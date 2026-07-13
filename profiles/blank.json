@@ -1,0 +1,27 @@
+{
+  "$schema": "../spec/profile.schema.json",
+  "schema_version": "1.0",
+  "name": "Blank profile",
+  "description": "A minimal starting point.",
+  "occupation": "",
+  "about": {
+    "background": [],
+    "experience": "",
+    "recurring_uses": [],
+    "stable_preferences": []
+  },
+  "response": {
+    "language": "",
+    "tone": [],
+    "audience": "",
+    "structure": {
+      "long_answers": "",
+      "body": "",
+      "lists": "",
+      "tables": ""
+    },
+    "technical": [],
+    "research": [],
+    "avoid": []
+  }
+}
