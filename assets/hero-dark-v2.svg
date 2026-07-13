@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
   <title id="title">ChatGPT Personalization</title>
-  <desc id="desc">A field-aware workflow for structuring, rendering, linting, and testing ChatGPT personalization profiles.</desc>
+  <desc id="desc">A field-aware workflow for structuring, rendering, linting, and manually evaluating ChatGPT personalization profiles.</desc>
   <rect width="1200" height="420" rx="24" fill="#0d1117"/>
   <rect x="1" y="1" width="1198" height="418" rx="23" fill="none" stroke="#30363d" stroke-width="2"/>
 
@@ -8,7 +8,7 @@
     <text x="72" y="92" font-size="18" font-weight="700" letter-spacing="2.8" fill="#58a6ff">CHATGPT PERSONALIZATION</text>
     <text x="72" y="168" font-size="54" font-weight="700" fill="#f0f6fc">Profiles you can inspect.</text>
     <text x="72" y="216" font-size="25" font-weight="400" fill="#8b949e">Structure user context, render clean fields,</text>
-    <text x="72" y="251" font-size="25" font-weight="400" fill="#8b949e">then lint and test the result.</text>
+    <text x="72" y="251" font-size="25" font-weight="400" fill="#8b949e">then lint and evaluate the result.</text>
 
     <g transform="translate(72 304)">
       <rect width="122" height="42" rx="8" fill="#161b22" stroke="#30363d"/>
@@ -16,7 +16,7 @@
       <rect x="136" width="142" height="42" rx="8" fill="#161b22" stroke="#30363d"/>
       <text x="207" y="27" text-anchor="middle" font-size="15" font-weight="600" fill="#f0f6fc">JSON SCHEMA</text>
       <rect x="292" width="126" height="42" rx="8" fill="#161b22" stroke="#30363d"/>
-      <text x="355" y="27" text-anchor="middle" font-size="15" font-weight="600" fill="#f0f6fc">TESTABLE</text>
+      <text x="355" y="27" text-anchor="middle" font-size="15" font-weight="600" fill="#f0f6fc">MANUAL EVAL</text>
     </g>
 
     <g transform="translate(760 60)">
@@ -38,8 +38,8 @@
 
       <rect x="0" y="232" width="350" height="68" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"/>
       <circle cx="34" cy="266" r="8" fill="#d29922"/>
-      <text x="58" y="261" font-size="14" font-weight="700" fill="#f0f6fc">LINT + TEST</text>
-      <text x="58" y="283" font-size="14" fill="#8b949e">limits · secrets · leakage · behavior</text>
+      <text x="58" y="261" font-size="14" font-weight="700" fill="#f0f6fc">LINT + EVAL</text>
+      <text x="58" y="283" font-size="14" fill="#8b949e">structure · limits · scenarios · privacy</text>
     </g>
   </g>
 </svg>
