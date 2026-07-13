@@ -19,25 +19,15 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark-v2.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/hero-light-v2.svg">
-  <img alt="ChatGPT Personalization: structure, render, lint, and test personal settings" src="assets/hero-light-v2.svg" width="100%">
+  <img alt="ChatGPT Personalization: structure, render, lint, and manually evaluate personal settings" src="assets/hero-light-v2.svg" width="100%">
 </picture>
 
 <br>
 
-Most custom-instruction repositories give you a block of text to copy. This project treats personalization as a small configuration system: stable user context is separated from response preferences, temporary requirements stay out of global settings, and profiles can be rendered, linted, versioned, and tested.
+Most custom-instruction repositories provide a block of text to copy. This project uses a small configuration format instead: stable user context is separated from response preferences, profiles can be reviewed as JSON, and a dependency-free tool renders the three text fields and checks common structural problems.
 
 > [!NOTE]
-> This is not a jailbreak collection, a persona pack, or a claim that longer instructions make a model smarter.
-
-## Why this project is different
-
-| Typical prompt pack | This project |
-| --- | --- |
-| One opaque instruction block | Separate occupation, user context, and response behavior |
-| Copy, paste, and hope | Render, lint, and test before use |
-| Temporary details mixed into global settings | Scope-aware guidance for profile, project, memory, and task context |
-| Difficult to review or maintain | Versioned JSON with a documented schema |
-| Quality judged by how impressive the prompt sounds | Quality judged through observable behavior |
+> This is not a jailbreak collection, a persona pack, or evidence that longer instructions make a model more capable.
 
 ## How it works
 
@@ -46,11 +36,13 @@ flowchart LR
     A[Profile JSON] --> B[Lint]
     B --> C[Render]
     C --> D[Paste into ChatGPT]
-    D --> E[Test representative prompts]
+    D --> E[Run manual scenarios]
     E -->|revise| A
 ```
 
-The source profile stays structured and auditable. The renderer produces three natural-language fields, while the linter checks common structural, privacy, and prompt-quality problems. Scenario tests then show whether the profile changes responses in a useful and repeatable way.
+The linter checks the profile shape, field types, unsupported properties, duplicate array values, configured length limits, repeated text, several recognizable secret formats, and a small set of prompt-bloat patterns. Unit tests cover the tool and malformed inputs.
+
+Response quality is evaluated separately with manual scenarios. The repository does not currently publish automated behavioral scores or claim a measured performance improvement.
 
 ## Quick start
 
@@ -73,28 +65,28 @@ build/tech-generalist/
 └── response-preferences.txt
 ```
 
-Review the output, remove anything that is not stable or useful, then paste each file into the matching personalization field available in your ChatGPT interface.
+Review the output and remove anything that is not stable or useful before pasting each file into the matching personalization field available in your ChatGPT interface.
 
 ## The profile model
 
 | Field | What belongs there | What should stay out |
 | --- | --- | --- |
-| **Occupation** | A short, stable description of the user's role | A résumé, prestige claims, or temporary projects |
+| **Occupation** | A short, stable role description | A résumé, prestige claims, or temporary projects |
 | **More about you** | Durable context that changes how answers should be explained | Secrets, detailed biography, or facts that become stale quickly |
 | **Response preferences** | Language, tone, audience, structure, research, and technical workflow | Project-specific requirements or one-off output formats |
 
-Task-specific instructions still belong in the current prompt. Project-wide rules belong in the relevant project or workspace. Memory can hold useful context, but it should not be treated as a precise configuration file.
+Task-specific instructions still belong in the current request. Project-wide rules belong in the relevant project or workspace. Memory can hold useful context, but it should not be treated as a precise configuration file.
 
-Read [Profile architecture](docs/architecture.md) for the full separation model.
+Read the [profile guide](docs/guide.md) for writing and migration guidance.
 
 ## Profiles
 
-The example profiles are deliberately reusable rather than personal. Start with the closest match, then remove or rewrite anything that does not describe you.
+The example profiles are starting points rather than universal presets. Adapt the closest one and remove irrelevant details.
 
 | Profile | Best suited for |
 | --- | --- |
 | [`knowledge-worker.json`](profiles/knowledge-worker.json) | Office work, research, planning, documentation, and practical decisions |
-| [`tech-generalist.json`](profiles/tech-generalist.json) | Troubleshooting, UI/UX, practical technology, and AI-assisted development |
+| [`tech-generalist.json`](profiles/tech-generalist.json) | Troubleshooting, UI/UX, practical technology, and assisted development |
 | [`student.json`](profiles/student.json) | Structured learning without assuming expert vocabulary |
 | [`product-designer.json`](profiles/product-designer.json) | Product thinking, interface critique, flows, and design systems |
 | [`writer-editor.json`](profiles/writer-editor.json) | Drafting, rewriting, editing, tone, and language-sensitive work |
@@ -102,35 +94,27 @@ The example profiles are deliberately reusable rather than personal. Start with 
 
 See [profiles/README.md](profiles/README.md) for adaptation guidance.
 
-## What the linter checks
+## Validation
 
-The dependency-free linter currently reports:
+Run the automated checks with:
 
-- missing fields and unsupported schema versions;
-- long-form fields that exceed or approach the configured limit;
-- repeated text and profiles that rely heavily on absolute commands;
-- common secret formats such as API keys and private-key headers;
-- prompt-bloat patterns such as inflated expertise claims, accuracy guarantees, and hidden-process demands.
+```bash
+python -m unittest discover -s tests -v
+python tools/profile.py lint profiles/*.json
+```
 
-It is a focused profile checker, not a complete security scanner or a substitute for human review.
+The linter is focused on profile structure and common mistakes. It is not a complete JSON Schema engine, security scanner, or substitute for human review. Its structural checks mirror the constraints used by the current profile schema and are covered by tests.
 
-## Testing behavior
-
-A profile should be tested against the work it is expected to support. The included scenarios cover simple explanation, long analysis, artifact tone, troubleshooting, current information, relevance leakage, and cases where a list or table is genuinely the best format.
-
-Start with [Testing a profile](docs/testing.md) and the reusable [evaluation scenarios](tests/scenarios.md).
+For response behavior, use the [manual evaluation guide](docs/testing.md) and the reusable [scenario set](tests/scenarios.md). Compare against a baseline and record the model, product surface, date, expected behavior, and failures.
 
 ## Documentation
 
 | Guide | Purpose |
 | --- | --- |
-| [Architecture](docs/architecture.md) | Decide what belongs in personalization, memory, projects, or the current task |
-| [Writing guide](docs/writing-guide.md) | Turn vague preferences into observable behavior |
-| [Migration](docs/migration.md) | Convert an existing instruction block into a structured profile |
-| [Testing](docs/testing.md) | Compare behavior against a baseline and record failures |
-| [Anti-patterns](docs/anti-patterns.md) | Avoid prompt bloat, fake authority, rigid formatting, and topic leakage |
+| [Profile guide](docs/guide.md) | Decide what belongs in each layer, write observable instructions, avoid common failure patterns, and migrate an existing block |
+| [Manual evaluation](docs/testing.md) | Compare behavior against a baseline without overstating what the tests prove |
 | [Privacy](docs/privacy.md) | Keep secrets and unnecessary personal data out of profiles |
-| [Research basis](docs/research-basis.md) | Review the product documentation and design reasoning behind the project |
+| [References](docs/references.md) | Review official product sources, related projects, and the limits of the initial source review |
 
 <details>
 <summary><strong>Repository structure</strong></summary>
@@ -138,7 +122,7 @@ Start with [Testing a profile](docs/testing.md) and the reusable [evaluation sce
 ```text
 .github/    Contribution templates and continuous integration
 assets/     Theme-aware README visuals
-docs/       Architecture, writing, migration, privacy, and testing guidance
+docs/       Profile guidance, manual evaluation, privacy, and references
 profiles/   Adaptable example profiles
 spec/       JSON Schema for profile files
 tests/      Unit tests and manual evaluation scenarios
@@ -147,25 +131,13 @@ tools/      Dependency-free renderer and linter
 
 </details>
 
-<details>
-<summary><strong>Design principles</strong></summary>
-
-1. Keep global instructions stable and broadly applicable.
-2. Put each fact or preference in the field where it belongs.
-3. Prefer observable behavior over inflated roles or claims.
-4. Use examples when wording alone is ambiguous.
-5. Test representative prompts after meaningful changes.
-6. Remove instructions that do not produce a visible benefit.
-
-</details>
-
 ## Product notes
 
-ChatGPT's personalization interface, field labels, limits, models, memory behavior, and selected personalities can change over time. The renderer therefore uses generic field names rather than assuming one exact screen layout. Review current product documentation before relying on a UI-specific assumption.
+ChatGPT's personalization interface, field labels, limits, plans, models, memory behavior, and selected personalities can change. The renderer uses generic field names rather than assuming one exact screen layout. Review current product documentation before relying on a UI-specific assumption.
 
 ## Contributing
 
-Contributions are welcome when they improve the method, tooling, documentation, tests, or quality of a genuinely distinct example profile. Public examples must remain reusable and free of sensitive or identifying information.
+Contributions are welcome when they improve the tooling, documentation, tests, or a genuinely distinct example profile. Public examples must remain reusable and free of sensitive or identifying information.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Security and privacy reports should follow [SECURITY.md](SECURITY.md).
 
