@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/man612/chatgpt-personalization/blob/main/spec/profile.schema.json",
+  "title": "ChatGPT Personalization Profile",
+  "description": "A structured source for rendering ChatGPT personalization fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "occupation",
+    "about",
+    "response"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "occupation": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "about": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "background",
+        "experience",
+        "recurring_uses",
+        "stable_preferences"
+      ],
+      "properties": {
+        "background": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "experience": {
+          "type": "string"
+        },
+        "recurring_uses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "stable_preferences": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "tone",
+        "audience",
+        "structure",
+        "technical",
+        "research",
+        "avoid"
+      ],
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "tone": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "audience": {
+          "type": "string"
+        },
+        "structure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "long_answers",
+            "body",
+            "lists",
+            "tables"
+          ],
+          "properties": {
+            "long_answers": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string"
+            },
+            "lists": {
+              "type": "string"
+            },
+            "tables": {
+              "type": "string"
+            }
+          }
+        },
+        "technical": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "research": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "avoid": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

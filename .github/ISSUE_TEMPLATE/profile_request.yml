@@ -1,0 +1,30 @@
+name: Profile proposal
+description: Propose a reusable example profile or a meaningful improvement to an existing one.
+title: "profile: "
+labels: ["profile"]
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Distinct use case
+      description: Who is this for, and why are the current profiles insufficient?
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observable behavior
+      description: What should change in responses, and how would you test it?
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Contribution checks
+      options:
+        - label: The proposal is generic and contains no personal or confidential information.
+          required: true
+        - label: The proposal differs materially from existing profiles.
+          required: true
+        - label: I can provide at least one evaluation scenario.
+          required: true
