@@ -11,6 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
     steps:
@@ -21,4 +22,6 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
       - name: Lint example profiles
-        run: python tools/profile.py lint "profiles/*.json"
+        run: python tools/profile.py lint profiles/*.json
+      - name: Render smoke test
+        run: python tools/profile.py render profiles/tech-generalist.json --out build/ci-smoke
