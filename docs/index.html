@@ -4,17 +4,39 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ChatGPT Custom Instructions Builder</title>
-  <meta name="description" content="Build, lint, preview, copy, and export ChatGPT custom instructions as structured JSON profiles in your browser.">
+  <meta name="description" content="Build, validate, preview, copy, and export ChatGPT custom instructions as structured JSON profiles in your browser.">
   <meta name="theme-color" content="#0d1117">
   <meta property="og:title" content="ChatGPT Custom Instructions Builder">
-  <meta property="og:description" content="Build, lint, preview, and export structured ChatGPT personalization profiles in your browser.">
+  <meta property="og:description" content="Build, validate, preview, and export structured ChatGPT personalization profiles in your browser.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://man612.github.io/chatgpt-personalization/">
-  <meta property="og:image" content="https://raw.githubusercontent.com/man612/chatgpt-personalization/main/assets/social-preview.svg">
+  <meta property="og:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="ChatGPT Personalization — custom instructions kept as structured JSON profiles">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
   <link rel="stylesheet" href="styles.css">
+  <script src="renderer.js" defer></script>
   <script src="app.js" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ChatGPT Custom Instructions Builder",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any modern web browser",
+    "url": "https://man612.github.io/chatgpt-personalization/",
+    "codeRepository": "https://github.com/man612/chatgpt-personalization",
+    "description": "A browser-based builder for structured ChatGPT personalization profiles.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#builder">Skip to builder</a>
@@ -28,6 +50,7 @@
       <nav aria-label="Primary">
         <a href="https://github.com/man612/chatgpt-personalization">GitHub</a>
         <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/guide.md">Guide</a>
+        <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/product-mapping.md">Field mapping</a>
       </nav>
     </div>
   </header>
@@ -36,7 +59,7 @@
     <section class="intro" aria-labelledby="page-title">
       <p class="eyebrow">Browser builder</p>
       <h1 id="page-title">ChatGPT Custom Instructions Builder</h1>
-      <p class="lede">Build, lint, preview, and export structured ChatGPT personalization profiles without installing anything.</p>
+      <p class="lede">Build, validate, preview, and export structured ChatGPT personalization profiles without installing anything.</p>
       <div class="trust-row" aria-label="Builder properties">
         <span>No sign-in</span>
         <span>No third-party libraries</span>
@@ -126,8 +149,9 @@
 
     <section class="explanation" aria-labelledby="what-this-does">
       <h2 id="what-this-does">What this builder checks</h2>
-      <p>The page uses the repository's public JSON Schema when available. It reports missing fields, wrong value types, unsupported properties, duplicate array items, and configured length limits. It does not judge whether a personal preference is useful, safe to publish, or likely to improve every response.</p>
-      <p>Use the <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/testing.md">manual evaluation guide</a> to compare behavior against a baseline before keeping a profile change.</p>
+      <p>The page uses the repository's public JSON Schema when available. It reports missing fields, wrong value types, unsupported properties, duplicate array items, configured schema limits, and rendered fields that approach or exceed the configured 1,500-character limit.</p>
+      <p>The browser performs structural validation, not the CLI's complete lint pass. Use the Python linter for secret-pattern, duplicate-text, and prompt-bloat checks, then use the <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/testing.md">manual evaluation guide</a> to compare behavior against a baseline.</p>
+      <p>The three output sections are the project's stable data model. ChatGPT field labels and layouts can vary by product surface, so review the <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/product-mapping.md">field-mapping guide</a> before pasting them.</p>
     </section>
   </main>
 
