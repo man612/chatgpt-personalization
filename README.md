@@ -1,7 +1,7 @@
 <h1 align="center">ChatGPT Personalization</h1>
 
 <p align="center">
-  Build, lint, and version ChatGPT custom instructions as structured, reviewable JSON profiles.
+  Build, lint, render, and version ChatGPT custom instructions as structured, reviewable JSON profiles.
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 
 <br>
 
-ChatGPT Personalization is a dependency-free toolkit for building, linting, rendering, and maintaining ChatGPT custom instructions. It stores occupation, durable user context, and response preferences as structured JSON profiles, then produces copy-ready text for ChatGPT's personalization fields.
+ChatGPT Personalization is a dependency-free toolkit for building, linting, rendering, and maintaining ChatGPT custom instructions. It stores occupation, durable user context, and response preferences as structured JSON profiles, then produces three copy-ready sections that can be mapped to the personalization fields available in the current ChatGPT interface.
 
 Use the [browser builder](https://man612.github.io/chatgpt-personalization/) for an install-free workflow, or use the Python CLI when profiles belong in a repository or repeatable local process.
 
@@ -38,21 +38,25 @@ Use the [browser builder](https://man612.github.io/chatgpt-personalization/) for
 - structured profiles backed by a documented JSON Schema;
 - a dependency-free renderer and linter for local use;
 - reusable starting profiles that remain editable and inspectable;
-- an in-browser custom instructions builder with live validation, preview, copy, import, and export;
+- an in-browser builder with structural validation, preview, copy, import, and export;
+- one rendering contract shared by the CLI and browser, checked by an automated parity test;
 - manual evaluation guidance that keeps behavioral claims separate from structural checks.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[Profile JSON] --> B[Validate]
-    B --> C[Render]
-    C --> D[Paste into ChatGPT]
-    D --> E[Run manual scenarios]
-    E -->|revise| A
+    A[Profile JSON] --> B{Use case}
+    B -->|Repository or CLI| C[Lint]
+    B -->|Browser| D[Validate]
+    C --> E[Shared rendering contract]
+    D --> E
+    E --> F[Map sections to available ChatGPT fields]
+    F --> G[Run manual scenarios]
+    G -->|revise| A
 ```
 
-The linter checks the profile shape, field types, unsupported properties, duplicate array values, configured length limits, repeated text, several recognizable secret formats, and a small set of prompt-bloat patterns. Unit tests cover the tool and malformed inputs.
+The Python linter checks profile shape, field types, unsupported properties, duplicate array values, configured length limits, repeated text, several recognizable secret formats, and a small set of prompt-bloat patterns. The browser performs structural validation and rendered-field length checks. Both use the same rendering rules, and CI compares their output directly.
 
 Response quality is evaluated separately with manual scenarios. The repository does not publish automated behavioral scores or claim a measured model-performance improvement.
 
@@ -61,6 +65,8 @@ Response quality is evaluated separately with manual scenarios. The repository d
 The browser builder runs as a static GitHub Pages site. Choose a profile, edit its structured fields, review validation messages, copy the rendered outputs, or download the resulting JSON.
 
 Profile edits stay in the browser. The page fetches public templates and the public schema from this repository, but it does not send edited profile contents to a server.
+
+The browser is a structural editor and validator, not a replacement for every CLI lint check. Run the Python linter before publishing a profile or treating it as reviewed.
 
 [Open the ChatGPT Custom Instructions Builder →](https://man612.github.io/chatgpt-personalization/)
 
@@ -85,19 +91,19 @@ build/tech-generalist/
 └── response-preferences.txt
 ```
 
-Review the output and remove anything that is not stable or useful before pasting each file into the matching personalization field available in your ChatGPT interface.
+Review the output and remove anything that is not stable or useful. Then use the [field-mapping guide](docs/product-mapping.md) to place each section in the closest personalization field available in your current ChatGPT interface.
 
 ## The profile model
 
-| Field | What belongs there | What should stay out |
+| Section | What belongs there | What should stay out |
 | --- | --- | --- |
 | **Occupation** | A short, stable role description | A résumé, prestige claims, or temporary projects |
 | **More about you** | Durable context that changes how answers should be explained | Secrets, detailed biography, or facts that become stale quickly |
 | **Response preferences** | Language, tone, audience, structure, research, and technical workflow | Project-specific requirements or one-off output formats |
 
-Task-specific instructions still belong in the current request. Project-wide rules belong in the relevant project or workspace. Memory can hold useful context, but it should not be treated as a precise configuration file.
+These are stable repository sections, not a promise that every ChatGPT client will always expose three fields with identical labels. Task-specific instructions still belong in the current request. Project-wide rules belong in the relevant project or workspace. Memory can hold useful context, but it should not be treated as a precise configuration file.
 
-Read the [profile guide](docs/guide.md) for writing and migration guidance.
+Read the [profile guide](docs/guide.md) for writing and migration guidance, and the [field-mapping guide](docs/product-mapping.md) for current product surfaces.
 
 ## Profiles
 
@@ -119,11 +125,14 @@ See [profiles/README.md](profiles/README.md) for adaptation guidance.
 Run the automated checks with:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p "test_*.py" -v
 python tools/profile.py lint profiles/*.json
+python tests/check_renderer_parity.py
 ```
 
 The linter is focused on profile structure and common mistakes. It is not a complete JSON Schema engine, security scanner, or substitute for human review. Its structural checks mirror the constraints used by the current profile schema and are covered by tests.
+
+The parity check executes the browser renderer with Node and compares its output with the Python renderer. GitHub Actions runs the Python matrix, CLI smoke test, JavaScript syntax checks, and renderer parity check on pull requests and changes to `main`.
 
 For response behavior, use the [manual evaluation guide](docs/testing.md) and the reusable [scenario set](tests/scenarios.md). Compare against a baseline and record the model, product surface, date, expected behavior, and failures.
 
@@ -132,6 +141,7 @@ For response behavior, use the [manual evaluation guide](docs/testing.md) and th
 | Guide | Purpose |
 | --- | --- |
 | [Profile guide](docs/guide.md) | Decide what belongs in each layer, write observable instructions, avoid common failure patterns, and migrate an existing block |
+| [Field mapping](docs/product-mapping.md) | Map the repository's stable sections to the personalization fields available in the current product surface |
 | [Manual evaluation](docs/testing.md) | Compare behavior against a baseline without overstating what the tests prove |
 | [Privacy](docs/privacy.md) | Keep secrets and unnecessary personal data out of profiles |
 | [References](docs/references.md) | Review official product sources, related projects, and the limits of the initial source review |
@@ -141,11 +151,11 @@ For response behavior, use the [manual evaluation guide](docs/testing.md) and th
 
 ```text
 .github/    Contribution templates and repository automation
-assets/     Theme-aware README and social-preview assets
-docs/       Browser builder, profile guidance, evaluation, privacy, and references
+assets/     Theme-aware README visuals
+docs/       Browser builder, mapping, guidance, evaluation, privacy, and references
 profiles/   Adaptable example profiles
 spec/       JSON Schema for profile files
-tests/      Unit tests and manual evaluation scenarios
+tests/      Unit tests, renderer parity checks, and manual evaluation scenarios
 tools/      Dependency-free renderer and linter
 ```
 
@@ -153,7 +163,9 @@ tools/      Dependency-free renderer and linter
 
 ## Product notes
 
-ChatGPT's personalization interface, field labels, limits, plans, models, memory behavior, and selected personalities can change. The renderer uses generic field names rather than assuming one exact screen layout. Review current product documentation before relying on a UI-specific assumption.
+ChatGPT's personalization interface, field labels, limits, plans, models, memory behavior, and selected personalities can change. The renderer therefore uses stable repository section names rather than assuming one exact screen layout. Review current product documentation before relying on a UI-specific assumption.
+
+The configured 1,500-character threshold is a conservative validation default for the two long rendered sections. It can be changed in the CLI and should not be treated as a permanent guarantee about every product surface.
 
 ## Contributing
 

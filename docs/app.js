@@ -32,10 +32,28 @@ const fallbackProfile = {
   "$schema": "../spec/profile.schema.json",
   "schema_version": "1.0",
   "name": "Blank profile",
-  "description": "A minimal starting point for a personal profile.",
+  "description": "A minimal starting point.",
   "occupation": "",
-  "about": {},
-  "response": {}
+  "about": {
+    "background": [],
+    "experience": "",
+    "recurring_uses": [],
+    "stable_preferences": []
+  },
+  "response": {
+    "language": "",
+    "tone": [],
+    "audience": "",
+    "structure": {
+      "long_answers": "",
+      "body": "",
+      "lists": "",
+      "tables": ""
+    },
+    "technical": [],
+    "research": [],
+    "avoid": []
+  }
 };
 
 function clone(value) {
@@ -50,10 +68,6 @@ function humanize(key) {
 
 function fieldId(path) {
   return `field-${path.join("-").replace(/[^a-zA-Z0-9-_]/g, "-")}`;
-}
-
-function getAtPath(object, path) {
-  return path.reduce((value, key) => value?.[key], object);
 }
 
 function setAtPath(object, path, value) {
@@ -95,9 +109,7 @@ async function loadTemplate(name) {
       throw profileResult.reason;
     }
 
-    if (schemaResult.status === "fulfilled") {
-      state.schema = schemaResult.value;
-    }
+    if (schemaResult.status === "fulfilled") state.schema = schemaResult.value;
 
     state.originalProfile = clone(state.profile);
     renderAll();
@@ -114,6 +126,15 @@ async function loadTemplate(name) {
   }
 }
 
+function resolveSchema(node) {
+  if (!node || !node.$ref || !state.schema) return node;
+  if (!node.$ref.startsWith("#/")) return node;
+  return node.$ref
+    .slice(2)
+    .split("/")
+    .reduce((value, segment) => value?.[segment.replace(/~1/g, "/").replace(/~0/g, "~")], state.schema) || node;
+}
+
 function schemaForPath(path) {
   if (!state.schema) return null;
   let node = state.schema;
@@ -123,15 +144,6 @@ function schemaForPath(path) {
     node = node.properties[key];
   }
   return resolveSchema(node);
-}
-
-function resolveSchema(node) {
-  if (!node || !node.$ref || !state.schema) return node;
-  if (!node.$ref.startsWith("#/")) return node;
-  return node.$ref
-    .slice(2)
-    .split("/")
-    .reduce((value, segment) => value?.[segment.replace(/~1/g, "/").replace(/~0/g, "~")], state.schema) || node;
 }
 
 function createField(key, value, path) {
@@ -169,7 +181,7 @@ function createField(key, value, path) {
     input.value = String(value);
     input.dataset.valueType = "number";
   } else {
-    const useTextarea = key === "occupation" || key === "description" || String(value).length > 80;
+    const useTextarea = key === "occupation" || key === "description" || String(value ?? "").length > 80;
     input = document.createElement(useTextarea ? "textarea" : "input");
     if (!useTextarea) input.type = "text";
     input.value = value ?? "";
@@ -203,7 +215,6 @@ function createObjectFields(object, path = []) {
 
   for (const [key, value] of Object.entries(object)) {
     const currentPath = [...path, key];
-
     if (value && typeof value === "object" && !Array.isArray(value)) {
       const fieldset = document.createElement("fieldset");
       fieldset.className = "fieldset";
@@ -240,53 +251,18 @@ function renderForm() {
   elements.form.replaceChildren(createObjectFields(state.profile));
 }
 
-function sentence(value) {
-  const text = String(value ?? "").trim();
-  if (!text) return "";
-  return /[.!?]$/.test(text) ? text : `${text}.`;
-}
-
-function serialiseValue(value) {
-  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean).join("; ");
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  return String(value ?? "").trim();
-}
-
-function renderObject(object) {
-  if (!object || typeof object !== "object" || Array.isArray(object)) return "";
-  const lines = [];
-
-  for (const [key, value] of Object.entries(object)) {
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      const nested = renderObject(value);
-      if (nested) lines.push(`${humanize(key)}:\n${nested}`);
-      continue;
-    }
-
-    const rendered = serialiseValue(value);
-    if (!rendered) continue;
-    lines.push(`${humanize(key)}: ${sentence(rendered)}`);
-  }
-
-  return lines.join("\n");
-}
-
-function renderProfile(profile) {
-  return {
-    occupation: sentence(profile?.occupation),
-    about: renderObject(profile?.about),
-    response: renderObject(profile?.response),
-  };
-}
-
 function syncOutputs() {
-  const rendered = renderProfile(state.profile);
+  const rendered = ProfileRenderer.renderProfile(state.profile);
   elements.occupationOutput.textContent = rendered.occupation;
-  elements.aboutOutput.textContent = rendered.about;
-  elements.responseOutput.textContent = rendered.response;
+  elements.aboutOutput.textContent = rendered.more_about_you;
+  elements.responseOutput.textContent = rendered.response_preferences;
   elements.jsonEditor.value = JSON.stringify(state.profile, null, 2);
-  elements.characterSummary.textContent = `${rendered.occupation.length} · ${rendered.about.length} · ${rendered.response.length} chars`;
-  showValidation(validateProfile(state.profile));
+  elements.characterSummary.textContent = [
+    rendered.occupation.length,
+    rendered.more_about_you.length,
+    rendered.response_preferences.length,
+  ].join(" · ") + " chars";
+  showValidation(validateProfile(state.profile, rendered));
 }
 
 function renderAll() {
@@ -304,109 +280,126 @@ function valueMatchesType(value, type) {
   return typeof value === type;
 }
 
-function validateNode(value, rawNode, path, errors) {
+function validateNode(value, rawNode, path, findings) {
   const node = resolveSchema(rawNode) || {};
   const location = path || "profile";
+  const addError = (message) => findings.push({ level: "error", code: "SCHEMA", message });
 
   if (node.type && !valueMatchesType(value, node.type)) {
     const expected = Array.isArray(node.type) ? node.type.join(" or ") : node.type;
-    errors.push(`${location} must be ${expected}.`);
+    addError(`${location} must be ${expected}.`);
     return;
   }
 
-  if (node.const !== undefined && value !== node.const) errors.push(`${location} must equal ${JSON.stringify(node.const)}.`);
-  if (node.enum && !node.enum.includes(value)) errors.push(`${location} must be one of: ${node.enum.join(", ")}.`);
+  if (node.const !== undefined && value !== node.const) addError(`${location} must equal ${JSON.stringify(node.const)}.`);
+  if (node.enum && !node.enum.includes(value)) addError(`${location} must be one of: ${node.enum.join(", ")}.`);
 
   if (typeof value === "string") {
-    if (node.minLength !== undefined && value.length < node.minLength) errors.push(`${location} must contain at least ${node.minLength} characters.`);
-    if (node.maxLength !== undefined && value.length > node.maxLength) errors.push(`${location} exceeds the ${node.maxLength}-character limit.`);
-    if (node.pattern && !new RegExp(node.pattern).test(value)) errors.push(`${location} does not match the required pattern.`);
+    if (node.minLength !== undefined && value.length < node.minLength) addError(`${location} must contain at least ${node.minLength} characters.`);
+    if (node.maxLength !== undefined && value.length > node.maxLength) addError(`${location} exceeds the ${node.maxLength}-character limit.`);
+    if (node.pattern && !new RegExp(node.pattern).test(value)) addError(`${location} does not match the required pattern.`);
   }
 
   if (Array.isArray(value)) {
-    if (node.minItems !== undefined && value.length < node.minItems) errors.push(`${location} must contain at least ${node.minItems} items.`);
-    if (node.maxItems !== undefined && value.length > node.maxItems) errors.push(`${location} must contain no more than ${node.maxItems} items.`);
+    if (node.minItems !== undefined && value.length < node.minItems) addError(`${location} must contain at least ${node.minItems} items.`);
+    if (node.maxItems !== undefined && value.length > node.maxItems) addError(`${location} must contain no more than ${node.maxItems} items.`);
     if (node.uniqueItems) {
       const encoded = value.map((item) => JSON.stringify(item));
-      if (new Set(encoded).size !== encoded.length) errors.push(`${location} contains duplicate items.`);
+      if (new Set(encoded).size !== encoded.length) addError(`${location} contains duplicate items.`);
     }
-    if (node.items) value.forEach((item, index) => validateNode(item, node.items, `${location}[${index}]`, errors));
+    if (node.items) value.forEach((item, index) => validateNode(item, node.items, `${location}[${index}]`, findings));
   }
 
   if (value && typeof value === "object" && !Array.isArray(value)) {
     for (const requiredKey of node.required || []) {
-      if (!(requiredKey in value)) errors.push(`${location}.${requiredKey} is required.`);
+      if (!(requiredKey in value)) addError(`${location}.${requiredKey} is required.`);
     }
 
     if (node.additionalProperties === false && node.properties) {
       for (const key of Object.keys(value)) {
-        if (!(key in node.properties)) errors.push(`${location}.${key} is not supported.`);
+        if (!(key in node.properties)) addError(`${location}.${key} is not supported.`);
       }
     }
 
     for (const [key, childValue] of Object.entries(value)) {
-      if (node.properties?.[key]) validateNode(childValue, node.properties[key], `${location}.${key}`, errors);
+      if (node.properties?.[key]) validateNode(childValue, node.properties[key], `${location}.${key}`, findings);
     }
   }
 
-  for (const candidate of node.allOf || []) validateNode(value, candidate, location, errors);
+  for (const candidate of node.allOf || []) validateNode(value, candidate, location, findings);
 
   if (node.anyOf) {
-    const candidateErrors = node.anyOf.map((candidate) => {
-      const localErrors = [];
-      validateNode(value, candidate, location, localErrors);
-      return localErrors;
+    const candidateResults = node.anyOf.map((candidate) => {
+      const local = [];
+      validateNode(value, candidate, location, local);
+      return local;
     });
-    if (candidateErrors.every((candidate) => candidate.length)) errors.push(`${location} does not match any permitted shape.`);
+    if (candidateResults.every((candidate) => candidate.length)) addError(`${location} does not match any permitted shape.`);
   }
 
   if (node.oneOf) {
     const passing = node.oneOf.filter((candidate) => {
-      const localErrors = [];
-      validateNode(value, candidate, location, localErrors);
-      return localErrors.length === 0;
+      const local = [];
+      validateNode(value, candidate, location, local);
+      return local.length === 0;
     });
-    if (passing.length !== 1) errors.push(`${location} must match exactly one permitted shape.`);
+    if (passing.length !== 1) addError(`${location} must match exactly one permitted shape.`);
   }
 }
 
 function fallbackValidation(profile) {
-  const errors = [];
-  if (!profile || typeof profile !== "object" || Array.isArray(profile)) return ["Profile must be a JSON object."];
+  const findings = [];
+  const addError = (message) => findings.push({ level: "error", code: "STRUCTURE", message });
+  if (!profile || typeof profile !== "object" || Array.isArray(profile)) return [{ level: "error", code: "STRUCTURE", message: "Profile must be a JSON object." }];
   for (const key of ["schema_version", "name", "occupation", "about", "response"]) {
-    if (!(key in profile)) errors.push(`profile.${key} is required.`);
+    if (!(key in profile)) addError(`profile.${key} is required.`);
   }
-  if (typeof profile.occupation !== "string") errors.push("profile.occupation must be a string.");
-  if (!profile.about || typeof profile.about !== "object" || Array.isArray(profile.about)) errors.push("profile.about must be an object.");
-  if (!profile.response || typeof profile.response !== "object" || Array.isArray(profile.response)) errors.push("profile.response must be an object.");
-  return errors;
+  if (typeof profile.occupation !== "string") addError("profile.occupation must be a string.");
+  if (!profile.about || typeof profile.about !== "object" || Array.isArray(profile.about)) addError("profile.about must be an object.");
+  if (!profile.response || typeof profile.response !== "object" || Array.isArray(profile.response)) addError("profile.response must be an object.");
+  return findings;
 }
 
-function validateProfile(profile) {
-  if (!state.schema) return fallbackValidation(profile);
-  const errors = [];
-  validateNode(profile, state.schema, "profile", errors);
-  return [...new Set(errors)];
+function validateProfile(profile, rendered = ProfileRenderer.renderProfile(profile)) {
+  const findings = [];
+  if (state.schema) validateNode(profile, state.schema, "profile", findings);
+  else findings.push(...fallbackValidation(profile));
+
+  if (!findings.some((item) => item.level === "error")) {
+    findings.push(...ProfileRenderer.renderedFieldFindings(rendered));
+  }
+
+  const seen = new Set();
+  return findings.filter((finding) => {
+    const key = `${finding.level}:${finding.code}:${finding.message}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
-function showValidation(errors) {
+function showValidation(findings) {
   elements.validation.replaceChildren();
+  const errors = findings.filter((item) => item.level === "error");
+  const warnings = findings.filter((item) => item.level === "warning");
   elements.validation.className = `validation-summary visible ${errors.length ? "invalid" : "valid"}`;
 
   const strong = document.createElement("strong");
-  strong.textContent = errors.length ? `${errors.length} validation issue${errors.length === 1 ? "" : "s"}` : "Profile passes structural validation";
+  if (errors.length) strong.textContent = `${errors.length} validation error${errors.length === 1 ? "" : "s"}`;
+  else if (warnings.length) strong.textContent = `Structurally valid with ${warnings.length} warning${warnings.length === 1 ? "" : "s"}`;
+  else strong.textContent = "Profile passes structural validation";
   elements.validation.append(strong);
 
-  if (errors.length) {
+  if (findings.length) {
     const list = document.createElement("ul");
-    for (const error of errors.slice(0, 12)) {
+    for (const finding of findings.slice(0, 12)) {
       const item = document.createElement("li");
-      item.textContent = error;
+      item.textContent = `${finding.level === "warning" ? "Warning" : "Error"}: ${finding.message}`;
       list.append(item);
     }
-    if (errors.length > 12) {
+    if (findings.length > 12) {
       const item = document.createElement("li");
-      item.textContent = `${errors.length - 12} more issues are not shown.`;
+      item.textContent = `${findings.length - 12} more findings are not shown.`;
       list.append(item);
     }
     elements.validation.append(list);
@@ -472,9 +465,10 @@ elements.resetButton.addEventListener("click", () => {
 });
 elements.downloadButton.addEventListener("click", downloadProfile);
 elements.validateButton.addEventListener("click", () => {
-  const errors = validateProfile(state.profile);
-  showValidation(errors);
-  setStatus(errors.length ? "Validation completed with issues." : "Validation completed without structural errors.", errors.length ? "error" : "ready");
+  const findings = validateProfile(state.profile);
+  showValidation(findings);
+  const hasErrors = findings.some((item) => item.level === "error");
+  setStatus(hasErrors ? "Validation completed with errors." : "Validation completed without structural errors.", hasErrors ? "error" : "ready");
 });
 elements.formatJsonButton.addEventListener("click", () => {
   try {
