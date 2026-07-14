@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">ChatGPT Personalization</title>
+  <desc id="desc">Build, lint, render, and version ChatGPT custom instructions as structured JSON profiles.</desc>
+  <rect width="1280" height="640" fill="#0d1117"/>
+  <rect x="1" y="1" width="1278" height="638" rx="28" fill="none" stroke="#30363d" stroke-width="2"/>
+
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+    <g transform="translate(78 70)">
+      <rect width="58" height="58" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+      <text x="29" y="37" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="19" font-weight="700" fill="#58a6ff">{ }</text>
+      <text x="78" y="36" font-size="20" font-weight="700" letter-spacing="2.4" fill="#58a6ff">CHATGPT PERSONALIZATION</text>
+    </g>
+
+    <text x="78" y="245" font-size="66" font-weight="750" letter-spacing="-2.5" fill="#f0f6fc">Custom instructions,</text>
+    <text x="78" y="320" font-size="66" font-weight="750" letter-spacing="-2.5" fill="#f0f6fc">kept as code.</text>
+    <text x="80" y="382" font-size="27" fill="#8b949e">Structured JSON profiles with validation, rendering,</text>
+    <text x="80" y="420" font-size="27" fill="#8b949e">versioning, and an install-free browser builder.</text>
+
+    <g transform="translate(80 488)">
+      <rect width="154" height="48" rx="10" fill="#161b22" stroke="#30363d"/>
+      <text x="77" y="31" text-anchor="middle" font-size="16" font-weight="700" fill="#f0f6fc">JSON SCHEMA</text>
+      <rect x="168" width="128" height="48" rx="10" fill="#161b22" stroke="#30363d"/>
+      <text x="232" y="31" text-anchor="middle" font-size="16" font-weight="700" fill="#f0f6fc">LINT</text>
+      <rect x="310" width="128" height="48" rx="10" fill="#161b22" stroke="#30363d"/>
+      <text x="374" y="31" text-anchor="middle" font-size="16" font-weight="700" fill="#f0f6fc">RENDER</text>
+      <rect x="452" width="176" height="48" rx="10" fill="#161b22" stroke="#30363d"/>
+      <text x="540" y="31" text-anchor="middle" font-size="16" font-weight="700" fill="#f0f6fc">BROWSER TOOL</text>
+    </g>
+
+    <g transform="translate(868 102)">
+      <rect width="330" height="430" rx="22" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+      <circle cx="30" cy="28" r="5" fill="#f85149"/>
+      <circle cx="48" cy="28" r="5" fill="#d29922"/>
+      <circle cx="66" cy="28" r="5" fill="#3fb950"/>
+      <text x="30" y="88" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" fill="#8b949e">profile.json</text>
+      <text x="30" y="132" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#c9d1d9">{</text>
+      <text x="52" y="164" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#79c0ff">"occupation"</text>
+      <text x="178" y="164" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#c9d1d9">:</text>
+      <text x="52" y="196" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#a5d6ff">"…"</text>
+      <text x="52" y="238" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#79c0ff">"about"</text>
+      <text x="132" y="238" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#c9d1d9">: { … },</text>
+      <text x="52" y="280" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#79c0ff">"response"</text>
+      <text x="158" y="280" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#c9d1d9">: { … }</text>
+      <text x="30" y="312" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#c9d1d9">}</text>
+      <path d="M165 342v28" stroke="#6e7681" stroke-width="2" stroke-linecap="round"/>
+      <path d="M158 362l7 8 7-8" fill="none" stroke="#6e7681" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="30" y="386" width="270" height="52" rx="10" fill="#0d1117" stroke="#30363d"/>
+      <circle cx="56" cy="412" r="7" fill="#3fb950"/>
+      <text x="76" y="418" font-size="15" font-weight="700" fill="#f0f6fc">VALID · COPY-READY</text>
+    </g>
+  </g>
+</svg>
