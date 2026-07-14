@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://man612.github.io/chatgpt-personalization/sitemap.xml

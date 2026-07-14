@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChatGPT Custom Instructions Builder</title>
+  <meta name="description" content="Build, lint, preview, copy, and export ChatGPT custom instructions as structured JSON profiles in your browser.">
+  <meta name="theme-color" content="#0d1117">
+  <meta property="og:title" content="ChatGPT Custom Instructions Builder">
+  <meta property="og:description" content="Build, lint, preview, and export structured ChatGPT personalization profiles in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://man612.github.io/chatgpt-personalization/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/man612/chatgpt-personalization/main/assets/social-preview.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#builder">Skip to builder</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="ChatGPT Personalization home">
+        <span class="brand-mark" aria-hidden="true">{ }</span>
+        <span>ChatGPT Personalization</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="https://github.com/man612/chatgpt-personalization">GitHub</a>
+        <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/guide.md">Guide</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="builder">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Browser builder</p>
+      <h1 id="page-title">ChatGPT Custom Instructions Builder</h1>
+      <p class="lede">Build, lint, preview, and export structured ChatGPT personalization profiles without installing anything.</p>
+      <div class="trust-row" aria-label="Builder properties">
+        <span>No sign-in</span>
+        <span>No third-party libraries</span>
+        <span>Edits stay in your browser</span>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Profile controls">
+      <label class="control template-control">
+        <span>Starting profile</span>
+        <select id="template-select">
+          <option value="tech-generalist.json">Technology generalist</option>
+          <option value="knowledge-worker.json">Knowledge worker</option>
+          <option value="student.json">Student</option>
+          <option value="product-designer.json">Product designer</option>
+          <option value="writer-editor.json">Writer and editor</option>
+          <option value="blank.json">Blank profile</option>
+        </select>
+      </label>
+      <div class="toolbar-actions">
+        <button id="reset-button" class="button secondary" type="button">Reset</button>
+        <button id="download-button" class="button primary" type="button">Download JSON</button>
+      </div>
+    </section>
+
+    <div id="status" class="status loading" role="status" aria-live="polite">Loading profile and schema…</div>
+
+    <section class="workspace" aria-label="Profile builder workspace">
+      <div class="panel editor-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Structured source</p>
+            <h2>Edit profile</h2>
+          </div>
+          <button id="validate-button" class="text-button" type="button">Validate now</button>
+        </div>
+
+        <div id="validation-summary" class="validation-summary" aria-live="polite"></div>
+        <form id="profile-form" novalidate></form>
+
+        <details class="json-details">
+          <summary>Advanced JSON editor</summary>
+          <p>Edit the complete profile when you need direct control. Applying JSON rebuilds the form and preview.</p>
+          <label for="json-editor" class="sr-only">Profile JSON</label>
+          <textarea id="json-editor" spellcheck="false"></textarea>
+          <div class="json-actions">
+            <button id="format-json-button" class="button secondary" type="button">Format JSON</button>
+            <button id="apply-json-button" class="button secondary" type="button">Apply JSON</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="panel preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Copy-ready output</p>
+            <h2>Preview</h2>
+          </div>
+          <span id="character-summary" class="character-summary"></span>
+        </div>
+
+        <article class="output-card">
+          <div class="output-heading">
+            <h3>Occupation</h3>
+            <button class="copy-button" type="button" data-copy="occupation-output">Copy</button>
+          </div>
+          <pre id="occupation-output" tabindex="0"></pre>
+        </article>
+
+        <article class="output-card">
+          <div class="output-heading">
+            <h3>More about you</h3>
+            <button class="copy-button" type="button" data-copy="about-output">Copy</button>
+          </div>
+          <pre id="about-output" tabindex="0"></pre>
+        </article>
+
+        <article class="output-card">
+          <div class="output-heading">
+            <h3>Response preferences</h3>
+            <button class="copy-button" type="button" data-copy="response-output">Copy</button>
+          </div>
+          <pre id="response-output" tabindex="0"></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="explanation" aria-labelledby="what-this-does">
+      <h2 id="what-this-does">What this builder checks</h2>
+      <p>The page uses the repository's public JSON Schema when available. It reports missing fields, wrong value types, unsupported properties, duplicate array items, and configured length limits. It does not judge whether a personal preference is useful, safe to publish, or likely to improve every response.</p>
+      <p>Use the <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/testing.md">manual evaluation guide</a> to compare behavior against a baseline before keeping a profile change.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Static site for <a href="https://github.com/man612/chatgpt-personalization">man612/chatgpt-personalization</a>. Profile edits are not uploaded by this page.</p>
+  </footer>
+
+  <template id="field-template">
+    <div class="field"></div>
+  </template>
+</body>
+</html>

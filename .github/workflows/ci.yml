@@ -1,8 +1,10 @@
 name: CI
 
+# Automatic runs are temporarily disabled because repository-level runner
+# availability currently fails before any workflow step starts. Re-enable
+# push and pull_request after the Actions account setting is resolved.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
