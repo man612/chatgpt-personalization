@@ -1,15 +1,17 @@
 <h1 align="center">ChatGPT Personalization</h1>
 
 <p align="center">
-  Build personal settings as structured, reviewable data instead of one large prompt.
+  Build, lint, and version ChatGPT custom instructions as structured, reviewable JSON profiles.
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick start</a> ·
-  <a href="#how-it-works">How it works</a> ·
-  <a href="#profiles">Profiles</a> ·
-  <a href="#documentation">Documentation</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="https://man612.github.io/chatgpt-personalization/"><strong>Open the browser builder</strong></a>
+  ·
+  <a href="#quick-start">CLI quick start</a>
+  ·
+  <a href="#profiles">Profiles</a>
+  ·
+  <a href="#documentation">Documentation</a>
 </p>
 
 <p align="center">
@@ -19,21 +21,31 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark-v2.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/hero-light-v2.svg">
-  <img alt="ChatGPT Personalization: structure, render, lint, and manually evaluate personal settings" src="assets/hero-light-v2.svg" width="100%">
+  <img alt="ChatGPT Personalization: structure, render, lint, and manually evaluate custom instructions" src="assets/hero-light-v2.svg" width="100%">
 </picture>
 
 <br>
 
-Most custom-instruction repositories provide a block of text to copy. This project uses a small configuration format instead: stable user context is separated from response preferences, profiles can be reviewed as JSON, and a dependency-free tool renders the three text fields and checks common structural problems.
+ChatGPT Personalization is a dependency-free toolkit for building, linting, rendering, and maintaining ChatGPT custom instructions. It stores occupation, durable user context, and response preferences as structured JSON profiles, then produces copy-ready text for ChatGPT's personalization fields.
+
+Use the [browser builder](https://man612.github.io/chatgpt-personalization/) for an install-free workflow, or use the Python CLI when profiles belong in a repository or repeatable local process.
 
 > [!NOTE]
 > This is not a jailbreak collection, a persona pack, or evidence that longer instructions make a model more capable.
+
+## What it provides
+
+- structured profiles backed by a documented JSON Schema;
+- a dependency-free renderer and linter for local use;
+- reusable starting profiles that remain editable and inspectable;
+- an in-browser custom instructions builder with live validation, preview, copy, import, and export;
+- manual evaluation guidance that keeps behavioral claims separate from structural checks.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[Profile JSON] --> B[Lint]
+    A[Profile JSON] --> B[Validate]
     B --> C[Render]
     C --> D[Paste into ChatGPT]
     D --> E[Run manual scenarios]
@@ -42,7 +54,15 @@ flowchart LR
 
 The linter checks the profile shape, field types, unsupported properties, duplicate array values, configured length limits, repeated text, several recognizable secret formats, and a small set of prompt-bloat patterns. Unit tests cover the tool and malformed inputs.
 
-Response quality is evaluated separately with manual scenarios. The repository does not currently publish automated behavioral scores or claim a measured performance improvement.
+Response quality is evaluated separately with manual scenarios. The repository does not publish automated behavioral scores or claim a measured model-performance improvement.
+
+## Browser builder
+
+The browser builder runs as a static GitHub Pages site. Choose a profile, edit its structured fields, review validation messages, copy the rendered outputs, or download the resulting JSON.
+
+Profile edits stay in the browser. The page fetches public templates and the public schema from this repository, but it does not send edited profile contents to a server.
+
+[Open the ChatGPT Custom Instructions Builder →](https://man612.github.io/chatgpt-personalization/)
 
 ## Quick start
 
@@ -120,9 +140,9 @@ For response behavior, use the [manual evaluation guide](docs/testing.md) and th
 <summary><strong>Repository structure</strong></summary>
 
 ```text
-.github/    Contribution templates and continuous integration
-assets/     Theme-aware README visuals
-docs/       Profile guidance, manual evaluation, privacy, and references
+.github/    Contribution templates and repository automation
+assets/     Theme-aware README and social-preview assets
+docs/       Browser builder, profile guidance, evaluation, privacy, and references
 profiles/   Adaptable example profiles
 spec/       JSON Schema for profile files
 tests/      Unit tests and manual evaluation scenarios
