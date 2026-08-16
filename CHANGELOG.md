@@ -1,30 +1,35 @@
-## Unreleased
-
-- Reorganized public starting points into `profiles/presets/`, public real-world examples into `profiles/maintainers/`, and private user profiles into gitignored `profiles/local/`.
-- Changed the browser builder to start from the anonymous Blank preset and moved the maintainer profile into a separate reference group.
-- Added a plan-aware Custom Instructions validation target in the browser without storing plan/limit data inside the profile.
-- Added machine-readable behavioral regression cases alongside the human-readable scenarios.
-- Expanded research, testing, privacy, product-mapping, and contribution guidance for public reuse and optional automated eval workflows.
-
 # Changelog
 
 All notable changes to this project are documented here.
 
-## Unreleased — schema v2
+## Unreleased
+
+### Repository experience
+
+- Restored theme-aware README visuals for the v2 architecture.
+- Improved README mobile readability, onboarding, support links, contributing guidance, and license explanation.
+- Added a project code of conduct and expanded the security policy.
+- Added Dependabot monitoring for GitHub Actions.
+- Aligned the preset issue form filename and label with the public-first terminology.
+
+### Schema v2 and public-first architecture
 
 - Reframed the repository from a three-field Custom Instructions helper into a complete ChatGPT personalization configuration toolkit.
 - Added explicit `product`, `identity`, and `instructions` layers.
 - Added Personality, Characteristics, and Memory intent to the profile schema.
 - Added a dedicated explanation contract with principle, dependency sequence, terminology policy, and depth policy.
-- Removed `long_answers` as a formatting trigger and added `OUTLINE_BIAS` linting for rules that may force numbered/outline-style responses.
+- Removed `long_answers` as a formatting trigger and added `OUTLINE_BIAS` linting for rules that may force numbered or outline-style responses.
 - Added UI/UX and writing sections as first-class instruction groups.
 - Expanded research guidance around primary sources, repositories, source code, releases, issues, evidence separation, and testing.
-- Added a public maintainer profile (`profiles/maintainers/yasman.json`) and rebuilt all example profiles for schema v2.
+- Reorganized reusable starting points into `profiles/presets/`, public real-world examples into `profiles/maintainers/`, and private user profiles into gitignored `profiles/local/`.
+- Added the public maintainer reference profile at `profiles/maintainers/yasman.json`.
 - Changed renderer output to `settings.md`, `occupation.txt`, `more-about-you.txt`, and `custom-instructions.txt`.
 - Rebuilt the browser builder for the v2 profile model and four-output preview.
+- Made the browser start from the anonymous Blank preset and separated maintainer examples from public presets.
+- Added selectable 1,500- and 5,000-character validation targets without storing plan data inside profiles.
 - Added v1-to-v2 migration documentation.
-- Expanded manual behavioral regression scenarios to cover paragraph flow, beginner depth, repository analysis, deep research, UI/UX critique, format exceptions, and concise factual answers.
-- Updated the default long-field validation target to 5,000 characters while keeping `--limit` configurable for other product surfaces.
+- Added machine-readable behavioral regression cases alongside the human-readable scenario suite.
+- Expanded behavioral scenarios for paragraph flow, beginner depth, repository analysis, deep research, UI/UX critique, format exceptions, and concise factual answers.
 
 ## 0.1.0 - 2026-07-13
 
