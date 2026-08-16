@@ -8,9 +8,13 @@ All notable changes to this project are documented here.
 
 - Restored theme-aware README visuals for the v2 architecture.
 - Improved README mobile readability, onboarding, support links, contributing guidance, and license explanation.
+- Standardized the README trust row as three compact CI, license, and schema badges.
+- Added a dedicated 1280×640 social preview asset plus Open Graph/Twitter metadata and a lightweight favicon for the browser builder.
+- Added a clear independent-project disclaimer to avoid implying OpenAI affiliation or endorsement.
 - Added a project code of conduct and expanded the security policy.
-- Added Dependabot monitoring for GitHub Actions.
+- Added Dependabot monitoring for GitHub Actions and updated the workflow to the current v7 major releases of `actions/checkout`, `actions/setup-python`, and `actions/setup-node`.
 - Aligned the preset issue form filename and label with the public-first terminology.
+- Refreshed the GitHub Pages sitemap date.
 
 ### Schema v2 and public-first architecture
 

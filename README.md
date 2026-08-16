@@ -12,9 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/man612/chatgpt-personalization/actions/workflows/ci.yml"><img src="https://github.com/man612/chatgpt-personalization/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
-  &nbsp; <a href="LICENSE"><strong>MIT License</strong></a>
-  &nbsp; · &nbsp; <strong>Schema v2</strong>
+  <a href="https://github.com/man612/chatgpt-personalization/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/man612/chatgpt-personalization/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/man612/chatgpt-personalization?style=flat-square&label=license" alt="MIT License"></a>
+  <a href="spec/profile.schema.json"><img src="https://img.shields.io/badge/schema-v2.0-8250df?style=flat-square" alt="Schema v2.0"></a>
+</p>
+
+<p align="center">
+  <sub>Independent open-source project · not affiliated with or endorsed by OpenAI</sub>
 </p>
 
 <picture>
