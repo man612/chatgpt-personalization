@@ -1,44 +1,49 @@
-# Profile guide
+# Designing a profile
 
-A profile is useful when it contains a small amount of stable information that changes future answers in a predictable way. It should not become a biography, project notebook, or collection of prompt tricks.
+A personalization profile should contain a small amount of durable context and observable response behavior. It should not become a biography, project notebook, prompt-trick collection, or dump of every preference a user has ever expressed.
+
+## Start with the right profile type
+
+Use `profiles/presets/` when publishing a reusable starting point. Use `profiles/local/` for a private personal profile. `profiles/maintainers/` exists only for maintainers who intentionally publish a real profile as a reference implementation.
+
+The distinction is architectural, not cosmetic: a preset should work without knowing who the user is, while a personal profile can contain durable user-specific context. The renderer and linter must treat both through the same schema.
 
 ## Separate information by scope
 
-Use `occupation` for a short and durable role description. Use `about` for stable context such as experience level, recurring use cases, accessibility needs, or preferences that genuinely affect explanations. Use `response` for communication and workflow preferences.
+`product` records intended product-level settings such as Personality, Characteristics, and Memory. `identity` contains durable context that affects how explanations should be shaped. `instructions` contains global response behavior.
 
-Temporary requirements belong in the current request. Project rules belong in the relevant project or workspace. Memory may hold useful background, but it is not a precise configuration file.
-
-Before adding a sentence, ask whether it is likely to remain true, useful across several conversations, stored in the correct layer, safe to expose, and possible to evaluate. Remove it when those conditions are not met.
+Temporary project rules belong in a ChatGPT Project or current workspace. One-off output requirements belong in the current request. Memory can carry useful evolving context, but it should not be treated as a precise configuration file.
 
 ## Write observable behavior
 
-Vague instructions such as “be helpful” or “give high-quality answers” are difficult to evaluate. Describe visible behavior instead:
+“Be helpful”, “be smart”, or “act like a world-class expert” are hard to test. Prefer visible behavior:
 
-> Define unfamiliar terms before relying on them.
+> Define unfamiliar terminology when it first matters.
 
-> For troubleshooting, explain the likely cause, the smallest safe fix, how to test it, and important side effects.
+> For troubleshooting, explain the likely cause, the smallest safe fix, how to verify it, and important side effects.
 
-Prefer conditional defaults over rigid formatting rules. “Use paragraphs by default and lists when scanning is easier” is more robust than “never use lists.” Artifact requests should also override conversational tone when necessary; a formal letter should sound appropriate for its recipient.
+> Use headings when the topic genuinely changes; do not create numbered sections merely because an answer is long.
 
-## Keep the language restrained
+Observable instructions can become regression criteria. Vague personality adjectives usually cannot.
 
-Do not use prestige personas such as “world-class expert,” accuracy guarantees, emotional pressure, or demands for private reasoning. They do not add reliable expertise or verification.
+## Explain before naming
 
-Avoid repeating the same preference in several fields. Repetition consumes limited space and can overemphasize a minor rule. When a profile grows, edit by subtraction before adding more text.
+For beginner-oriented profiles, “simple language” should not mean “remove the mechanism”. A robust explanation contract can define a dependency order: ordinary-language concept → problem solved → bigger-picture role → example if useful → technical terminology and mechanism → trade-offs, verification, or edge cases.
 
-Common failure patterns include temporary project details in global settings, forcing professional interests into unrelated topics, contradictory instructions, fixed product names or prices that become stale, and marketing claims that cannot be tested.
+This keeps informational depth while reducing linguistic friction.
 
-## Migrate an existing instruction block
+## Keep prompts lean
 
-Start by marking stable facts, response preferences, and temporary details separately. Move only the shortest role summary into `occupation`; put durable explanatory context in `about`; map language, tone, structure, technical workflow, research expectations, and recurring failure modes into `response`.
+Do not repeat the same preference across identity, tone, structure, and avoid lists. When a profile grows, remove redundant wording before adding more. Keep a rule when it encodes a real requirement or repeatedly fixes an observed failure.
 
-Delete temporary project names, deadlines, client requirements, one-off output formats, secrets, and repeated commands. Then create a profile from `profiles/blank.json` and run:
+## Product details are validation inputs, not identity
 
-```bash
-python tools/profile.py lint path/to/profile.json
-python tools/profile.py render path/to/profile.json --out build/profile
-```
+ChatGPT plan limits and UI controls change. Do not write “I am a Plus user” into a generic preset merely to select a character limit. Choose `--limit 1500` or `--limit 5000` at lint/render time, or choose the target in the browser builder.
 
-The linter checks structure, field types, unsupported properties, duplicate array values, configured field limits, several common secret formats, repeated text, and a small set of prompt-bloat patterns. It is not a complete security scanner and cannot decide whether every sentence is useful.
+## Privacy
 
-Review the rendered files before pasting them into ChatGPT. Compare the profile against a simpler baseline using the manual scenarios in [Testing a profile](testing.md), and keep only changes that produce a repeatable benefit.
+A public preset should never contain secrets or real personal history. A local profile can still be sensitive, so Git ignore is only a convenience—not a security boundary. Review diffs before commits and keep credentials out of profile JSON entirely.
+
+## Iterate with evals
+
+Start from the smallest profile that captures the requirement. Run representative scenarios, note a repeated failure, change the smallest relevant rule, then rerun the affected case plus unrelated cases for side effects. This is more reliable than continuously lengthening the prompt.

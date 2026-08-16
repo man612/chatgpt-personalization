@@ -22,13 +22,7 @@ SPEC.loader.exec_module(profile_tool)
 
 
 def render_with_node(profile: dict[str, Any]) -> dict[str, str]:
-    result = subprocess.run(
-        ["node", str(NODE_HELPER)],
-        input=json.dumps(profile),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    result = subprocess.run(["node", str(NODE_HELPER)], input=json.dumps(profile), capture_output=True, text=True, check=False)
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or "Node renderer failed")
     return json.loads(result.stdout)
@@ -37,73 +31,58 @@ def render_with_node(profile: dict[str, Any]) -> dict[str, str]:
 def render_with_python(profile: dict[str, Any]) -> dict[str, str]:
     rendered = profile_tool.render_profile(profile)
     return {
+        "settings": rendered.settings,
         "occupation": rendered.occupation,
         "more_about_you": rendered.more_about_you,
-        "response_preferences": rendered.response_preferences,
+        "custom_instructions": rendered.custom_instructions,
     }
 
 
-def fixtures() -> list[dict[str, Any]]:
-    return [
-        {
-            "schema_version": "1.0",
-            "name": "Parity fixture",
-            "description": "Exercises every renderer section.",
-            "occupation": "  Analyst and product generalist  ",
-            "about": {
-                "background": ["Works with reports", "Builds internal tools."],
-                "experience": "Knows the basics",
-                "recurring_uses": ["Research", "Writing", "Troubleshooting"],
-                "stable_preferences": ["Values clarity", "Prefers practical examples."],
-            },
-            "response": {
-                "language": "Use English",
-                "tone": ["plainspoken", "direct", "patient without being patronizing"],
-                "audience": "an intelligent beginner",
-                "structure": {
-                    "long_answers": "Use descriptive sections",
-                    "body": "Use connected paragraphs.",
-                    "lists": "Use lists when useful",
-                    "tables": "Use tables for direct comparison",
-                },
-                "technical": ["Explain likely causes", "Show how to test the fix."],
-                "research": ["Verify current claims", "Separate facts from assumptions."],
-                "avoid": ["generic openings", "unrelated rewrites", "decorative complexity"],
-            },
+def fixture() -> dict[str, Any]:
+    return {
+        "schema_version": "2.0",
+        "name": "Parity fixture",
+        "product": {
+            "personality": "Default",
+            "characteristics": {"warm": "slightly_more", "enthusiastic": "less", "headers_and_lists": "less", "emojis": "less"},
+            "memory": {"saved_memories": True, "reference_chat_history": True},
         },
-        {
-            "schema_version": "1.0",
-            "name": "Sparse fixture",
-            "occupation": "",
-            "about": {
-                "background": [],
-                "experience": "",
-                "recurring_uses": [],
-                "stable_preferences": [],
-            },
-            "response": {
-                "language": "",
-                "tone": [],
-                "audience": "",
-                "structure": {
-                    "long_answers": "",
-                    "body": "",
-                    "lists": "",
-                    "tables": "",
-                },
-                "technical": [],
-                "research": [],
-                "avoid": [],
-            },
+        "identity": {
+            "occupation": " Analyst and product generalist ",
+            "background": ["Works with reports", "Builds internal tools."],
+            "experience": "Knows the basics",
+            "recurring_uses": ["Research", "Writing", "Troubleshooting"],
+            "stable_preferences": ["Values clarity", "Prefers practical examples."],
         },
-    ]
+        "instructions": {
+            "language": "Use English",
+            "tone": ["plainspoken", "direct", "patient"],
+            "audience": "an intelligent beginner",
+            "explanation": {
+                "principle": "Prioritize understanding before terminology",
+                "sequence": ["explain the concept", "show why it matters", "introduce the term"],
+                "terminology": "Define unfamiliar terms",
+                "depth": "Keep important reasoning",
+            },
+            "structure": {
+                "default": "Use connected paragraphs",
+                "headings": "Use headings for genuine topic changes",
+                "lists": "Use lists when scanning helps",
+                "tables": "Use tables for direct comparisons",
+            },
+            "technical": ["Explain likely causes", "Show how to test the fix."],
+            "research": ["Verify current claims", "Separate facts from assumptions."],
+            "ui_ux": ["Explain user impact"],
+            "writing": ["Preserve voice"],
+            "avoid": ["generic openings", "decorative complexity"],
+        },
+    }
 
 
 def main() -> int:
-    profiles = fixtures()
-    profiles_dir = REPO_ROOT / "profiles"
-    if profiles_dir.exists():
-        for path in sorted(profiles_dir.glob("*.json")):
+    profiles = [fixture()]
+    for directory in (REPO_ROOT / "profiles" / "presets", REPO_ROOT / "profiles" / "maintainers"):
+        for path in sorted(directory.glob("*.json")):
             profiles.append(json.loads(path.read_text(encoding="utf-8")))
 
     for index, profile in enumerate(profiles, start=1):

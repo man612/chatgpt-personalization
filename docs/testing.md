@@ -1,27 +1,33 @@
-# Manual profile evaluation
+# Testing personalization
 
-The automated test suite checks the renderer, linter, malformed inputs, and example-profile structure. It does not prove that a profile improves model responses. Behavioral evaluation remains manual because outputs vary by model, product surface, and time.
+The repository intentionally separates **engineering tests** from **behavioral evaluation**. A green CI run can prove that the toolkit works; it cannot prove that a profile makes ChatGPT answers better.
 
-## Build a small test set
+## Engineering tests
 
-Choose prompts that represent the work the profile is expected to support. Include a simple explanation, a long analytical question, a rewriting request where the artifact needs its own tone, a troubleshooting task, a current or uncertain topic, an unrelated topic that should not trigger professional interests, and a request whose best format is a short list or table.
+The automated repository suite checks schema handling, enums and types, secret-pattern warnings, prompt-bloat heuristics, outline-bias heuristics, output limits, CLI failures, and parity between the Python and browser renderers. CI runs those checks across supported Python versions.
 
-Reusable prompts are available in [`tests/scenarios.md`](../tests/scenarios.md).
+## Behavioral evals
 
-## Define pass criteria first
+For important profile changes, compare the same prompt with a baseline, the previous profile, and the candidate profile. Define pass criteria before reading the answer. Run important cases more than once because model output varies.
 
-Write observable criteria before running the prompts. Examples include unfamiliar terms being explained before heavy use, technical fixes including a verification step, uncertainty being stated instead of hidden, artifact tone matching its audience, irrelevant interests not leaking into unrelated answers, and lists appearing when they materially improve usability.
+Useful criteria are observable: unfamiliar terminology appears after or alongside an understandable concept; deep explanations preserve mechanisms and trade-offs; continuous explanations are not fragmented into unnecessary numbered sections; troubleshooting includes verification; current claims are actually verified; repository analysis inspects relevant source/configuration; UI/UX feedback identifies concrete user impact; list-shaped requests still produce lists; and simple factual questions remain concise.
 
-Avoid vague criteria such as “sounds smarter” or “feels better.” They are difficult to compare consistently.
+`tests/scenarios.md` is the human-readable suite. `tests/scenarios.json` contains the same style of cases in a machine-readable form so external harnesses can consume or transform them.
 
-## Compare against a baseline
+## Optional automated evals
 
-Run the same prompts with personalization disabled or with a smaller profile. Record the profile version, model, product surface, date, prompt, expected behavior, and observed failure.
+The core repository has no LLM-evaluation runtime dependency. That is deliberate: public users should be able to lint and render a profile without an API account.
 
-Run important scenarios more than once because one strong or weak response is not reliable evidence. Keep a rule only when it produces a repeatable improvement that matters to the user.
+For automated experimentation, adapt `tests/scenarios.json` to an eval framework such as OpenAI's evaluation tooling or promptfoo. Keep the provider and grader configuration outside the profile itself. Record model, date, number of samples, rubric, and scoring method.
 
-## Make small revisions
+Automated API evals are only a **proxy** for consumer ChatGPT personalization. The API can test rendered instruction text, but it does not expose every consumer ChatGPT control in exactly the same way as Personality, Characteristics, Memory, Projects, and other product context. Do not label an API score as “ChatGPT personalization performance” without that caveat.
 
-Do not rewrite the entire profile after one failure. Change the smallest relevant instruction, then repeat the affected scenarios and at least one unrelated scenario to check for side effects.
+## Repeated samples matter
 
-Re-test after major product or model changes. The repository provides a method and reusable scenarios; it does not currently publish automated behavioral scores or claim a measured performance improvement.
+One response is weak evidence. OpenAI's public Model Spec Evals supports multiple candidate epochs and multiple grader samples specifically because output and grading can vary. For this smaller project, the exact sample count depends on cost and importance, but meaningful claims should be based on repeated runs rather than a single favorite output.
+
+## Diagnose the smallest failure
+
+If a response is too outline-like, change the structure rule. If jargon arrives too early, change the explanation contract. If research is shallow, strengthen evidence requirements. Rerun the affected scenario and at least one unrelated scenario to check for regressions.
+
+Do not rewrite the entire profile after one bad answer.

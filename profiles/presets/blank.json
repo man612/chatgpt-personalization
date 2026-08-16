@@ -1,0 +1,24 @@
+{
+  "$schema": "../spec/profile.schema.json",
+  "schema_version": "2.0",
+  "name": "Blank profile",
+  "description": "Minimal v2 starting point.",
+  "product": {
+    "personality": "Default",
+    "characteristics": {"warm": "neutral", "enthusiastic": "neutral", "headers_and_lists": "neutral", "emojis": "neutral"},
+    "memory": {"saved_memories": true, "reference_chat_history": true}
+  },
+  "identity": {"occupation": "", "background": [], "experience": "", "recurring_uses": [], "stable_preferences": []},
+  "instructions": {
+    "language": "",
+    "tone": [],
+    "audience": "",
+    "explanation": {"principle": "", "sequence": [], "terminology": "", "depth": ""},
+    "structure": {"default": "", "headings": "", "lists": "", "tables": ""},
+    "technical": [],
+    "research": [],
+    "ui_ux": [],
+    "writing": [],
+    "avoid": []
+  }
+}

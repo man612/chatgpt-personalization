@@ -1,46 +1,27 @@
-# Mapping profile sections to ChatGPT
+# Mapping the profile to ChatGPT
 
-The profile format deliberately keeps three stable sections:
+The repository stores personalization intent in a stable schema while the ChatGPT interface can change. Do not assume every plan, platform, or rollout exposes identical labels or controls.
 
-- `occupation`: a short description of the user's role;
-- `about`: durable context that changes how answers should be explained;
-- `response`: language, tone, structure, research, and technical preferences.
+## Product settings
 
-These are repository concepts, not a promise that every ChatGPT client will always show three fields with the same labels. Product surfaces, field names, field counts, and limits can change.
+`product.personality` maps to the current Base style and tone control when available. `product.characteristics` maps to Characteristics such as warmth, enthusiasm, Headers & Lists, and emoji level when those controls are available. `product.memory` records the intended Memory state.
 
-## Practical mapping
+These values are rendered into `settings.md` as a checklist because they are product controls, not text that should be pasted into Custom Instructions.
 
-When the interface exposes matching personalization fields, paste each rendered section into the closest field:
+## User context and instructions
 
-| Rendered section | Typical destination |
-| --- | --- |
-| Occupation | Occupation, role, or work context |
-| More about you | User context or information ChatGPT should know |
-| Response preferences | How ChatGPT should respond |
+`identity.occupation` renders to `occupation.txt`. The rest of stable identity/context renders to `more-about-you.txt`. Global response behavior renders to `custom-instructions.txt`. Paste them into the closest matching fields available on your current ChatGPT surface. If the UI exposes fewer fields, preserve the separation conceptually and remove duplicated text before combining fields.
 
-When the interface exposes fewer fields, preserve the meaning rather than the labels. Combine the short occupation text with the beginning of the user-context section, then keep response preferences in the field intended for response style or custom instructions.
+## Custom Instructions character target
 
-When the interface exposes one general instructions field, combine the rendered sections in this order:
+As of the 2026-08-16 source review, OpenAI documents 1,500 characters for Free and Go and 5,000 for Plus, Pro, Business, Enterprise, and Education. The profile does not store a plan because plans and limits can change. Use the CLI `--limit` option or browser target selector at validation time.
 
-```text
-Occupation
+## Memory is not a config file
 
-More about you
+Memory can automatically synthesize useful context from prior chats and other sources. It can evolve and may not expose every remembered detail. Use the profile for explicit, reviewable instructions and durable context; use Memory for context that benefits from evolving with conversation history.
 
-Response preferences
-```
+## Projects are a separate scope
 
-Review the combined text before saving it. Remove repeated ideas and keep temporary project requirements in the current conversation or project rather than global personalization.
+Project instructions and project memory should contain rules and context limited to that project. Do not copy every project convention into global personalization. Shared or project-only contexts can have different memory boundaries from global ChatGPT personalization.
 
-## Related product features
-
-Saved memory, selected personality, project instructions, and the current prompt can all affect a response. This repository does not treat those features as interchangeable:
-
-- use the profile for stable, reviewable preferences;
-- use memory for useful context that does not need exact wording;
-- use project instructions for rules limited to one workspace;
-- use the current prompt for temporary requirements and output details.
-
-The CLI and browser builder use a configurable 1,500-character limit for the two long rendered sections. Treat that as a conservative validation default, not a guarantee that every current or future product surface uses the same limit.
-
-Check current product documentation before relying on a specific field name, layout, or limit.
+Always check current OpenAI documentation before relying on an exact label, availability claim, or limit.

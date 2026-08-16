@@ -1,11 +1,11 @@
-# Privacy guidance
+# Privacy and data hygiene
 
-Personalization settings can be reused across many conversations, which makes them the wrong place for secrets or highly sensitive records.
+A personalization profile can contain durable information about a person, so treat it like configuration with privacy impact.
 
-Do not store passwords, API keys, recovery codes, private keys, government identifiers, full financial details, confidential client information, private health records, or information you would not want exposed to a connected service.
+Public presets in `profiles/presets/` must be anonymous and reusable. Public maintainer profiles are intentionally published examples and should contain only information the maintainer is comfortable making public. Private personal profiles belong in `profiles/local/`, whose JSON files are gitignored by default.
 
-Use the minimum useful detail. “Works in healthcare administration” may be enough; a hospital name, employee number, and internal system list usually are not.
+Git ignore rules prevent accidental ordinary commits; they are not encryption and not a security boundary. Always review `git status` and the staged diff before publishing.
 
-Custom instructions can influence what information is sent to third-party tools or services when they are relevant to a request. Review the privacy terms and permissions of connected apps, plug-ins, or workspaces. Treat a public example profile as public data.
+Never store passwords, API keys, private keys, authentication tokens, client secrets, confidential customer data, or information that does not need to be global personalization. The linter catches a small set of recognizable secret formats, but it is not a complete secret scanner.
 
-The linter warns about several recognizable secret formats and private-key headers. It cannot identify every sensitive detail and should not replace human review.
+Remember that product features such as Memory and connected apps have their own data behavior. This repository only stores the configuration you choose to put in its files; it does not control ChatGPT account-level data settings.

@@ -1,0 +1,111 @@
+[
+  {
+    "id": "simple-explanation",
+    "prompt": "What is an API, and why would an app use one?",
+    "criteria": [
+      "Explain the concept before relying on jargon",
+      "Preserve the useful mechanism without unnecessary depth",
+      "Do not force professional interests into the answer"
+    ],
+    "tags": ["explanation", "beginner"]
+  },
+  {
+    "id": "deep-explanation",
+    "prompt": "Explain reverse proxy from zero, but go deep enough that I can understand why it exists and how requests actually flow.",
+    "criteria": [
+      "Build a mental model before technical detail",
+      "Define reverse proxy terminology",
+      "Preserve request-flow mechanism and trade-offs",
+      "Do not fragment one continuous explanation into unnecessary numbered sections"
+    ],
+    "tags": ["explanation", "depth", "structure"]
+  },
+  {
+    "id": "long-analysis",
+    "prompt": "Compare local storage, a hosted database, and a spreadsheet as data storage for a small internal app. Explain the trade-offs and recommend when each is appropriate.",
+    "criteria": [
+      "Use structure that follows the comparison rather than arbitrary answer length",
+      "Explain decision trade-offs",
+      "Give conditional recommendations"
+    ],
+    "tags": ["analysis", "decision"]
+  },
+  {
+    "id": "troubleshooting",
+    "prompt": "A Windows computer can access the internet but cannot see a shared printer. Give me a safe troubleshooting plan.",
+    "criteria": [
+      "Prioritize likely causes",
+      "Give the smallest relevant checks/fixes",
+      "Include verification",
+      "Mention important side effects when relevant"
+    ],
+    "tags": ["technical", "troubleshooting"]
+  },
+  {
+    "id": "current-information",
+    "prompt": "Which ChatGPT plan currently supports the Custom Instructions capacity I need?",
+    "criteria": [
+      "Verify current product information",
+      "Distinguish current facts from assumptions",
+      "Use concrete limits/dates when useful"
+    ],
+    "tags": ["research", "current"]
+  },
+  {
+    "id": "repository-analysis",
+    "prompt": "Review this repository's architecture and tell me whether its configuration model is actually reusable by other people, not just its maintainer.",
+    "criteria": [
+      "Inspect repository evidence when available",
+      "Separate generic core from person-specific data",
+      "Explain architecture consequences instead of only listing files"
+    ],
+    "tags": ["research", "repository"]
+  },
+  {
+    "id": "ui-ux-review",
+    "prompt": "Review this application screen for UI/UX problems and explain which changes matter most to the user experience.",
+    "criteria": [
+      "Identify concrete design elements",
+      "Explain user impact",
+      "Prioritize meaningful fixes",
+      "Avoid generic checklist-only feedback"
+    ],
+    "tags": ["ui-ux"]
+  },
+  {
+    "id": "artifact-override",
+    "prompt": "Write a formal complaint email to an internet provider about repeated outages.",
+    "criteria": [
+      "The artifact tone matches its recipient",
+      "Global conversational tone does not leak into the formal email"
+    ],
+    "tags": ["writing", "artifact"]
+  },
+  {
+    "id": "relevance-boundary",
+    "prompt": "Explain why sourdough starter rises.",
+    "criteria": [
+      "Do not force technology analogies or professional interests unless they genuinely help",
+      "Give a self-contained explanation"
+    ],
+    "tags": ["relevance"]
+  },
+  {
+    "id": "format-exception",
+    "prompt": "Give me a checklist for reviewing a used laptop before buying it.",
+    "criteria": [
+      "Use a checklist because the request is naturally list-shaped",
+      "Keep items actionable and scannable"
+    ],
+    "tags": ["structure", "list"]
+  },
+  {
+    "id": "concise-fact",
+    "prompt": "What port does SSH use by default?",
+    "criteria": [
+      "Answer directly and concisely",
+      "Do not expand into a long tutorial unless needed"
+    ],
+    "tags": ["brevity"]
+  }
+]
