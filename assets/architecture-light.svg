@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-labelledby="title desc">
+  <title id="title">Public-first profile architecture</title>
+  <desc id="desc">Anonymous presets feed private local profiles or public maintainer examples, then render product settings and ChatGPT instruction fields.</desc>
+  <rect width="1200" height="330" rx="24" fill="#ffffff"/>
+  <rect x="1" y="1" width="1198" height="328" rx="23" fill="none" stroke="#d0d7de" stroke-width="2"/>
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+    <text x="54" y="54" font-size="15" font-weight="700" letter-spacing="2" fill="#59636e">PUBLIC-FIRST ARCHITECTURE</text>
+
+    <g transform="translate(54 84)">
+      <rect width="236" height="176" rx="18" fill="#f6f8fa" stroke="#d0d7de"/>
+      <text x="22" y="35" font-size="13" font-weight="700" fill="#1f883d">01 · PRESETS</text>
+      <text x="22" y="68" font-size="23" font-weight="700" fill="#1f2328">Anonymous starts</text>
+      <text x="22" y="99" font-size="14" fill="#59636e">blank · student</text>
+      <text x="22" y="123" font-size="14" fill="#59636e">tech · design · writing</text>
+      <rect x="22" y="142" width="118" height="26" rx="13" fill="#dafbe1"/>
+      <text x="81" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="#116329">REUSABLE</text>
+    </g>
+
+    <path d="M306 172h86" stroke="#8c959f" stroke-width="2" stroke-linecap="round"/>
+    <path d="M382 165l10 7-10 7" fill="none" stroke="#8c959f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g transform="translate(408 84)">
+      <rect width="304" height="176" rx="18" fill="#f6f8fa" stroke="#d0d7de"/>
+      <text x="22" y="35" font-size="13" font-weight="700" fill="#0969da">02 · PROFILE</text>
+      <text x="22" y="68" font-size="23" font-weight="700" fill="#1f2328">Your source of truth</text>
+      <text x="22" y="100" font-size="14" fill="#59636e">product · identity · instructions</text>
+      <rect x="22" y="124" width="116" height="28" rx="14" fill="#ddf4ff"/>
+      <text x="80" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#0550ae">LOCAL / PRIVATE</text>
+      <rect x="148" y="124" width="134" height="28" rx="14" fill="#fff8c5"/>
+      <text x="215" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#7d4e00">MAINTAINER EXAMPLE</text>
+    </g>
+
+    <path d="M728 172h86" stroke="#8c959f" stroke-width="2" stroke-linecap="round"/>
+    <path d="M804 165l10 7-10 7" fill="none" stroke="#8c959f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g transform="translate(830 84)">
+      <rect width="316" height="176" rx="18" fill="#f6f8fa" stroke="#d0d7de"/>
+      <text x="22" y="35" font-size="13" font-weight="700" fill="#8250df">03 · OUTPUT</text>
+      <text x="22" y="68" font-size="23" font-weight="700" fill="#1f2328">Ready to install</text>
+      <text x="22" y="100" font-size="14" fill="#59636e">settings.md · occupation.txt</text>
+      <text x="22" y="123" font-size="14" fill="#59636e">about-you · custom-instructions</text>
+      <rect x="22" y="142" width="168" height="26" rx="13" fill="#fbefff"/>
+      <text x="106" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="#6639ba">VALIDATE + EVALUATE</text>
+    </g>
+  </g>
+</svg>
