@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ChatGPT Personalization Builder</title>
-  <meta name="description" content="Build, validate, preview, and export complete ChatGPT personalization profiles including Personality, Characteristics, Memory, user context, and Custom Instructions.">
+  <meta name="description" content="Build, validate, preview, and export reusable ChatGPT personalization profiles with separate product settings, user context, and response instructions.">
   <meta name="theme-color" content="#0d1117">
   <meta property="og:title" content="ChatGPT Personalization Builder">
-  <meta property="og:description" content="Version ChatGPT Personality, Characteristics, Memory intent, user context, and Custom Instructions as structured JSON.">
+  <meta property="og:description" content="Start from an anonymous preset, keep personal profiles local, and render reviewable ChatGPT personalization settings.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://man612.github.io/chatgpt-personalization/">
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
@@ -29,23 +29,34 @@
 
   <main class="shell">
     <section class="hero">
-      <p class="eyebrow">Schema v2</p>
-      <h1>Personalization as configuration, not prompt clutter.</h1>
-      <p class="lede">Edit product settings, durable user context, and response behavior separately. Preview the settings checklist and copy-ready ChatGPT fields before exporting the profile.</p>
+      <p class="eyebrow">Schema v2 · public toolkit</p>
+      <h1>Build your personalization, not someone else's persona.</h1>
+      <p class="lede">Start from an anonymous preset, customize product settings, durable context, and response behavior separately, then validate and export the result.</p>
       <div class="trust-row"><span>No sign-in</span><span>No third-party libraries</span><span>Edits stay in your browser</span></div>
     </section>
 
     <section class="toolbar" aria-label="Profile controls">
       <label class="control">
-        <span>Starting profile</span>
+        <span>Starting point</span>
         <select id="template-select">
-          <option value="yasman.json">Yasman — maintainer profile</option>
-          <option value="tech-generalist.json">Technology generalist</option>
-          <option value="knowledge-worker.json">Knowledge worker</option>
-          <option value="student.json">Student</option>
-          <option value="product-designer.json">Product designer</option>
-          <option value="writer-editor.json">Writer and editor</option>
-          <option value="blank.json">Blank profile</option>
+          <optgroup label="Public presets">
+            <option value="presets/blank.json" selected>Blank — least opinionated</option>
+            <option value="presets/tech-generalist.json">Technology generalist</option>
+            <option value="presets/knowledge-worker.json">Knowledge worker</option>
+            <option value="presets/student.json">Student</option>
+            <option value="presets/product-designer.json">Product designer</option>
+            <option value="presets/writer-editor.json">Writer and editor</option>
+          </optgroup>
+          <optgroup label="Reference examples">
+            <option value="maintainers/yasman.json">Yasman — maintainer example</option>
+          </optgroup>
+        </select>
+      </label>
+      <label class="control">
+        <span>Custom Instructions target</span>
+        <select id="limit-select">
+          <option value="1500" selected>Free / Go — 1,500</option>
+          <option value="5000">Plus / Pro / Business / Enterprise / Edu — 5,000</option>
         </select>
       </label>
       <div class="toolbar-actions">
@@ -80,30 +91,18 @@
           <div><p class="panel-kicker">Rendered output</p><h2>Preview</h2></div>
           <span id="character-summary" class="character-summary"></span>
         </div>
-
-        <article class="output-card">
-          <div class="output-heading"><h3>Product settings</h3><button class="copy-button" data-copy="settings-output" type="button">Copy</button></div>
-          <pre id="settings-output" tabindex="0"></pre>
-        </article>
-        <article class="output-card">
-          <div class="output-heading"><h3>Occupation</h3><button class="copy-button" data-copy="occupation-output" type="button">Copy</button></div>
-          <pre id="occupation-output" tabindex="0"></pre>
-        </article>
-        <article class="output-card">
-          <div class="output-heading"><h3>More about you</h3><button class="copy-button" data-copy="about-output" type="button">Copy</button></div>
-          <pre id="about-output" tabindex="0"></pre>
-        </article>
-        <article class="output-card">
-          <div class="output-heading"><h3>Custom Instructions</h3><button class="copy-button" data-copy="instructions-output" type="button">Copy</button></div>
-          <pre id="instructions-output" tabindex="0"></pre>
-        </article>
+        <article class="output-card"><div class="output-heading"><h3>Product settings</h3><button class="copy-button" data-copy="settings-output" type="button">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
+        <article class="output-card"><div class="output-heading"><h3>Occupation</h3><button class="copy-button" data-copy="occupation-output" type="button">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
+        <article class="output-card"><div class="output-heading"><h3>More about you</h3><button class="copy-button" data-copy="about-output" type="button">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
+        <article class="output-card"><div class="output-heading"><h3>Custom Instructions</h3><button class="copy-button" data-copy="instructions-output" type="button">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
       </div>
     </section>
 
     <section class="explanation">
-      <h2>What changed in v2?</h2>
-      <p>The old model treated personalization mostly as three text fields. v2 separates product controls from user context and response behavior, adds an explicit explanation contract for beginner-friendly depth, and removes answer length as a reason to force numbered sections.</p>
-      <p>The browser performs lightweight structural validation. The Python CLI adds secret-pattern, duplicate-text, prompt-bloat, output-limit, and outline-bias checks. Behavioral quality still requires regression testing against real prompts.</p>
+      <h2>Public by design, personal when you choose</h2>
+      <p>Presets are anonymous and reusable. The maintainer profile is available only as a reference example and is not the default. Downloaded profiles stay on your device unless you publish them yourself.</p>
+      <p>The character target is a validation setting, not part of your identity profile. Product limits can change, so check current OpenAI documentation before treating 1,500 or 5,000 as permanent.</p>
+      <p>Structural validation catches configuration problems. Behavioral quality still needs representative regression scenarios; see the Testing guide.</p>
     </section>
   </main>
 

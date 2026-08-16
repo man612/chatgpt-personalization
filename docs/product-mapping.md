@@ -1,49 +1,27 @@
-# Mapping v2 profiles to ChatGPT
+# Mapping the profile to ChatGPT
 
-The v2 schema models intent rather than one frozen screenshot of the ChatGPT settings UI. Product labels, plans, availability, and limits can change.
+The repository stores personalization intent in a stable schema while the ChatGPT interface can change. Do not assume every plan, platform, or rollout exposes identical labels or controls.
 
-## `product`
+## Product settings
 
-Apply these fields in ChatGPT Personalization when the controls are available:
+`product.personality` maps to the current Base style and tone control when available. `product.characteristics` maps to Characteristics such as warmth, enthusiasm, Headers & Lists, and emoji level when those controls are available. `product.memory` records the intended Memory state.
 
-- `personality` → Base style and tone / Personality;
-- `characteristics.warm` → Warm;
-- `characteristics.enthusiastic` → Enthusiastic;
-- `characteristics.headers_and_lists` → Headers & Lists;
-- `characteristics.emojis` → Emojis;
-- `memory.saved_memories` → saved-memory setting;
-- `memory.reference_chat_history` → reference-chat-history setting.
+These values are rendered into `settings.md` as a checklist because they are product controls, not text that should be pasted into Custom Instructions.
 
-Relative values such as `slightly_more` describe intent, not a guaranteed UI tick position. If a characteristic is unavailable on the account, leave the profile unchanged and apply the closest behavior through instructions only when it materially matters.
+## User context and instructions
 
-## `identity`
+`identity.occupation` renders to `occupation.txt`. The rest of stable identity/context renders to `more-about-you.txt`. Global response behavior renders to `custom-instructions.txt`. Paste them into the closest matching fields available on your current ChatGPT surface. If the UI exposes fewer fields, preserve the separation conceptually and remove duplicated text before combining fields.
 
-`identity.occupation` maps to the closest occupation/role field.
+## Custom Instructions character target
 
-The rest of `identity` renders to `more-about-you.txt` and belongs in the closest field for durable user context.
+As of the 2026-08-16 source review, OpenAI documents 1,500 characters for Free and Go and 5,000 for Plus, Pro, Business, Enterprise, and Education. The profile does not store a plan because plans and limits can change. Use the CLI `--limit` option or browser target selector at validation time.
 
-Do not paste the raw JSON. Render it first so list-oriented source data becomes compact prose.
+## Memory is not a config file
 
-## `instructions`
+Memory can automatically synthesize useful context from prior chats and other sources. It can evolve and may not expose every remembered detail. Use the profile for explicit, reviewable instructions and durable context; use Memory for context that benefits from evolving with conversation history.
 
-The rendered `custom-instructions.txt` belongs in the field that controls how ChatGPT should respond.
+## Projects are a separate scope
 
-If the product surface exposes several instruction fields, preserve semantic separation rather than duplicating text across them.
+Project instructions and project memory should contain rules and context limited to that project. Do not copy every project convention into global personalization. Shared or project-only contexts can have different memory boundaries from global ChatGPT personalization.
 
-## Memory is not a configuration file
-
-The profile may recommend that Memory be enabled, but Memory itself should store useful evolving context—not exact global rules that must retain precise wording.
-
-Global behavioral rules belong in the versioned profile. Project rules belong in the project. Temporary requirements belong in the prompt that needs them.
-
-## Character limits
-
-The CLI default long-field validation target is 5,000 characters because that matches the maintainer's current paid ChatGPT surface at the time of the v2 review in August 2026.
-
-Do not treat that number as permanent. Use `--limit` to match the surface you are actually targeting:
-
-```bash
-python tools/profile.py lint profiles/tech-generalist.json --limit 1500
-```
-
-The repository intentionally avoids a hard-coded plan-to-limit table in the schema because product limits can change independently of profile semantics.
+Always check current OpenAI documentation before relying on an exact label, availability claim, or limit.

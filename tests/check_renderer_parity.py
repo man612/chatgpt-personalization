@@ -81,8 +81,9 @@ def fixture() -> dict[str, Any]:
 
 def main() -> int:
     profiles = [fixture()]
-    for path in sorted((REPO_ROOT / "profiles").glob("*.json")):
-        profiles.append(json.loads(path.read_text(encoding="utf-8")))
+    for directory in (REPO_ROOT / "profiles" / "presets", REPO_ROOT / "profiles" / "maintainers"):
+        for path in sorted(directory.glob("*.json")):
+            profiles.append(json.loads(path.read_text(encoding="utf-8")))
 
     for index, profile in enumerate(profiles, start=1):
         expected = render_with_python(profile)

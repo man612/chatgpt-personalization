@@ -132,7 +132,7 @@ class ProfileToolTests(unittest.TestCase):
 class ExampleProfileTests(unittest.TestCase):
     def test_all_examples_load_and_lint(self):
         repo_root = Path(__file__).resolve().parents[1]
-        profile_paths = sorted((repo_root / "profiles").glob("*.json"))
+        profile_paths = sorted((repo_root / "profiles" / "presets").glob("*.json")) + sorted((repo_root / "profiles" / "maintainers").glob("*.json"))
         self.assertGreater(len(profile_paths), 1)
         for path in profile_paths:
             with self.subTest(path=path.name):
@@ -140,9 +140,30 @@ class ExampleProfileTests(unittest.TestCase):
                 errors = [finding for finding in profile_tool.lint_profile(data) if finding.level == "error"]
                 self.assertEqual(errors, [])
 
+    def test_presets_do_not_include_maintainer_identity(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        for path in sorted((repo_root / "profiles" / "presets").glob("*.json")):
+            raw = path.read_text(encoding="utf-8").casefold()
+            self.assertNotIn("yasman", raw, path.name)
+            self.assertNotIn("man612", raw, path.name)
+
+    def test_local_profiles_are_gitignored(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        ignore = (repo_root / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("profiles/local/*.json", ignore)
+
+    def test_machine_readable_scenarios_are_valid(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        scenarios = json.loads((repo_root / "tests" / "scenarios.json").read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(scenarios), 8)
+        for case in scenarios:
+            self.assertTrue(case["id"])
+            self.assertTrue(case["prompt"])
+            self.assertTrue(case["criteria"])
+
     def test_yasman_profile_is_paragraph_first(self):
         repo_root = Path(__file__).resolve().parents[1]
-        profile = json.loads((repo_root / "profiles" / "yasman.json").read_text(encoding="utf-8"))
+        profile = json.loads((repo_root / "profiles" / "maintainers" / "yasman.json").read_text(encoding="utf-8"))
         rendered = profile_tool.render_profile(profile)
         self.assertIn("connected explanatory paragraphs", rendered.custom_instructions)
         self.assertIn("Do not create numbered sections merely because an answer is long", rendered.custom_instructions)

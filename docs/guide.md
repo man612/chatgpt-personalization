@@ -1,74 +1,49 @@
-# Profile design guide
+# Designing a profile
 
-A good personalization profile is not the longest prompt you can fit into a settings field. It is a small set of durable instructions that changes future answers in predictable, observable ways.
+A personalization profile should contain a small amount of durable context and observable response behavior. It should not become a biography, project notebook, prompt-trick collection, or dump of every preference a user has ever expressed.
 
-## Separate scope before writing instructions
+## Start with the right profile type
 
-Use `product` for product-level intent such as Personality, Characteristics, and Memory. Use `identity` for durable user context. Use `instructions` for global response behavior.
+Use `profiles/presets/` when publishing a reusable starting point. Use `profiles/local/` for a private personal profile. `profiles/maintainers/` exists only for maintainers who intentionally publish a real profile as a reference implementation.
 
-Do not copy the same preference into all three layers. If `headers_and_lists` is already set lower in product Characteristics, the instruction layer only needs the semantic rule that explains when a list is actually appropriate.
+The distinction is architectural, not cosmetic: a preset should work without knowing who the user is, while a personal profile can contain durable user-specific context. The renderer and linter must treat both through the same schema.
 
-Temporary requirements belong in the current request. Project architecture, repository conventions, client rules, and project-specific sources of truth belong in project instructions or workspace context.
+## Separate information by scope
 
-## Describe observable behavior
+`product` records intended product-level settings such as Personality, Characteristics, and Memory. `identity` contains durable context that affects how explanations should be shaped. `instructions` contains global response behavior.
 
-Avoid instructions such as “be smart”, “be helpful”, or “be expert”. They do not tell you what success looks like.
+Temporary project rules belong in a ChatGPT Project or current workspace. One-off output requirements belong in the current request. Memory can carry useful evolving context, but it should not be treated as a precise configuration file.
 
-Prefer behavior you can test:
+## Write observable behavior
 
-> Define unfamiliar terms when they first become important.
+“Be helpful”, “be smart”, or “act like a world-class expert” are hard to test. Prefer visible behavior:
 
-> For troubleshooting, identify the likely cause, give the smallest relevant fix, explain how to verify it, and warn about important side effects.
+> Define unfamiliar terminology when it first matters.
 
-> Use headings when the topic genuinely changes, not simply because an answer is long.
+> For troubleshooting, explain the likely cause, the smallest safe fix, how to verify it, and important side effects.
 
-## Separate comprehension from terminology
+> Use headings when the topic genuinely changes; do not create numbered sections merely because an answer is long.
 
-A common failure in “beginner-friendly” prompts is that the model simplifies the information instead of simplifying the language.
+Observable instructions can become regression criteria. Vague personality adjectives usually cannot.
 
-Use `instructions.explanation` to define the teaching path. A strong default is:
+## Explain before naming
 
-1. ordinary-language concept;
-2. problem it solves;
-3. where it fits in the bigger picture;
-4. concrete example or mental model when useful;
-5. technical term and mechanism;
-6. implementation details, trade-offs, verification, and edge cases when relevant.
+For beginner-oriented profiles, “simple language” should not mean “remove the mechanism”. A robust explanation contract can define a dependency order: ordinary-language concept → problem solved → bigger-picture role → example if useful → technical terminology and mechanism → trade-offs, verification, or edge cases.
 
-The sequence is not a rigid template for every answer. It is a dependency order for unfamiliar material.
+This keeps informational depth while reducing linguistic friction.
 
-A useful rule is: **plain language should reduce linguistic complexity, not informational depth.**
+## Keep prompts lean
 
-## Avoid outline bias
+Do not repeat the same preference across identity, tone, structure, and avoid lists. When a profile grows, remove redundant wording before adding more. Keep a rule when it encodes a real requirement or repeatedly fixes an observed failure.
 
-Formatting should follow the information shape.
+## Product details are validation inputs, not identity
 
-A long explanation about one mechanism may be best as connected paragraphs. A short installation task may be best as numbered steps. A direct comparison may be best as a table. A checklist request should remain a checklist.
+ChatGPT plan limits and UI controls change. Do not write “I am a Plus user” into a generic preset merely to select a character limit. Choose `--limit 1500` or `--limit 5000` at lint/render time, or choose the target in the browser builder.
 
-Do not use “always use numbered sections for long answers”. The v2 linter warns about several recognizable forms of that rule with `OUTLINE_BIAS`.
+## Privacy
 
-## Keep research instructions operational
+A public preset should never contain secrets or real personal history. A local profile can still be sensitive, so Git ignore is only a convenience—not a security boundary. Review diffs before commits and keep credentials out of profile JSON entirely.
 
-“Research deeply” is hard to evaluate. A stronger research contract says what evidence to inspect and how to treat uncertainty.
+## Iterate with evals
 
-For technical research, prefer primary sources when relevant: official documentation, specifications, papers, repositories, source code, release notes, changelogs, configuration, and issue trackers. Use secondary reporting for context and community reports for real-world experience, but do not present all three as the same kind of evidence.
-
-Depth should come from cross-checking, mechanisms, trade-offs, and testing where possible—not from increasing the number of headings or bullets.
-
-## Keep the profile lean
-
-Repetition can overemphasize a minor preference. Before adding a new rule, ask:
-
-- Is it stable across many conversations?
-- Is it stored in the right layer?
-- Can I observe whether it worked?
-- Is another rule already saying the same thing?
-- Did a real failure motivate it?
-
-Edit by subtraction before adding more instructions.
-
-## Public profiles and privacy
-
-A public profile should contain only information the owner intentionally publishes. Do not store credentials, API keys, tokens, private client information, internal URLs, or sensitive biography in a repository profile.
-
-The linter recognizes a small set of common secret formats, but it is not a security scanner.
+Start from the smallest profile that captures the requirement. Run representative scenarios, note a repeated failure, change the smallest relevant rule, then rerun the affected case plus unrelated cases for side effects. This is more reliable than continuously lengthening the prompt.

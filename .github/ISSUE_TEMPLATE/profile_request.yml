@@ -1,27 +1,20 @@
-name: Profile proposal
-description: Propose a reusable example profile or a meaningful improvement to an existing one.
-title: "profile: "
+name: Preset proposal
+description: Propose a reusable public preset or a meaningful improvement to an existing preset.
+title: "preset: "
 labels: ["profile"]
 body:
   - type: textarea
     id: use_case
     attributes:
-      label: Distinct use case
-      description: Who is this for, and why are the current profiles insufficient?
-    validations:
-      required: true
-  - type: textarea
-    id: layers
-    attributes:
-      label: Affected layers
-      description: Does this change product settings, durable identity/context, response instructions, or more than one layer?
+      label: Reusable use case
+      description: Who is this preset for, and why are the current presets insufficient?
     validations:
       required: true
   - type: textarea
     id: behavior
     attributes:
       label: Observable behavior
-      description: What should change in responses, and which regression scenario would demonstrate it?
+      description: What should change in responses, and which regression scenario demonstrates the need?
     validations:
       required: true
   - type: checkboxes
@@ -29,11 +22,9 @@ body:
     attributes:
       label: Contribution checks
       options:
-        - label: The profile is reusable or is intentionally documented as a public maintainer example.
+        - label: The preset is generic and contains no real person's identity, employer, client data, secrets, or confidential information.
           required: true
-        - label: It contains no secrets, confidential information, or unnecessary personal data.
+        - label: The proposal differs materially from existing presets.
           required: true
-        - label: It differs materially from existing profiles.
-          required: true
-        - label: I can provide at least one evaluation scenario or explain which existing scenario covers the change.
+        - label: I can provide or update at least one evaluation scenario for the behavior change.
           required: true

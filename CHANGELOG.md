@@ -1,3 +1,11 @@
+## Unreleased
+
+- Reorganized public starting points into `profiles/presets/`, public real-world examples into `profiles/maintainers/`, and private user profiles into gitignored `profiles/local/`.
+- Changed the browser builder to start from the anonymous Blank preset and moved the maintainer profile into a separate reference group.
+- Added a plan-aware Custom Instructions validation target in the browser without storing plan/limit data inside the profile.
+- Added machine-readable behavioral regression cases alongside the human-readable scenarios.
+- Expanded research, testing, privacy, product-mapping, and contribution guidance for public reuse and optional automated eval workflows.
+
 # Changelog
 
 All notable changes to this project are documented here.
@@ -11,7 +19,7 @@ All notable changes to this project are documented here.
 - Removed `long_answers` as a formatting trigger and added `OUTLINE_BIAS` linting for rules that may force numbered/outline-style responses.
 - Added UI/UX and writing sections as first-class instruction groups.
 - Expanded research guidance around primary sources, repositories, source code, releases, issues, evidence separation, and testing.
-- Added a public maintainer profile (`profiles/yasman.json`) and rebuilt all example profiles for schema v2.
+- Added a public maintainer profile (`profiles/maintainers/yasman.json`) and rebuilt all example profiles for schema v2.
 - Changed renderer output to `settings.md`, `occupation.txt`, `more-about-you.txt`, and `custom-instructions.txt`.
 - Rebuilt the browser builder for the v2 profile model and four-output preview.
 - Added v1-to-v2 migration documentation.

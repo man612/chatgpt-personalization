@@ -1,27 +1,27 @@
 ## Purpose
 
-Explain the concrete failure, product change, or maintenance problem this PR addresses.
+Explain the problem this change solves and whether it affects the generic core, a public preset, or a maintainer reference profile.
 
 ## What changed
 
-Describe the affected v2 layers (`product`, `identity`, `instructions`) and any renderer, linter, browser, documentation, or evaluation changes.
+Describe the focused changes. Personal preferences should not silently become preset defaults.
 
 ## Validation
 
 ```bash
 python -m unittest discover -s tests -p "test_*.py" -v
-python tools/profile.py lint profiles/*.json
+python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json
 node --check docs/renderer.js
 node --check docs/app.js
 python tests/check_renderer_parity.py
 ```
 
-Describe any behavioral scenarios you compared against a baseline. Structural tests alone do not prove response quality improved.
+Describe any behavioral scenarios tested and the baseline used.
 
 ## Checklist
 
-- [ ] Product-specific assumptions are documented as changeable rather than permanent facts.
-- [ ] Public profiles contain no secrets, confidential information, or unnecessary personal data.
-- [ ] New instructions describe observable behavior rather than prestige or vague quality claims.
-- [ ] Formatting rules follow information shape rather than answer length.
-- [ ] Documentation, migration notes, and changelog are updated when needed.
+- [ ] Public presets are anonymous and reusable.
+- [ ] No secrets, client data, or unintended personal information were added.
+- [ ] Product-specific limits or UI assumptions are documented as changeable.
+- [ ] New behavioral rules correspond to a real requirement or observed failure.
+- [ ] Documentation/changelog are updated when needed.

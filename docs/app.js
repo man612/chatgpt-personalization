@@ -4,6 +4,7 @@
   const renderer = window.PersonalizationRenderer;
   const profileForm = document.querySelector("#profile-form");
   const templateSelect = document.querySelector("#template-select");
+  const limitSelect = document.querySelector("#limit-select");
   const status = document.querySelector("#status");
   const validationSummary = document.querySelector("#validation-summary");
   const jsonEditor = document.querySelector("#json-editor");
@@ -142,13 +143,21 @@
 
   function sync(updateEditor = true) {
     const findings = renderer.validateProfile(profile);
-    renderValidation(findings);
     if (updateEditor) jsonEditor.value = JSON.stringify(profile, null, 2);
 
     try {
       const rendered = renderer.renderProfile(profile);
+      const limit = Number(limitSelect.value);
+      const instructionLength = rendered.custom_instructions.length;
+      if (Number.isFinite(limit) && limit > 0) {
+        if (instructionLength > limit) {
+          findings.push({ level: "error", code: "FIELD_LIMIT", message: `Custom Instructions are ${instructionLength} characters; selected target is ${limit}.` });
+        } else if (instructionLength > Math.floor(limit * 0.9)) {
+          findings.push({ level: "warning", code: "FIELD_NEAR_LIMIT", message: `Custom Instructions are ${instructionLength} characters; selected target is ${limit}.` });
+        }
+      }
       Object.entries(outputs).forEach(([key, element]) => { element.textContent = rendered[key]; });
-      characterSummary.textContent = `About ${rendered.more_about_you.length} · Instructions ${rendered.custom_instructions.length} chars`;
+      characterSummary.textContent = `About ${rendered.more_about_you.length} · Instructions ${instructionLength}/${limit} chars`;
       status.textContent = "Ready";
       status.className = "status ready";
     } catch (error) {
@@ -157,6 +166,7 @@
       status.textContent = error.message;
       status.className = "status error";
     }
+    renderValidation(findings);
   }
 
   async function loadTemplate(filename) {
@@ -171,6 +181,7 @@
   }
 
   templateSelect.addEventListener("change", () => loadTemplate(templateSelect.value).catch(showError));
+  limitSelect.addEventListener("change", () => sync(false));
   document.querySelector("#reset-button").addEventListener("click", () => {
     if (!loadedProfile) return;
     profile = clone(loadedProfile);

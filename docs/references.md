@@ -1,44 +1,56 @@
-# References and design basis
+# Research basis and related projects
 
-This project is intentionally grounded first in primary OpenAI product and developer documentation. Product behavior can change, so review dates matter.
+Last reviewed: **2026-08-16**.
 
-## ChatGPT personalization
+This file records the sources used to shape the repository. It is not a claim that this project is officially endorsed by OpenAI or that it outperforms other personalization approaches. Product behavior changes quickly, so current OpenAI documentation takes precedence over assumptions encoded here.
 
-The v2 separation between product settings, durable user context, instructions, Memory, project context, and task-local requests is informed by current ChatGPT documentation:
+## Primary OpenAI product sources
 
-- ChatGPT Custom Instructions: https://help.openai.com/en/articles/8096356-custom-instructions-for-chatgpt
+The profile separates product settings, explicit instructions, evolving memory, and project-scoped context because OpenAI documents them as distinct personalization surfaces that can work together rather than as one interchangeable prompt.
+
+- ChatGPT Custom Instructions: https://help.openai.com/en/articles/8096356-custom-instructions
 - Customizing Your ChatGPT Personality: https://help.openai.com/en/articles/11899719-customizing-your-chatgpt-personality
 - Characteristics in ChatGPT: https://help.openai.com/en/articles/20001038-characteristics-in-chatgpt
 - Memory FAQ: https://help.openai.com/en/articles/8590148-memory-faq
-- ChatGPT release notes: https://help.openai.com/en/articles/6825453-chatgpt-release-notes
+- Projects in ChatGPT: https://help.openai.com/en/articles/10169521-projects-in-chatgpt
+- ChatGPT Release Notes: https://help.openai.com/en/articles/6825453-chatgpt-release-notes
 
-The repository does not assume that every account exposes the same fields or controls. Characteristics and limits can roll out by plan or change over time.
+At this review date, Custom Instructions limits are documented as 1,500 characters for Free/Go and 5,000 for Plus/Pro/Business/Enterprise/Education. Because this is a product detail, the repository treats the limit as a validation target rather than permanent schema truth.
 
-## Prompt design and evaluation
+## Prompt and model-behavior guidance
 
-The project favors observable instructions, limited repetition, and evaluation against realistic scenarios rather than prestige personas or prompt length.
+OpenAI's latest model guidance recommends leaner prompts, avoiding repeated instructions, and validating prompt changes on representative evals. The public Model Spec provides a useful reference for instruction hierarchy and default response behavior.
 
-Primary references:
-
-- OpenAI prompt engineering guidance: https://developers.openai.com/api/docs/guides/prompt-engineering
-- OpenAI latest-model guidance: https://developers.openai.com/api/docs/guides/latest-model
-- OpenAI evals guidance: https://developers.openai.com/api/docs/guides/evals
+- Model guidance: https://developers.openai.com/api/docs/guides/latest-model
 - OpenAI Model Spec: https://github.com/openai/model_spec
-- OpenAI Model Spec eval harness: https://github.com/openai/model_spec_evals
-- OpenAI Model Spec dataset: https://github.com/openai/model_spec_dataset
 
-The repository borrows the evaluation mindset, not the claim that its manual scenarios are equivalent to OpenAI's internal or public model evaluations.
+The repository borrows these design principles without pretending that consumer ChatGPT Custom Instructions are identical to API developer/system messages.
 
-## Related public projects
+## Evaluation references
 
-Other public personalization and instruction projects can be useful as design references, but their product assumptions may be stale:
+OpenAI's Model Spec Evals separates evaluation prompts/datasets from the harness that executes and grades them, and supports repeated candidate/grader samples. That influenced this project's separation between machine-readable scenarios and optional external eval runners.
 
-- https://github.com/daveshap/ChatGPT_Custom_Instructions
-- https://github.com/spdustin/ChatGPT-AutoExpert
-- https://github.com/tf318/chatgpt-custom-instruction-switcher
+- Model Spec Evals: https://github.com/openai/model_spec_evals
+- Model Spec source: https://github.com/openai/model_spec
 
-Their inclusion does not imply endorsement or comparative superiority.
+For a broader open-source example of test-driven prompt work, promptfoo provides declarative test cases, multiple providers, graders, repeated evaluation workflows, and CI integration. It is an optional reference only; this repository does not require promptfoo at runtime.
 
-## Review date
+- promptfoo: https://github.com/promptfoo/promptfoo
 
-The v2 product assumptions were reviewed in August 2026. Re-check official documentation before treating UI labels, limits, plan availability, or model behavior as current.
+## Older Custom Instructions projects reviewed
+
+Several public repositories demonstrated that people want reusable Custom Instructions, persona packs, and switching workflows. They were useful landscape references, but many encode product assumptions from 2023–2024 and should not be treated as current ChatGPT documentation.
+
+- daveshap/ChatGPT_Custom_Instructions — archived collection of reusable custom instructions
+- spdustin/ChatGPT-AutoExpert — influential expert/persona-oriented instruction framework
+- tf318/chatgpt-custom-instruction-switcher — switching workflow for multiple instruction sets
+
+The lesson taken from these projects is not to copy their prompts. It is to preserve reuse, inspectability, and easy switching while avoiding stale product assumptions, prestige-persona claims, and one-size-fits-all defaults.
+
+## Design conclusions from the review
+
+The current architecture intentionally follows five conclusions: public presets should be anonymous; real personal profiles must be a different category; product controls should not be duplicated into prompt text when a dedicated control exists; changing product limits should be validation inputs; and behavioral claims require representative repeated evals rather than subjective prompt length or a single impressive response.
+
+## Limitations
+
+Consumer ChatGPT is not fully reproducible through the public API. Automated API evals can test rendered instruction text, but cannot exactly recreate every combination of ChatGPT Personality, Characteristics, Memory state, project context, connected sources, or product routing. The repository therefore keeps manual ChatGPT evaluation as a first-class workflow.

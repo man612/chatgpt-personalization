@@ -1,52 +1,58 @@
 <h1 align="center">ChatGPT Personalization</h1>
 
 <p align="center">
-  Version, lint, render, and evaluate a complete ChatGPT personalization setup as reviewable JSON.
+  Build, version, lint, render, and evaluate ChatGPT personalization profiles without turning one person's preferences into a universal prompt.
 </p>
 
 <p align="center">
   <a href="https://man612.github.io/chatgpt-personalization/"><strong>Open the browser builder</strong></a>
-  ·
-  <a href="#quick-start">CLI quick start</a>
-  ·
-  <a href="#v2-profile-model">v2 model</a>
-  ·
-  <a href="#evaluation">Evaluation</a>
+  · <a href="#quick-start">Quick start</a>
+  · <a href="#profile-types">Profile types</a>
+  · <a href="docs/testing.md">Evaluation</a>
 </p>
 
-<p align="center">
-  <sub>Python 3.11+ · Node only for parity tests · no runtime dependencies · JSON Schema · MIT</sub>
-</p>
+<p align="center"><sub>Python 3.11+ · no runtime dependencies · JSON Schema · browser builder · MIT</sub></p>
 
-ChatGPT Personalization is a small toolkit for treating personalization like configuration instead of an unversioned prompt pasted into a settings box.
+ChatGPT Personalization is an open-source toolkit for treating personalization as **maintainable configuration** instead of an unversioned block of prompt text. The core is generic: anyone can start from a preset, customize a profile, validate it, render copy-ready settings, and test whether the behavior actually improves.
 
-Version 2 expands the project beyond Custom Instructions. A profile now separates **product-level personalization**, **durable user context**, and **response behavior** so Personality, Characteristics, Memory, identity, and instructions do not compete inside one oversized prompt.
+The project also contains a public maintainer profile for Yasman, but that profile is only a real-world reference implementation. Nothing in the schema, renderer, linter, browser builder, or CI has Yasman-specific behavior.
 
 > [!NOTE]
-> This project does not make a model more capable, bypass product rules, or guarantee better answers. It helps make intended behavior explicit, reviewable, testable, and easier to maintain.
+> This project does not make a model more capable, bypass product rules, or guarantee better answers. Structural validation proves that a profile is well-formed; behavioral improvement still needs evaluation on representative prompts.
 
-## Why v2 exists
+## Why this exists
 
-The original v1 model rendered three fields: occupation, more-about-you, and response preferences. That was useful, but it mixed two different concerns: product settings and prompt text.
+ChatGPT personalization is no longer one text box. Current product behavior can involve a selected Personality, Characteristics, Memory, Custom Instructions, project-scoped context, and task-local instructions. These layers have different scopes and can conflict, so the repository keeps them conceptually separate instead of stuffing everything into one giant prompt.
 
-Modern ChatGPT personalization can include a selected Personality, Characteristics such as warmth and Headers & Lists, Memory settings, Custom Instructions, Project instructions, and task-local requests. These layers have different scopes and can conflict. v2 makes that separation explicit.
+The project also follows a test-driven approach to prompt changes. OpenAI's current model guidance recommends leaner prompts, stating instructions once, and validating changes on representative evals rather than assuming that more instruction text is better. OpenAI's public Model Spec Evals similarly separates evaluation prompts from the harness that measures behavior. See `docs/references.md` for the research basis and limitations.
 
-It also removes one problematic design assumption from the original technology profile: **answer length no longer triggers numbered sections**. Long explanations should stay connected when they are teaching one continuous idea; headings and lists are used because they improve comprehension, not because the answer crossed an arbitrary length threshold.
+## Profile types
 
-## v2 profile model
+```text
+profiles/
+├── presets/
+│   ├── blank.json
+│   ├── knowledge-worker.json
+│   ├── product-designer.json
+│   ├── student.json
+│   ├── tech-generalist.json
+│   └── writer-editor.json
+├── maintainers/
+│   └── yasman.json
+└── local/
+    └── README.md
+```
+
+**Presets** are anonymous public starting points. **Maintainer profiles** are public real-world examples. **Local profiles** are for personal configuration and are gitignored by default. This separation keeps the repository useful to everyone without pretending one maintainer's preferences are universal.
+
+## The v2 model
 
 ```text
 profile
 ├── product
 │   ├── personality
 │   ├── characteristics
-│   │   ├── warm
-│   │   ├── enthusiastic
-│   │   ├── headers_and_lists
-│   │   └── emojis
 │   └── memory
-│       ├── saved_memories
-│       └── reference_chat_history
 ├── identity
 │   ├── occupation
 │   ├── background
@@ -56,10 +62,6 @@ profile
 └── instructions
     ├── language / tone / audience
     ├── explanation
-    │   ├── principle
-    │   ├── sequence
-    │   ├── terminology
-    │   └── depth
     ├── structure
     ├── technical
     ├── research
@@ -68,134 +70,73 @@ profile
     └── avoid
 ```
 
-The important addition is `instructions.explanation`. “Beginner-friendly” is too ambiguous by itself. v2 can specify an actual teaching sequence such as ordinary-language concept → problem solved → bigger-picture position → example → technical term/mechanism → implementation details and trade-offs.
+`instructions.explanation` is intentionally explicit. A label such as “beginner-friendly” is ambiguous; a useful profile can instead define the teaching sequence, terminology policy, and how much technical depth must be preserved.
 
-That makes it possible to express a rule such as:
-
-> Plain language should reduce linguistic complexity, not informational depth.
-
-## What gets rendered
-
-The CLI and browser renderer produce four outputs:
-
-```text
-settings.md
-occupation.txt
-more-about-you.txt
-custom-instructions.txt
-```
-
-`settings.md` is a human-readable checklist for product-level settings. The other three are copy-ready text for the closest matching fields in the current ChatGPT interface.
-
-The repository deliberately does **not** pretend that every ChatGPT account exposes identical fields, labels, sliders, plans, or limits. Product surfaces change. The schema stores intent; the mapping guide explains how to apply it to the current UI.
+The structure rules also avoid using answer length as a formatting trigger. A long explanation can remain connected prose when it is teaching one continuous idea, while checklists, procedures, and comparisons can still use lists or tables when those formats improve usability.
 
 ## Quick start
+
+Clone the repository, copy a preset into the private local area, edit it, then lint and render it:
 
 ```bash
 git clone https://github.com/man612/chatgpt-personalization.git
 cd chatgpt-personalization
 
-python tools/profile.py lint profiles/yasman.json
-python tools/profile.py render profiles/yasman.json --out build/yasman
+cp profiles/presets/blank.json profiles/local/me.json
+python tools/profile.py lint profiles/local/me.json --limit 5000
+python tools/profile.py render profiles/local/me.json --out build/me --limit 5000
 ```
 
-Use a different configured long-field limit when your ChatGPT surface has a smaller limit:
+The renderer creates:
+
+```text
+build/me/
+├── settings.md
+├── occupation.txt
+├── more-about-you.txt
+└── custom-instructions.txt
+```
+
+`settings.md` is a human-readable checklist for product-level controls. The text files are copy-ready for the closest matching personalization fields in the current ChatGPT interface.
+
+## Current Custom Instructions limits
+
+The CLI does not store a plan name in the profile. Instead, choose the validation target that matches the product surface you are using. At the time of this repository review, ChatGPT Free and Go support 1,500 characters, while Plus, Pro, Business, Enterprise, and Education support 5,000. Product limits can change, so the number is a validation input, not permanent schema truth.
 
 ```bash
-python tools/profile.py lint profiles/tech-generalist.json --limit 1500
+# Free / Go target
+python tools/profile.py lint profiles/local/me.json --limit 1500
+
+# Plus / Pro / Business / Enterprise / Education target
+python tools/profile.py lint profiles/local/me.json --limit 5000
 ```
 
-The default limit is 5,000 characters because the repository's current maintainer profile targets a paid ChatGPT surface. Treat the number as a configurable validation target, not a permanent product guarantee.
-
-## Profiles
-
-| Profile | Purpose |
-| --- | --- |
-| [`yasman.json`](profiles/yasman.json) | Maintainer's public working profile; deepest example of the v2 model |
-| [`tech-generalist.json`](profiles/tech-generalist.json) | Practical technology, troubleshooting, AI-assisted development, research, UI/UX |
-| [`knowledge-worker.json`](profiles/knowledge-worker.json) | Office work, research, planning, documentation, decisions |
-| [`student.json`](profiles/student.json) | Learning without assuming expert vocabulary |
-| [`product-designer.json`](profiles/product-designer.json) | Product thinking, interface critique, interaction flows |
-| [`writer-editor.json`](profiles/writer-editor.json) | Drafting and editing while preserving voice |
-| [`blank.json`](profiles/blank.json) | Minimal v2 starting point |
-
-## Validation
-
-Run the automated checks with:
-
-```bash
-python -m unittest discover -s tests -p "test_*.py" -v
-python tools/profile.py lint profiles/*.json
-node --check docs/renderer.js
-node --check docs/app.js
-python tests/check_renderer_parity.py
-```
-
-The linter checks structure, field types, unsupported properties, duplicate array values, configured output limits, several recognizable secret formats, repeated text, prompt-bloat patterns, and a specific `OUTLINE_BIAS` warning for rules that may force numbered/outline-style answers.
-
-The browser and Python renderers share the same output contract. `tests/check_renderer_parity.py` compares them across fixtures and every example profile.
-
-## Evaluation
-
-Passing unit tests does not prove that personalization improves model behavior.
-
-The repository therefore keeps behavioral evaluation separate. [`tests/scenarios.md`](tests/scenarios.md) includes regression scenarios for:
-
-- beginner explanations that remain technically deep;
-- programming concepts explained in dependency order;
-- deep research with source verification;
-- actual repository analysis rather than README-only summaries;
-- troubleshooting with cause → minimal fix → verification → risk;
-- concrete UI/UX critique;
-- artifact-tone overrides;
-- relevance boundaries;
-- format exceptions such as checklists;
-- short factual questions that should remain short.
-
-Compare a candidate profile against a baseline on the same ChatGPT model and product surface. Keep a rule only when it produces a repeatable improvement that matters.
-
-## Scope rules
-
-Use each layer for one job:
-
-- **product** — recommended ChatGPT Personality, Characteristics, and Memory intent;
-- **identity** — stable information about the user that changes explanations;
-- **instructions** — global response behavior;
-- **Memory** — useful evolving context that does not need exact wording;
-- **Project instructions** — rules limited to one project/workspace;
-- **current prompt** — temporary requirements and output details.
-
-Do not put project names, deadlines, secrets, client data, or one-off formatting requirements into a global profile.
+The browser builder exposes the same target choice without storing it in the downloaded profile.
 
 ## Browser builder
 
-The GitHub Pages builder runs entirely in the browser. It loads public profile templates, lets you edit nested fields, validates the v2 shape, previews all four rendered outputs, and downloads the resulting JSON.
+The GitHub Pages builder is dependency-free and runs entirely in the browser. It starts from **Blank**, not from the maintainer profile. Public presets are grouped separately from the maintainer reference example.
 
-Edited profile contents are not uploaded by the page.
+The browser checks profile structure and the selected Custom Instructions target. The Python CLI adds secret-pattern, repeated-text, prompt-bloat, over-constraint, and outline-bias checks.
 
-## Migration from v1
+## Evaluation
 
-v1 profiles are intentionally rejected with a migration message instead of being silently reinterpreted. See [`docs/migration-v2.md`](docs/migration-v2.md).
+A valid JSON profile is not automatically a better personalization. The repository therefore keeps two kinds of tests separate:
 
-The key migration is:
+- **engineering tests** verify schema handling, linting, rendering, browser/Python parity, and CLI behavior;
+- **behavioral evals** compare real outputs against predefined criteria such as terminology order, paragraph flow, research evidence, troubleshooting verification, or correct use of lists.
 
-```text
-occupation        -> identity.occupation
-about.*           -> identity.*
-response.*        -> instructions.*
-new               -> product.*
-new               -> instructions.explanation.*
-removed           -> response.structure.long_answers
-```
+`tests/scenarios.md` is human-readable and `tests/scenarios.json` is machine-readable. You can run the scenarios manually in ChatGPT, or adapt the JSON cases to an external eval harness. Automated API evals are useful for regression testing instruction text, but they are not a perfect reproduction of consumer ChatGPT because the API does not expose every ChatGPT personalization control.
 
-## Documentation
+## Design rules
 
-- [`docs/guide.md`](docs/guide.md) — how to design a profile without prompt bloat
-- [`docs/product-mapping.md`](docs/product-mapping.md) — how v2 layers map to current ChatGPT surfaces
-- [`docs/testing.md`](docs/testing.md) — behavioral evaluation method
-- [`docs/migration-v2.md`](docs/migration-v2.md) — migration from v1
-- [`docs/privacy.md`](docs/privacy.md) — keep secrets and unnecessary personal data out
-- [`docs/references.md`](docs/references.md) — official sources and design basis
+The generic core follows a few deliberately boring rules: presets must stay anonymous; personal data belongs in local or explicitly public maintainer profiles; project-specific instructions do not belong in global personalization; product details that can change are documented rather than hard-coded as permanent truths; and a new instruction should fix an observed failure or encode a real product requirement.
+
+Read `docs/guide.md` for profile design, `docs/product-mapping.md` for current ChatGPT mapping, `docs/testing.md` for evaluation, `docs/privacy.md` for data hygiene, and `docs/references.md` for the sources reviewed.
+
+## Contributing
+
+Contributions are welcome for schema improvements, generic presets, tooling, browser UX, tests, and documentation. Personal profiles should not be proposed as universal defaults. See `CONTRIBUTING.md`.
 
 ## License
 

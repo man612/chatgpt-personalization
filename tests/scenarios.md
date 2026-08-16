@@ -1,65 +1,65 @@
-# Behavioral evaluation scenarios
+# Behavioral regression scenarios
 
-Structural tests can prove that a profile is valid and renders consistently. They cannot prove that ChatGPT actually responds better. Use these scenarios as a small regression suite and compare the same model with personalization disabled, the previous profile, and the candidate profile.
+These prompts test behavior, not model intelligence. Run them against a baseline, previous profile, and candidate profile when a relevant rule changes. The equivalent machine-readable cases live in `scenarios.json`.
 
-Record the date, ChatGPT surface, selected model, profile revision, run number, and observed failures. Important scenarios should be run more than once because a single output is noisy evidence.
+## Explanation and depth
 
-## 1. Beginner explanation without shallowness
+> What is an API, and why would an app use one?
 
-> Explain what a reverse proxy is from zero, but go deep enough that I understand why it exists and how traffic actually flows.
+> Explain reverse proxy from zero, but go deep enough that I can understand why it exists and how requests actually flow.
 
-Pass when the answer builds the concept before leaning on jargon, preserves the mechanism, and does not become a numbered outline merely because it is long.
+Check concept-before-jargon order, preserved mechanism, and whether one continuous explanation stays reasonably connected.
 
-## 2. Programming concept in dependency order
+## Long analysis
 
-> I understand what an app does but I do not really understand state management. Explain why React apps need it, then explain `useState`, shared state, and stores.
+> Compare local storage, a hosted database, and a spreadsheet as data storage for a small internal app. Explain the trade-offs and recommend when each is appropriate.
 
-Pass when the answer explains the problem before the APIs and does not assume terms such as render, component tree, mutation, or store without explanation when they matter.
+Check whether structure follows the comparison instead of answer length.
 
-## 3. Deep research
+## Troubleshooting
 
-> Research the latest workflow for exposing a local web app through Cloudflare Tunnel. Compare it with the older workflow and tell me what actually changed.
+> A Windows computer can access the internet but cannot see a shared printer. Give me a safe troubleshooting plan.
 
-Pass when current claims are verified, primary sources are preferred, repository/release evidence is inspected when relevant, evidence is separated from inference, and depth comes from mechanisms and cross-checking rather than bullet count.
+Check likely causes, smallest relevant fixes, verification, and side effects.
 
-## 4. Repository analysis
+## Current information
 
-> Analyze this open-source repository and explain its architecture to me as an intelligent beginner. Do not rely only on the README if the source code changes the picture.
+> Which ChatGPT plan currently supports the Custom Instructions capacity I need?
 
-Pass when the actual repository structure or implementation is inspected and architecture terminology is explained in context.
+Check whether current product information is verified rather than recalled from a frozen profile.
 
-## 5. Troubleshooting
+## Repository analysis
 
-> A Windows computer can access the internet but cannot see a shared printer. Give me a safe troubleshooting plan and explain why each check matters.
+> Review this repository's architecture and tell me whether its configuration model is actually reusable by other people, not just its maintainer.
 
-Pass when likely causes are prioritized, fixes are minimal, verification is explicit, and risky or disruptive actions are not suggested prematurely.
+Check whether repository evidence is inspected and generic core is separated from person-specific data.
 
-## 6. UI/UX critique
+## UI/UX
 
-> Review this dashboard UI. Tell me what is actually wrong, why users would feel it, and what you would change first.
+> Review this application screen for UI/UX problems and explain which changes matter most to the user experience.
 
-Pass when feedback identifies concrete elements, connects them to user impact, covers relevant hierarchy/spacing/type/interaction/accessibility issues, and avoids a generic checklist.
+Check concrete elements, user impact, priority, and whether the answer avoids a generic checklist dump.
 
-## 7. Artifact override
+## Artifact override
 
 > Write a formal complaint email to an internet provider about repeated outages.
 
-Pass when the artifact fits the recipient and requested formality instead of inheriting the assistant's conversational tone.
+The artifact should match its audience rather than inherit conversational tone.
 
-## 8. Relevance boundary
+## Relevance boundary
 
 > Explain why sourdough starter rises.
 
-Pass when a technology profile does not force software, networking, or AI analogies into an unrelated topic unless they genuinely make the explanation clearer.
+Professional interests should not leak into unrelated topics.
 
-## 9. Format exception
+## Format exception
 
 > Give me a checklist for reviewing a used laptop before buying it.
 
-Pass when a paragraph-first profile still produces a usable checklist because the requested information is naturally a checklist.
+A paragraph-first profile should still use a checklist when a checklist is the correct format.
 
-## 10. Short factual question
+## Concise fact
 
-> What port does HTTPS normally use?
+> What port does SSH use by default?
 
-Pass when personalization does not inflate a simple answer into an unnecessary tutorial.
+A deep-explanation preference should not turn a simple fact into an essay.

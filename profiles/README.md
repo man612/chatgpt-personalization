@@ -1,23 +1,40 @@
 # Profiles
 
-Profiles are versioned sources of truth for **three different layers** of ChatGPT personalization:
+The repository separates **reusable presets** from **real personal profiles**. This matters because a public starter template and one person's long-term context are different things.
 
-1. `product` — recommended product-level settings such as Personality, Characteristics, and Memory;
-2. `identity` — durable user context that changes how answers should be explained;
-3. `instructions` — observable response behavior for explanation, structure, technical work, research, UI/UX, and writing.
+```text
+profiles/
+├── presets/       reusable, anonymous starting points
+├── maintainers/   public reference profiles used by project maintainers
+└── local/         private profiles for your own machine; JSON files are gitignored
+```
 
-Do not put temporary projects, deadlines, credentials, client data, or one-off output requirements in a global profile. Put project-wide rules in the relevant ChatGPT Project or workspace, and put one-off requirements in the current request.
+## Presets
 
-## Included profiles
+Files in `presets/` are public starting points. They may describe a role such as student, product designer, or technology generalist, but they should not contain a real person's name, employer, client data, private project history, or secrets.
 
-- `yasman.json` — the maintainer's public, non-secret working profile and the strongest example of the v2 model.
-- `tech-generalist.json` — reusable template for hands-on technology and AI-assisted development.
-- `knowledge-worker.json` — office work, research, planning, and practical decisions.
-- `student.json` — structured learning without assuming expert vocabulary.
-- `product-designer.json` — interface critique, flows, and product design.
-- `writer-editor.json` — drafting and editing while preserving voice.
-- `blank.json` — minimal v2 starting point.
+Choose the nearest preset, then customize it. `blank.json` is the least opinionated starting point.
 
-The product settings are recommendations, not a claim that every ChatGPT account exposes the same controls. Characteristics, Memory options, labels, and limits can vary by plan and product rollout.
+## Maintainer profiles
 
-Run `python tools/profile.py lint profiles/*.json` after changes, then compare behavior with the scenarios in `tests/scenarios.md` rather than assuming a structurally valid profile is behaviorally better.
+Files in `maintainers/` are public reference implementations. They show how the same generic schema can represent a real person without adding person-specific branches to the renderer, linter, schema, or browser builder.
+
+`maintainers/yasman.json` is the maintainer's working profile. It is **not** a universal recommendation and is not the default template in the browser builder.
+
+## Local profiles
+
+Create personal profiles in `profiles/local/` when you do not want them committed:
+
+```bash
+cp profiles/presets/blank.json profiles/local/me.json
+python tools/profile.py lint profiles/local/me.json --limit 5000
+python tools/profile.py render profiles/local/me.json --out build/me
+```
+
+`profiles/local/*.json` and `*.jsonc` are ignored by Git. The directory README stays tracked so the privacy-first workflow is discoverable.
+
+## Scope rules
+
+A global profile should contain durable user context and global response preferences. Temporary project details belong in a ChatGPT Project or the current conversation. Secrets, credentials, client data, and sensitive information that does not need to be global should stay out of public profiles entirely.
+
+Product controls such as Personality, Characteristics, Memory options, field labels, and Custom Instructions limits can change over time. The profile stores intended settings; the product-mapping documentation explains how to apply them to the current ChatGPT interface.
