@@ -2,151 +2,95 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/man612/chatgpt-personalization/blob/main/spec/profile.schema.json",
   "title": "ChatGPT Personalization Profile",
-  "description": "A structured source for rendering ChatGPT personalization fields.",
+  "description": "A versioned source of truth for ChatGPT personalization settings, durable user context, and response instructions.",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "name",
-    "occupation",
-    "about",
-    "response"
-  ],
+  "required": ["schema_version", "name", "product", "identity", "instructions"],
   "properties": {
-    "$schema": {
-      "type": "string"
-    },
-    "schema_version": {
-      "const": "1.0"
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 80
-    },
-    "description": {
-      "type": "string",
-      "maxLength": 240
-    },
-    "occupation": {
-      "type": "string",
-      "maxLength": 500
-    },
-    "about": {
+    "$schema": {"type": "string"},
+    "schema_version": {"const": "2.0"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 80},
+    "description": {"type": "string", "maxLength": 240},
+    "product": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "background",
-        "experience",
-        "recurring_uses",
-        "stable_preferences"
-      ],
+      "required": ["personality", "characteristics", "memory"],
       "properties": {
-        "background": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
+        "personality": {"type": "string", "enum": ["Default", "Professional", "Friendly", "Candid", "Quirky", "Efficient", "Cynical"]},
+        "characteristics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["warm", "enthusiastic", "headers_and_lists", "emojis"],
+          "properties": {
+            "warm": {"$ref": "#/$defs/relativePreference"},
+            "enthusiastic": {"$ref": "#/$defs/relativePreference"},
+            "headers_and_lists": {"$ref": "#/$defs/relativePreference"},
+            "emojis": {"$ref": "#/$defs/relativePreference"}
+          }
         },
-        "experience": {
-          "type": "string"
-        },
-        "recurring_uses": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
-        },
-        "stable_preferences": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
+        "memory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["saved_memories", "reference_chat_history"],
+          "properties": {
+            "saved_memories": {"type": "boolean"},
+            "reference_chat_history": {"type": "boolean"}
+          }
         }
       }
     },
-    "response": {
+    "identity": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "language",
-        "tone",
-        "audience",
-        "structure",
-        "technical",
-        "research",
-        "avoid"
-      ],
+      "required": ["occupation", "background", "experience", "recurring_uses", "stable_preferences"],
       "properties": {
-        "language": {
-          "type": "string"
-        },
-        "tone": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
-        },
-        "audience": {
-          "type": "string"
+        "occupation": {"type": "string", "maxLength": 500},
+        "background": {"$ref": "#/$defs/stringList"},
+        "experience": {"type": "string"},
+        "recurring_uses": {"$ref": "#/$defs/stringList"},
+        "stable_preferences": {"$ref": "#/$defs/stringList"}
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language", "tone", "audience", "explanation", "structure", "technical", "research", "ui_ux", "writing", "avoid"],
+      "properties": {
+        "language": {"type": "string"},
+        "tone": {"$ref": "#/$defs/stringList"},
+        "audience": {"type": "string"},
+        "explanation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["principle", "sequence", "terminology", "depth"],
+          "properties": {
+            "principle": {"type": "string"},
+            "sequence": {"$ref": "#/$defs/stringList"},
+            "terminology": {"type": "string"},
+            "depth": {"type": "string"}
+          }
         },
         "structure": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "long_answers",
-            "body",
-            "lists",
-            "tables"
-          ],
+          "required": ["default", "headings", "lists", "tables"],
           "properties": {
-            "long_answers": {
-              "type": "string"
-            },
-            "body": {
-              "type": "string"
-            },
-            "lists": {
-              "type": "string"
-            },
-            "tables": {
-              "type": "string"
-            }
+            "default": {"type": "string"},
+            "headings": {"type": "string"},
+            "lists": {"type": "string"},
+            "tables": {"type": "string"}
           }
         },
-        "technical": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
-        },
-        "research": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
-        },
-        "avoid": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
-        }
+        "technical": {"$ref": "#/$defs/stringList"},
+        "research": {"$ref": "#/$defs/stringList"},
+        "ui_ux": {"$ref": "#/$defs/stringList"},
+        "writing": {"$ref": "#/$defs/stringList"},
+        "avoid": {"$ref": "#/$defs/stringList"}
       }
     }
+  },
+  "$defs": {
+    "relativePreference": {"type": "string", "enum": ["less", "slightly_less", "neutral", "slightly_more", "more"]},
+    "stringList": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
   }
 }

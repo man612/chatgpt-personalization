@@ -1,21 +1,23 @@
-# Example profiles
+# Profiles
 
-The files in this directory are starting points, not universal presets. Choose the closest profile, remove details that do not describe the intended user, and rewrite the remaining text in that user's own terms.
+Profiles are versioned sources of truth for **three different layers** of ChatGPT personalization:
 
-Each file follows `spec/profile.schema.json` and can be checked and rendered with:
+1. `product` — recommended product-level settings such as Personality, Characteristics, and Memory;
+2. `identity` — durable user context that changes how answers should be explained;
+3. `instructions` — observable response behavior for explanation, structure, technical work, research, UI/UX, and writing.
 
-```bash
-python tools/profile.py lint profiles/<name>.json
-python tools/profile.py render profiles/<name>.json --out build/<name>
-```
+Do not put temporary projects, deadlines, credentials, client data, or one-off output requirements in a global profile. Put project-wide rules in the relevant ChatGPT Project or workspace, and put one-off requirements in the current request.
 
-Current examples:
+## Included profiles
 
-- `knowledge-worker.json` for office work, research, writing, planning, and practical decisions;
-- `tech-generalist.json` for practical technology work, troubleshooting, UI/UX, and assisted development;
-- `student.json` for structured learning without assuming expert vocabulary;
-- `product-designer.json` for product and UI/UX evaluation;
-- `writer-editor.json` for drafting, editing, and language-sensitive work;
-- `blank.json` as a minimal starting point.
+- `yasman.json` — the maintainer's public, non-secret working profile and the strongest example of the v2 model.
+- `tech-generalist.json` — reusable template for hands-on technology and AI-assisted development.
+- `knowledge-worker.json` — office work, research, planning, and practical decisions.
+- `student.json` — structured learning without assuming expert vocabulary.
+- `product-designer.json` — interface critique, flows, and product design.
+- `writer-editor.json` — drafting and editing while preserving voice.
+- `blank.json` — minimal v2 starting point.
 
-A useful example should be reusable, distinct from the existing profiles, free of identifying information, and specific enough to request observable behavior. More profiles are not automatically better; add one only when it represents a meaningfully different use case.
+The product settings are recommendations, not a claim that every ChatGPT account exposes the same controls. Characteristics, Memory options, labels, and limits can vary by plan and product rollout.
+
+Run `python tools/profile.py lint profiles/*.json` after changes, then compare behavior with the scenarios in `tests/scenarios.md` rather than assuming a structurally valid profile is behaviorally better.

@@ -1,5 +1,5 @@
 __pycache__/
-*.py[cod]
+*.pyc
 build/
-.coverage
 .DS_Store
+profiles/private-*.json

@@ -26,8 +26,8 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py" -v
       - name: Lint example profiles
         run: python tools/profile.py lint profiles/*.json
-      - name: Render smoke test
-        run: python tools/profile.py render profiles/tech-generalist.json --out build/ci-smoke
+      - name: Render maintainer smoke test
+        run: python tools/profile.py render profiles/yasman.json --out build/ci-smoke
 
   browser:
     name: Browser renderer parity

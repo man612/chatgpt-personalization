@@ -1,34 +1,44 @@
-# References and design notes
+# References and design basis
 
-This file records sources that informed the initial design. It is not a systematic review of every personalization repository, and it should not be read as evidence that this project outperforms other approaches.
+This project is intentionally grounded first in primary OpenAI product and developer documentation. Product behavior can change, so review dates matter.
 
-## ChatGPT product behavior
+## ChatGPT personalization
 
-The project separates stable identity, user context, response preferences, memory, project context, and task-local requests because these layers have different scopes and can conflict.
+The v2 separation between product settings, durable user context, instructions, Memory, project context, and task-local requests is informed by current ChatGPT documentation:
 
-Official sources:
+- ChatGPT Custom Instructions: https://help.openai.com/en/articles/8096356-custom-instructions-for-chatgpt
+- Customizing Your ChatGPT Personality: https://help.openai.com/en/articles/11899719-customizing-your-chatgpt-personality
+- Characteristics in ChatGPT: https://help.openai.com/en/articles/20001038-characteristics-in-chatgpt
+- Memory FAQ: https://help.openai.com/en/articles/8590148-memory-faq
+- ChatGPT release notes: https://help.openai.com/en/articles/6825453-chatgpt-release-notes
 
-- [ChatGPT Custom Instructions](https://help.openai.com/en/articles/8096356-custom-instructions-for-chatgpt)
-- [Customizing Your ChatGPT Personality](https://help.openai.com/en/articles/11899719-customizing-your-chatgpt-personality)
-- [Memory FAQ](https://help.openai.com/en/articles/8590148-memory-faq)
+The repository does not assume that every account exposes the same fields or controls. Characteristics and limits can roll out by plan or change over time.
 
-Product interfaces, labels, limits, plans, and memory behavior can change. Check the current documentation before depending on a UI-specific assumption.
+## Prompt design and evaluation
 
-## Prompt structure and evaluation
+The project favors observable instructions, limited repetition, and evaluation against realistic scenarios rather than prestige personas or prompt length.
 
-OpenAI's API guidance separates instructions, examples, and context, while noting that the best structure varies by model and task. The repository borrows the separation principle without treating consumer ChatGPT fields as API system messages.
+Primary references:
 
-- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Working with evals](https://developers.openai.com/api/docs/guides/evals)
+- OpenAI prompt engineering guidance: https://developers.openai.com/api/docs/guides/prompt-engineering
+- OpenAI latest-model guidance: https://developers.openai.com/api/docs/guides/latest-model
+- OpenAI evals guidance: https://developers.openai.com/api/docs/guides/evals
+- OpenAI Model Spec: https://github.com/openai/model_spec
+- OpenAI Model Spec eval harness: https://github.com/openai/model_spec_evals
+- OpenAI Model Spec dataset: https://github.com/openai/model_spec_dataset
 
-The included scenarios are manual checks for profile behavior. They are not a benchmark of model capability and the repository does not currently publish comparative performance scores.
+The repository borrows the evaluation mindset, not the claim that its manual scenarios are equivalent to OpenAI's internal or public model evaluations.
 
 ## Related public projects
 
-The following projects were reviewed as examples of different approaches, including instruction collections, persona systems, and prompt-switching tools:
+Other public personalization and instruction projects can be useful as design references, but their product assumptions may be stale:
 
-- [ChatGPT Custom Instructions](https://github.com/daveshap/ChatGPT_Custom_Instructions)
-- [ChatGPT AutoExpert](https://github.com/spdustin/ChatGPT-AutoExpert)
-- [ChatGPT Custom Instruction Switcher](https://github.com/tf318/chatgpt-custom-instruction-switcher)
+- https://github.com/daveshap/ChatGPT_Custom_Instructions
+- https://github.com/spdustin/ChatGPT-AutoExpert
+- https://github.com/tf318/chatgpt-custom-instruction-switcher
 
-Their inclusion is descriptive rather than competitive. Repository status and product assumptions may have changed since they were reviewed. A broader landscape comparison should record its search method, review date, inclusion criteria, and limitations before making market-wide claims.
+Their inclusion does not imply endorsement or comparative superiority.
+
+## Review date
+
+The v2 product assumptions were reviewed in August 2026. Re-check official documentation before treating UI labels, limits, plan availability, or model behavior as current.

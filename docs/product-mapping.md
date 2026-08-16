@@ -1,46 +1,49 @@
-# Mapping profile sections to ChatGPT
+# Mapping v2 profiles to ChatGPT
 
-The profile format deliberately keeps three stable sections:
+The v2 schema models intent rather than one frozen screenshot of the ChatGPT settings UI. Product labels, plans, availability, and limits can change.
 
-- `occupation`: a short description of the user's role;
-- `about`: durable context that changes how answers should be explained;
-- `response`: language, tone, structure, research, and technical preferences.
+## `product`
 
-These are repository concepts, not a promise that every ChatGPT client will always show three fields with the same labels. Product surfaces, field names, field counts, and limits can change.
+Apply these fields in ChatGPT Personalization when the controls are available:
 
-## Practical mapping
+- `personality` → Base style and tone / Personality;
+- `characteristics.warm` → Warm;
+- `characteristics.enthusiastic` → Enthusiastic;
+- `characteristics.headers_and_lists` → Headers & Lists;
+- `characteristics.emojis` → Emojis;
+- `memory.saved_memories` → saved-memory setting;
+- `memory.reference_chat_history` → reference-chat-history setting.
 
-When the interface exposes matching personalization fields, paste each rendered section into the closest field:
+Relative values such as `slightly_more` describe intent, not a guaranteed UI tick position. If a characteristic is unavailable on the account, leave the profile unchanged and apply the closest behavior through instructions only when it materially matters.
 
-| Rendered section | Typical destination |
-| --- | --- |
-| Occupation | Occupation, role, or work context |
-| More about you | User context or information ChatGPT should know |
-| Response preferences | How ChatGPT should respond |
+## `identity`
 
-When the interface exposes fewer fields, preserve the meaning rather than the labels. Combine the short occupation text with the beginning of the user-context section, then keep response preferences in the field intended for response style or custom instructions.
+`identity.occupation` maps to the closest occupation/role field.
 
-When the interface exposes one general instructions field, combine the rendered sections in this order:
+The rest of `identity` renders to `more-about-you.txt` and belongs in the closest field for durable user context.
 
-```text
-Occupation
+Do not paste the raw JSON. Render it first so list-oriented source data becomes compact prose.
 
-More about you
+## `instructions`
 
-Response preferences
+The rendered `custom-instructions.txt` belongs in the field that controls how ChatGPT should respond.
+
+If the product surface exposes several instruction fields, preserve semantic separation rather than duplicating text across them.
+
+## Memory is not a configuration file
+
+The profile may recommend that Memory be enabled, but Memory itself should store useful evolving context—not exact global rules that must retain precise wording.
+
+Global behavioral rules belong in the versioned profile. Project rules belong in the project. Temporary requirements belong in the prompt that needs them.
+
+## Character limits
+
+The CLI default long-field validation target is 5,000 characters because that matches the maintainer's current paid ChatGPT surface at the time of the v2 review in August 2026.
+
+Do not treat that number as permanent. Use `--limit` to match the surface you are actually targeting:
+
+```bash
+python tools/profile.py lint profiles/tech-generalist.json --limit 1500
 ```
 
-Review the combined text before saving it. Remove repeated ideas and keep temporary project requirements in the current conversation or project rather than global personalization.
-
-## Related product features
-
-Saved memory, selected personality, project instructions, and the current prompt can all affect a response. This repository does not treat those features as interchangeable:
-
-- use the profile for stable, reviewable preferences;
-- use memory for useful context that does not need exact wording;
-- use project instructions for rules limited to one workspace;
-- use the current prompt for temporary requirements and output details.
-
-The CLI and browser builder use a configurable 1,500-character limit for the two long rendered sections. Treat that as a conservative validation default, not a guarantee that every current or future product surface uses the same limit.
-
-Check current product documentation before relying on a specific field name, layout, or limit.
+The repository intentionally avoids a hard-coded plan-to-limit table in the schema because product limits can change independently of profile semantics.

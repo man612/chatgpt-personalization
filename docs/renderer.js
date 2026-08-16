@@ -1,27 +1,19 @@
-(function (root, factory) {
-  const api = factory();
-  if (typeof module === "object" && module.exports) {
-    module.exports = api;
-  } else {
-    root.ProfileRenderer = api;
-  }
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+(function (root) {
   "use strict";
 
-  const DEFAULT_LONG_FIELD_LIMIT = 1500;
+  const SCHEMA_VERSION = "2.0";
+  const PERSONALITIES = new Set(["Default", "Professional", "Friendly", "Candid", "Quirky", "Efficient", "Cynical"]);
+  const RELATIVE = new Set(["less", "slightly_less", "neutral", "slightly_more", "more"]);
 
   function nonemptyStrings(values) {
-    if (!Array.isArray(values)) return [];
-    return values
-      .filter((value) => typeof value === "string")
-      .map((value) => value.trim())
-      .filter(Boolean);
+    return Array.isArray(values) ? values.filter((value) => typeof value === "string" && value.trim()).map((value) => value.trim()) : [];
   }
 
   function sentence(value) {
-    const text = typeof value === "string" ? value.trim() : "";
-    if (!text) return "";
-    return /[.!?]$/.test(text) ? text : `${text}.`;
+    if (typeof value !== "string") return "";
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
   }
 
   function sentences(values) {
@@ -33,122 +25,178 @@
     if (!cleaned.length) return "";
     if (cleaned.length === 1) return cleaned[0];
     if (cleaned.length === 2) return `${cleaned[0]} and ${cleaned[1]}`;
-    return `${cleaned.slice(0, -1).join(", ")}, and ${cleaned.at(-1)}`;
+    return `${cleaned.slice(0, -1).join(", ")}, and ${cleaned[cleaned.length - 1]}`;
   }
 
   function toneText(values) {
-    const simple = [];
-    const qualified = [];
+    const cleaned = nonemptyStrings(values);
+    return cleaned.length ? `Use a ${serialList(cleaned)} tone.` : "";
+  }
 
-    for (const value of nonemptyStrings(values)) {
-      const lowered = value.toLowerCase();
-      const wordCount = value.split(/\s+/).filter(Boolean).length;
-      if (wordCount <= 2 && ![" without ", " when ", " but "].some((part) => lowered.includes(part))) {
-        simple.push(value);
-      } else {
-        qualified.push(value);
-      }
-    }
+  function displayRelative(value) {
+    return typeof value === "string" ? value.replaceAll("_", " ") : "";
+  }
 
-    const parts = [];
-    if (simple.length) parts.push(`Use a ${serialList(simple)} tone.`);
-    for (const item of qualified) {
-      parts.push(sentence(item.charAt(0).toUpperCase() + item.slice(1)));
-    }
-    return parts.join(" ");
+  function onOff(value) {
+    return value ? "on" : "off";
   }
 
   function renderProfile(profile) {
-    const about = profile && typeof profile.about === "object" && !Array.isArray(profile.about)
-      ? profile.about
-      : {};
-    const response = profile && typeof profile.response === "object" && !Array.isArray(profile.response)
-      ? profile.response
-      : {};
-    const structure = response && typeof response.structure === "object" && !Array.isArray(response.structure)
-      ? response.structure
-      : {};
+    const errors = validateProfile(profile).filter((finding) => finding.level === "error");
+    if (errors.length) throw new Error(errors[0].message);
 
-    const aboutParagraphs = [];
-    const background = sentences(about.background);
-    if (background) aboutParagraphs.push(background);
+    const product = profile.product;
+    const characteristics = product.characteristics;
+    const memory = product.memory;
+    const settings = [
+      `Base personality: ${product.personality}`,
+      "Characteristics:",
+      `- Warm: ${displayRelative(characteristics.warm)}`,
+      `- Enthusiastic: ${displayRelative(characteristics.enthusiastic)}`,
+      `- Headers & Lists: ${displayRelative(characteristics.headers_and_lists)}`,
+      `- Emojis: ${displayRelative(characteristics.emojis)}`,
+      "Memory:",
+      `- Saved memories: ${onOff(memory.saved_memories)}`,
+      `- Reference chat history: ${onOff(memory.reference_chat_history)}`,
+    ].join("\n");
 
-    const experience = sentence(about.experience);
-    if (experience) aboutParagraphs.push(experience);
+    const identity = profile.identity;
+    const about = [];
+    const background = sentences(identity.background);
+    if (background) about.push(background);
+    const experience = sentence(identity.experience);
+    if (experience) about.push(experience);
+    const uses = serialList(identity.recurring_uses);
+    if (uses) about.push(`Common uses include ${uses}.`);
+    const preferences = sentences(identity.stable_preferences);
+    if (preferences) about.push(preferences);
 
-    const uses = serialList(about.recurring_uses);
-    if (uses) aboutParagraphs.push(`Common uses include ${uses}.`);
+    const instructions = profile.instructions;
+    const explanation = instructions.explanation;
+    const structure = instructions.structure;
+    const paragraphs = [];
 
-    const preferences = sentences(about.stable_preferences);
-    if (preferences) aboutParagraphs.push(preferences);
+    const opening = [];
+    if (instructions.language && instructions.language.trim()) opening.push(sentence(instructions.language));
+    const tone = toneText(instructions.tone);
+    if (tone) opening.push(tone);
+    if (instructions.audience && instructions.audience.trim()) opening.push(sentence(`Write for ${instructions.audience}`));
+    if (opening.length) paragraphs.push(opening.join(" "));
 
-    const responseParagraphs = [];
-    const openingParts = [];
-    const language = sentence(response.language);
-    if (language) openingParts.push(language);
+    const explanationParts = [];
+    if (explanation.principle && explanation.principle.trim()) explanationParts.push(sentence(explanation.principle));
+    const sequence = serialList(explanation.sequence);
+    if (sequence) explanationParts.push(sentence(`For unfamiliar topics, follow this order when useful: ${sequence}`));
+    if (explanation.terminology && explanation.terminology.trim()) explanationParts.push(sentence(explanation.terminology));
+    if (explanation.depth && explanation.depth.trim()) explanationParts.push(sentence(explanation.depth));
+    if (explanationParts.length) paragraphs.push(explanationParts.join(" "));
 
-    const tone = toneText(response.tone);
-    if (tone) openingParts.push(tone);
+    const structureText = sentences([structure.default, structure.headings, structure.lists, structure.tables]);
+    if (structureText) paragraphs.push(structureText);
 
-    const audience = typeof response.audience === "string" ? response.audience.trim() : "";
-    if (audience) openingParts.push(`Write for ${audience}.`);
-    if (openingParts.length) responseParagraphs.push(openingParts.join(" "));
+    ["technical", "research", "ui_ux", "writing"].forEach((key) => {
+      const text = sentences(instructions[key]);
+      if (text) paragraphs.push(text);
+    });
 
-    const structureText = sentences([
-      structure.long_answers,
-      structure.body,
-      structure.lists,
-      structure.tables,
-    ]);
-    if (structureText) responseParagraphs.push(structureText);
-
-    const technical = sentences(response.technical);
-    if (technical) responseParagraphs.push(technical);
-
-    const research = sentences(response.research);
-    if (research) responseParagraphs.push(research);
-
-    const avoid = serialList(response.avoid);
-    if (avoid) responseParagraphs.push(`Avoid ${avoid}.`);
+    const avoid = serialList(instructions.avoid);
+    if (avoid) paragraphs.push(sentence(`Avoid ${avoid}`));
 
     return {
-      occupation: typeof profile?.occupation === "string" ? profile.occupation.trim() : "",
-      more_about_you: aboutParagraphs.join("\n\n"),
-      response_preferences: responseParagraphs.join("\n\n"),
+      settings,
+      occupation: identity.occupation.trim(),
+      more_about_you: about.join("\n\n"),
+      custom_instructions: paragraphs.join("\n\n"),
     };
   }
 
-  function renderedFieldFindings(rendered, longFieldLimit = DEFAULT_LONG_FIELD_LIMIT) {
+  function validateProfile(profile) {
     const findings = [];
-    if (!rendered.occupation) {
-      findings.push({ level: "warning", code: "EMPTY_FIELD", message: "Occupation is empty." });
+    const error = (code, message) => findings.push({ level: "error", code, message });
+    const warn = (code, message) => findings.push({ level: "warning", code, message });
+
+    if (!profile || typeof profile !== "object" || Array.isArray(profile)) {
+      error("TYPE", "profile must be an object");
+      return findings;
+    }
+    if (profile.schema_version !== SCHEMA_VERSION) {
+      error("SCHEMA_VERSION", profile.schema_version === "1.0" ? "schema_version 1.0 requires migration to v2" : `schema_version must be ${SCHEMA_VERSION}`);
+    }
+    if (typeof profile.name !== "string" || !profile.name.trim()) error("NAME", "name must be a non-empty string");
+
+    const product = profile.product;
+    if (!product || typeof product !== "object" || Array.isArray(product)) {
+      error("PRODUCT", "product must be an object");
+    } else {
+      if (!PERSONALITIES.has(product.personality)) error("PERSONALITY", "product.personality is not supported by this schema");
+      const characteristics = product.characteristics;
+      if (!characteristics || typeof characteristics !== "object" || Array.isArray(characteristics)) {
+        error("CHARACTERISTICS", "product.characteristics must be an object");
+      } else {
+        ["warm", "enthusiastic", "headers_and_lists", "emojis"].forEach((key) => {
+          if (!RELATIVE.has(characteristics[key])) error("CHARACTERISTIC", `product.characteristics.${key} has an unsupported value`);
+        });
+      }
+      const memory = product.memory;
+      if (!memory || typeof memory !== "object" || Array.isArray(memory)) {
+        error("MEMORY", "product.memory must be an object");
+      } else {
+        ["saved_memories", "reference_chat_history"].forEach((key) => {
+          if (typeof memory[key] !== "boolean") error("MEMORY", `product.memory.${key} must be boolean`);
+        });
+      }
     }
 
-    for (const [name, value] of [
-      ["More about you", rendered.more_about_you],
-      ["Response preferences", rendered.response_preferences],
-    ]) {
-      const length = value.length;
-      if (length > longFieldLimit) {
-        findings.push({
-          level: "error",
-          code: "FIELD_LIMIT",
-          message: `${name} is ${length} characters; the configured limit is ${longFieldLimit}.`,
+    const identity = profile.identity;
+    if (!identity || typeof identity !== "object" || Array.isArray(identity)) {
+      error("IDENTITY", "identity must be an object");
+    } else {
+      if (typeof identity.occupation !== "string") error("IDENTITY", "identity.occupation must be a string");
+      ["background", "recurring_uses", "stable_preferences"].forEach((key) => {
+        if (!Array.isArray(identity[key]) || identity[key].some((item) => typeof item !== "string")) error("IDENTITY", `identity.${key} must be an array of strings`);
+      });
+      if (typeof identity.experience !== "string") error("IDENTITY", "identity.experience must be a string");
+    }
+
+    const instructions = profile.instructions;
+    if (!instructions || typeof instructions !== "object" || Array.isArray(instructions)) {
+      error("INSTRUCTIONS", "instructions must be an object");
+    } else {
+      if (typeof instructions.language !== "string") error("INSTRUCTIONS", "instructions.language must be a string");
+      if (!Array.isArray(instructions.tone) || instructions.tone.some((item) => typeof item !== "string")) error("INSTRUCTIONS", "instructions.tone must be an array of strings");
+      if (typeof instructions.audience !== "string") error("INSTRUCTIONS", "instructions.audience must be a string");
+      ["technical", "research", "ui_ux", "writing", "avoid"].forEach((key) => {
+        if (!Array.isArray(instructions[key]) || instructions[key].some((item) => typeof item !== "string")) error("INSTRUCTIONS", `instructions.${key} must be an array of strings`);
+      });
+      const explanation = instructions.explanation;
+      if (!explanation || typeof explanation !== "object" || Array.isArray(explanation)) {
+        error("EXPLANATION", "instructions.explanation must be an object");
+      } else {
+        ["principle", "terminology", "depth"].forEach((key) => {
+          if (typeof explanation[key] !== "string") error("EXPLANATION", `instructions.explanation.${key} must be a string`);
         });
-      } else if (length > Math.floor(longFieldLimit * 0.9)) {
-        findings.push({
-          level: "warning",
-          code: "FIELD_NEAR_LIMIT",
-          message: `${name} is ${length} characters; the configured limit is ${longFieldLimit}.`,
+        if (!Array.isArray(explanation.sequence) || explanation.sequence.some((item) => typeof item !== "string")) error("EXPLANATION", "instructions.explanation.sequence must be an array of strings");
+      }
+      const structure = instructions.structure;
+      if (!structure || typeof structure !== "object" || Array.isArray(structure)) {
+        error("STRUCTURE", "instructions.structure must be an object");
+      } else {
+        ["default", "headings", "lists", "tables"].forEach((key) => {
+          if (typeof structure[key] !== "string") error("STRUCTURE", `instructions.structure.${key} must be a string`);
         });
+        const combined = [structure.default, structure.headings, structure.lists, structure.tables].join(" ");
+        const outlineSentences = combined.split(/(?<=[.!?])\s+/);
+        const biased = outlineSentences.some((text) => {
+          const lowered = text.toLowerCase();
+          const negated = ["do not", "don't", "avoid", "without", "not use", "not create"].some((phrase) => lowered.includes(phrase));
+          return !negated && /\b(always|prefer|use|create|format|organize)\b.{0,40}\bnumbered (sections?|headings?)\b/i.test(text);
+        });
+        if (biased) warn("OUTLINE_BIAS", "structure may force outline-style answers");
       }
     }
     return findings;
   }
 
-  return {
-    DEFAULT_LONG_FIELD_LIMIT,
-    renderProfile,
-    renderedFieldFindings,
-  };
-});
+  root.PersonalizationRenderer = { renderProfile, validateProfile, SCHEMA_VERSION };
+  if (typeof module !== "undefined" && module.exports) module.exports = root.PersonalizationRenderer;
+})(typeof globalThis !== "undefined" ? globalThis : this);

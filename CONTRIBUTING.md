@@ -1,40 +1,30 @@
 # Contributing
 
-This project values small, reviewable improvements over large prompt dumps.
+Contributions are welcome when they improve the schema, renderer, linter, browser builder, documentation, behavioral scenarios, or a genuinely distinct reusable profile.
 
-## Useful contributions
+## Design principles
 
-Good contributions include clearer documentation, reproducible evaluation cases, validator improvements, corrections to current product notes, and example profiles that represent a genuinely distinct use case.
-
-A new example profile should explain who it is for, avoid private or identifying details, pass the linter, and differ materially from existing profiles.
+- Keep product settings, durable user context, global instructions, project rules, and task-local requirements separate.
+- Prefer observable behavior over prestige personas or vague quality adjectives.
+- Do not add a rule only because it sounds good. Point to a real failure mode or evaluation scenario.
+- Keep formatting conditional on information shape rather than answer length.
+- Keep example profiles reusable and free of secrets or unnecessary personal data.
+- Treat current ChatGPT field names, plan availability, limits, and UI controls as changeable product details.
 
 ## Before opening a pull request
 
-Run the tests and lint every example profile:
+Run:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p "test_*.py" -v
 python tools/profile.py lint profiles/*.json
+node --check docs/renderer.js
+node --check docs/app.js
+python tests/check_renderer_parity.py
 ```
 
-Keep changes focused. Do not combine a documentation rewrite, a schema change, and several new profiles in one pull request unless they are inseparable.
-
-## Writing standard
-
-Use plain English. Avoid marketing claims, decorative headings, fake authority, unexplained acronyms, and phrases such as “ultimate,” “revolutionary,” “unlock the power,” or “100% accurate.”
-
-Explain why a rule exists when that reason is not obvious. Prefer an example over a paragraph of abstract advice.
-
-## Profile standard
-
-A profile must contain only stable, reusable information. Temporary tasks, employer-confidential information, account credentials, medical records, financial identifiers, and other sensitive details do not belong in a public example.
-
-Global response preferences should not force a single format onto every task. For example, “use numbered sections for long analytical answers” is acceptable; “always use seven numbered sections” is not.
+If you change behavior guidance, also run the relevant prompts from `tests/scenarios.md` against a baseline and describe the observed failure you are trying to fix. Do not claim a model-performance improvement from structural tests alone.
 
 ## Schema changes
 
-Changes to `spec/profile.schema.json` require an update to the renderer, tests, documentation, and `CHANGELOG.md`. Backward-incompatible changes require a new major schema version.
-
-## Commit messages
-
-Use concise, descriptive commit messages. Conventional prefixes such as `docs:`, `feat:`, `fix:`, and `test:` are welcome but not required.
+Schema changes that break existing profiles require a version bump and migration notes. Do not silently reinterpret an older schema version.

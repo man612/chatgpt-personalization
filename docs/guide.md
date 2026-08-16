@@ -1,44 +1,74 @@
-# Profile guide
+# Profile design guide
 
-A profile is useful when it contains a small amount of stable information that changes future answers in a predictable way. It should not become a biography, project notebook, or collection of prompt tricks.
+A good personalization profile is not the longest prompt you can fit into a settings field. It is a small set of durable instructions that changes future answers in predictable, observable ways.
 
-## Separate information by scope
+## Separate scope before writing instructions
 
-Use `occupation` for a short and durable role description. Use `about` for stable context such as experience level, recurring use cases, accessibility needs, or preferences that genuinely affect explanations. Use `response` for communication and workflow preferences.
+Use `product` for product-level intent such as Personality, Characteristics, and Memory. Use `identity` for durable user context. Use `instructions` for global response behavior.
 
-Temporary requirements belong in the current request. Project rules belong in the relevant project or workspace. Memory may hold useful background, but it is not a precise configuration file.
+Do not copy the same preference into all three layers. If `headers_and_lists` is already set lower in product Characteristics, the instruction layer only needs the semantic rule that explains when a list is actually appropriate.
 
-Before adding a sentence, ask whether it is likely to remain true, useful across several conversations, stored in the correct layer, safe to expose, and possible to evaluate. Remove it when those conditions are not met.
+Temporary requirements belong in the current request. Project architecture, repository conventions, client rules, and project-specific sources of truth belong in project instructions or workspace context.
 
-## Write observable behavior
+## Describe observable behavior
 
-Vague instructions such as “be helpful” or “give high-quality answers” are difficult to evaluate. Describe visible behavior instead:
+Avoid instructions such as “be smart”, “be helpful”, or “be expert”. They do not tell you what success looks like.
 
-> Define unfamiliar terms before relying on them.
+Prefer behavior you can test:
 
-> For troubleshooting, explain the likely cause, the smallest safe fix, how to test it, and important side effects.
+> Define unfamiliar terms when they first become important.
 
-Prefer conditional defaults over rigid formatting rules. “Use paragraphs by default and lists when scanning is easier” is more robust than “never use lists.” Artifact requests should also override conversational tone when necessary; a formal letter should sound appropriate for its recipient.
+> For troubleshooting, identify the likely cause, give the smallest relevant fix, explain how to verify it, and warn about important side effects.
 
-## Keep the language restrained
+> Use headings when the topic genuinely changes, not simply because an answer is long.
 
-Do not use prestige personas such as “world-class expert,” accuracy guarantees, emotional pressure, or demands for private reasoning. They do not add reliable expertise or verification.
+## Separate comprehension from terminology
 
-Avoid repeating the same preference in several fields. Repetition consumes limited space and can overemphasize a minor rule. When a profile grows, edit by subtraction before adding more text.
+A common failure in “beginner-friendly” prompts is that the model simplifies the information instead of simplifying the language.
 
-Common failure patterns include temporary project details in global settings, forcing professional interests into unrelated topics, contradictory instructions, fixed product names or prices that become stale, and marketing claims that cannot be tested.
+Use `instructions.explanation` to define the teaching path. A strong default is:
 
-## Migrate an existing instruction block
+1. ordinary-language concept;
+2. problem it solves;
+3. where it fits in the bigger picture;
+4. concrete example or mental model when useful;
+5. technical term and mechanism;
+6. implementation details, trade-offs, verification, and edge cases when relevant.
 
-Start by marking stable facts, response preferences, and temporary details separately. Move only the shortest role summary into `occupation`; put durable explanatory context in `about`; map language, tone, structure, technical workflow, research expectations, and recurring failure modes into `response`.
+The sequence is not a rigid template for every answer. It is a dependency order for unfamiliar material.
 
-Delete temporary project names, deadlines, client requirements, one-off output formats, secrets, and repeated commands. Then create a profile from `profiles/blank.json` and run:
+A useful rule is: **plain language should reduce linguistic complexity, not informational depth.**
 
-```bash
-python tools/profile.py lint path/to/profile.json
-python tools/profile.py render path/to/profile.json --out build/profile
-```
+## Avoid outline bias
 
-The linter checks structure, field types, unsupported properties, duplicate array values, configured field limits, several common secret formats, repeated text, and a small set of prompt-bloat patterns. It is not a complete security scanner and cannot decide whether every sentence is useful.
+Formatting should follow the information shape.
 
-Review the rendered files before pasting them into ChatGPT. Compare the profile against a simpler baseline using the manual scenarios in [Testing a profile](testing.md), and keep only changes that produce a repeatable benefit.
+A long explanation about one mechanism may be best as connected paragraphs. A short installation task may be best as numbered steps. A direct comparison may be best as a table. A checklist request should remain a checklist.
+
+Do not use “always use numbered sections for long answers”. The v2 linter warns about several recognizable forms of that rule with `OUTLINE_BIAS`.
+
+## Keep research instructions operational
+
+“Research deeply” is hard to evaluate. A stronger research contract says what evidence to inspect and how to treat uncertainty.
+
+For technical research, prefer primary sources when relevant: official documentation, specifications, papers, repositories, source code, release notes, changelogs, configuration, and issue trackers. Use secondary reporting for context and community reports for real-world experience, but do not present all three as the same kind of evidence.
+
+Depth should come from cross-checking, mechanisms, trade-offs, and testing where possible—not from increasing the number of headings or bullets.
+
+## Keep the profile lean
+
+Repetition can overemphasize a minor preference. Before adding a new rule, ask:
+
+- Is it stable across many conversations?
+- Is it stored in the right layer?
+- Can I observe whether it worked?
+- Is another rule already saying the same thing?
+- Did a real failure motivate it?
+
+Edit by subtraction before adding more instructions.
+
+## Public profiles and privacy
+
+A public profile should contain only information the owner intentionally publishes. Do not store credentials, API keys, tokens, private client information, internal URLs, or sensitive biography in a repository profile.
+
+The linter recognizes a small set of common secret formats, but it is not a security scanner.

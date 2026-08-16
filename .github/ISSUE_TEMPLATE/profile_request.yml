@@ -11,10 +11,17 @@ body:
     validations:
       required: true
   - type: textarea
+    id: layers
+    attributes:
+      label: Affected layers
+      description: Does this change product settings, durable identity/context, response instructions, or more than one layer?
+    validations:
+      required: true
+  - type: textarea
     id: behavior
     attributes:
       label: Observable behavior
-      description: What should change in responses, and how would you test it?
+      description: What should change in responses, and which regression scenario would demonstrate it?
     validations:
       required: true
   - type: checkboxes
@@ -22,9 +29,11 @@ body:
     attributes:
       label: Contribution checks
       options:
-        - label: The proposal is generic and contains no personal or confidential information.
+        - label: The profile is reusable or is intentionally documented as a public maintainer example.
           required: true
-        - label: The proposal differs materially from existing profiles.
+        - label: It contains no secrets, confidential information, or unnecessary personal data.
           required: true
-        - label: I can provide at least one evaluation scenario.
+        - label: It differs materially from existing profiles.
+          required: true
+        - label: I can provide at least one evaluation scenario or explain which existing scenario covers the change.
           required: true
