@@ -1,7 +1,7 @@
 name: Preset proposal
 description: Propose a reusable public preset or a meaningful improvement to an existing preset.
 title: "preset: "
-labels: ["profile"]
+labels: ["enhancement"]
 body:
   - type: textarea
     id: use_case
