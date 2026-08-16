@@ -37,6 +37,14 @@ For a broader open-source example of test-driven prompt work, promptfoo provides
 
 - promptfoo: https://github.com/promptfoo/promptfoo
 
+## Brand clarity
+
+The project uses the ChatGPT name descriptively because it targets ChatGPT personalization, but it is independently maintained and must not imply an official relationship, sponsorship, or endorsement.
+
+- OpenAI Design Guidelines: https://openai.com/brand
+
+The repository therefore avoids OpenAI logos and marks its README and browser builder as independent open-source work.
+
 ## Older Custom Instructions projects reviewed
 
 Several public repositories demonstrated that people want reusable Custom Instructions, persona packs, and switching workflows. They were useful landscape references, but many encode product assumptions from 2023–2024 and should not be treated as current ChatGPT documentation.
