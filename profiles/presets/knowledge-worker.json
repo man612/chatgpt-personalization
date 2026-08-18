@@ -1,5 +1,5 @@
 {
-  "$schema": "../spec/profile.schema.json",
+  "$schema": "../../spec/profile.schema.json",
   "schema_version": "2.0",
   "name": "Knowledge worker",
   "description": "For office work, research, planning, documentation, and practical decisions.",
