@@ -26,9 +26,14 @@
   <script src="app.js" defer></script>
 </head>
 <body>
+  <a class="skip-link" href="#workspace">Skip to builder</a>
+
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="brand" href="./"><span class="brand-mark">{ }</span><span>ChatGPT Personalization</span></a>
+      <a class="brand" href="./" aria-label="ChatGPT Personalization home">
+        <span class="brand-mark" aria-hidden="true">{ }</span>
+        <span class="brand-copy"><strong>ChatGPT Personalization</strong><small>Builder · schema v2</small></span>
+      </a>
       <nav aria-label="Primary">
         <a href="https://github.com/man612/chatgpt-personalization">GitHub</a>
         <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/guide.md">Guide</a>
@@ -38,55 +43,70 @@
   </header>
 
   <main class="shell">
-    <section class="hero">
-      <p class="eyebrow">Schema v2 · independent public toolkit</p>
-      <h1>Build your personalization, not someone else's persona.</h1>
-      <p class="lede">Start from an anonymous preset, customize product settings, durable context, and response behavior separately, then validate and export the result.</p>
-      <div class="trust-row"><span>No sign-in</span><span>No third-party libraries</span><span>Edits stay in your browser</span></div>
-    </section>
-
-    <section class="toolbar" aria-label="Profile controls">
-      <label class="control">
-        <span>Starting point</span>
-        <select id="template-select">
-          <optgroup label="Public presets">
-            <option value="presets/blank.json" selected>Blank — least opinionated</option>
-            <option value="presets/tech-generalist.json">Technology generalist</option>
-            <option value="presets/knowledge-worker.json">Knowledge worker</option>
-            <option value="presets/student.json">Student</option>
-            <option value="presets/product-designer.json">Product designer</option>
-            <option value="presets/writer-editor.json">Writer and editor</option>
-          </optgroup>
-          <optgroup label="Reference examples">
-            <option value="maintainers/yasman.json">Yasman — maintainer example</option>
-          </optgroup>
-        </select>
-      </label>
-      <label class="control">
-        <span>Custom Instructions target</span>
-        <select id="limit-select">
-          <option value="1500" selected>Free / Go — 1,500</option>
-          <option value="5000">Plus / Pro / Business / Enterprise / Education — 5,000</option>
-        </select>
-      </label>
-      <div class="toolbar-actions">
-        <button id="reset-button" class="button secondary" type="button">Reset</button>
-        <button id="download-button" class="button primary" type="button">Download JSON</button>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Independent personalization toolkit</div>
+      <h1 id="page-title">Shape how ChatGPT works with you.</h1>
+      <p class="lede">Build a reviewable personalization profile from reusable presets. Product controls, durable context, and response behavior stay separate—then render the exact fields you need.</p>
+      <div class="trust-row" aria-label="Builder properties">
+        <span><i aria-hidden="true"></i>No sign-in</span>
+        <span><i aria-hidden="true"></i>No runtime dependencies</span>
+        <span><i aria-hidden="true"></i>Edits stay in your browser</span>
+      </div>
+      <div class="hero-flow" aria-label="Workflow">
+        <div><b>01</b><span>Choose a preset</span></div>
+        <div><b>02</b><span>Shape your profile</span></div>
+        <div><b>03</b><span>Validate &amp; export</span></div>
       </div>
     </section>
 
-    <div id="status" class="status" role="status" aria-live="polite">Loading profile…</div>
+    <section class="control-deck" aria-label="Profile controls">
+      <div class="control-card control-card-primary">
+        <div class="control-label" id="template-select-label">Starting point</div>
+        <select id="template-select" aria-labelledby="template-select-label">
+          <optgroup label="Public presets">
+            <option value="presets/blank.json" data-description="Minimal, neutral starting profile" selected>Blank</option>
+            <option value="presets/tech-generalist.json" data-description="Technical work, troubleshooting, UI/UX, assisted development">Technology generalist</option>
+            <option value="presets/knowledge-worker.json" data-description="Research, planning, analysis, and everyday knowledge work">Knowledge worker</option>
+            <option value="presets/student.json" data-description="Learning, explanation, study, and structured understanding">Student</option>
+            <option value="presets/product-designer.json" data-description="Product thinking, interface critique, and design decisions">Product designer</option>
+            <option value="presets/writer-editor.json" data-description="Drafting, editing, tone, and language-sensitive work">Writer and editor</option>
+          </optgroup>
+          <optgroup label="Reference example">
+            <option value="maintainers/yasman.json" data-description="Published maintainer profile; not a universal default">Yasman — maintainer profile</option>
+          </optgroup>
+        </select>
+      </div>
 
-    <section class="workspace">
+      <div class="control-card">
+        <div class="control-label" id="limit-select-label">Validation target</div>
+        <select id="limit-select" aria-labelledby="limit-select-label">
+          <option value="1500" data-description="Custom Instructions target: 1,500 characters" selected>Free / Go</option>
+          <option value="5000" data-description="Custom Instructions target: 5,000 characters">Plus / Pro / Business / Enterprise / Education</option>
+        </select>
+      </div>
+
+      <div class="deck-actions">
+        <button id="reset-button" class="button secondary" type="button"><span aria-hidden="true">↺</span> Reset</button>
+        <button id="download-button" class="button primary" type="button">Download JSON <span aria-hidden="true">↓</span></button>
+      </div>
+    </section>
+
+    <div id="status" class="status loading" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span class="status-text">Loading profile…</span></div>
+
+    <section id="workspace" class="workspace" aria-label="Profile builder workspace">
       <div class="panel editor-panel">
         <div class="panel-heading">
-          <div><p class="panel-kicker">Source of truth</p><h2>Edit profile</h2></div>
-          <button id="validate-button" class="text-button" type="button">Validate</button>
+          <div>
+            <p class="panel-kicker">Source of truth</p>
+            <h2>Edit profile</h2>
+            <p class="panel-caption">Change the profile, not a giant prompt blob.</p>
+          </div>
+          <button id="validate-button" class="text-button" type="button">Validate now</button>
         </div>
         <div id="validation-summary" class="validation-summary" aria-live="polite"></div>
         <form id="profile-form" novalidate></form>
         <details class="json-details">
-          <summary>Advanced JSON editor</summary>
+          <summary><span>Advanced JSON editor</span><small>Direct schema-level control</small></summary>
           <p>Edit the complete v2 document directly. Applying JSON rebuilds the visual editor and preview.</p>
           <textarea id="json-editor" spellcheck="false" aria-label="Profile JSON"></textarea>
           <div class="json-actions">
@@ -98,24 +118,32 @@
 
       <div class="panel preview-panel">
         <div class="panel-heading">
-          <div><p class="panel-kicker">Rendered output</p><h2>Preview</h2></div>
+          <div>
+            <p class="panel-kicker">Rendered output</p>
+            <h2>Copy-ready fields</h2>
+            <p class="panel-caption">Always rendered from the current profile.</p>
+          </div>
           <span id="character-summary" class="character-summary"></span>
         </div>
-        <article class="output-card"><div class="output-heading"><h3>Product settings</h3><button class="copy-button" data-copy="settings-output" type="button">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
-        <article class="output-card"><div class="output-heading"><h3>Occupation</h3><button class="copy-button" data-copy="occupation-output" type="button">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
-        <article class="output-card"><div class="output-heading"><h3>More about you</h3><button class="copy-button" data-copy="about-output" type="button">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
-        <article class="output-card"><div class="output-heading"><h3>Custom Instructions</h3><button class="copy-button" data-copy="instructions-output" type="button">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
+
+        <div class="output-stack">
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">01</span><h3>Product settings</h3></div><button class="copy-button" data-copy="settings-output" type="button">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">02</span><h3>Occupation</h3></div><button class="copy-button" data-copy="occupation-output" type="button">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">03</span><h3>More about you</h3></div><button class="copy-button" data-copy="about-output" type="button">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">04</span><h3>Custom Instructions</h3></div><button class="copy-button" data-copy="instructions-output" type="button">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
+        </div>
       </div>
     </section>
 
-    <section class="explanation">
-      <h2>Public by design, personal when you choose</h2>
-      <p>Presets are anonymous and reusable. The maintainer profile is available only as a reference example and is not the default. Downloaded profiles stay on your device unless you publish them yourself.</p>
-      <p>The character target is a validation setting, not part of your identity profile. Product limits can change, so check current OpenAI documentation before treating 1,500 or 5,000 as permanent.</p>
-      <p>Structural validation catches configuration problems. Behavioral quality still needs representative regression scenarios; see the Testing guide.</p>
+    <section class="explanation" aria-labelledby="public-design-title">
+      <div class="explanation-rule" aria-hidden="true"></div>
+      <p class="panel-kicker">Design boundary</p>
+      <h2 id="public-design-title">Public by design, personal when you choose.</h2>
+      <p>Presets are anonymous and reusable. The maintainer profile is a reference example, never the default. Downloaded profiles stay on your device unless you publish them yourself.</p>
+      <p>The character target is validation metadata, not identity. Structural validation catches configuration problems; behavioral quality still needs representative regression scenarios.</p>
     </section>
   </main>
 
-  <footer><div class="shell"><p>Static builder for <a href="https://github.com/man612/chatgpt-personalization">man612/chatgpt-personalization</a>. Profile edits are not uploaded by this page. Independent project; not affiliated with or endorsed by OpenAI.</p></div></footer>
+  <footer><div class="shell footer-inner"><p>Static builder for <a href="https://github.com/man612/chatgpt-personalization">man612/chatgpt-personalization</a>. Profile edits are not uploaded by this page.</p><p>Independent project · not affiliated with or endorsed by OpenAI.</p></div></footer>
 </body>
 </html>
