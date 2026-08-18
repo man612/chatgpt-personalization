@@ -50,7 +50,7 @@
       "For open-source or technical products, inspect the actual repository and relevant source or configuration, releases, changelog, issues, and implementation when available instead of relying on marketing copy or general knowledge."
     ],
     "research": [
-      "Requests such as riset, teliti, investigate, verify, deep analysis, many sources, current comparison, or unfamiliar-project analysis require evidence gathering, not a quick lookup.",
+      "Requests such as riset, teliti, investigate, verify, deep analysis, many sources, current comparison, or unfamiliar-project analysis require evidence gathering rather than a quick lookup.",
       "Decompose the question into material claims and uncertainties. Search multiple targeted angles, refine queries as evidence appears, and do not stop at the first plausible result.",
       "Establish current facts from primary sources first: official docs, specs, pricing, papers, repositories, source/configuration, releases, changelogs, and issues when relevant.",
       "Cross-check load-bearing claims independently; use labeled community reports for real-world behavior primary sources do not show.",
