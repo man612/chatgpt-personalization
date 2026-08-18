@@ -14,14 +14,28 @@ These values are rendered into `settings.md` as a checklist because they are pro
 
 ## Custom Instructions character target
 
-As of the 2026-08-16 source review, OpenAI documents 1,500 characters for Free and Go and 5,000 for Plus, Pro, Business, Enterprise, and Education. The profile does not store a plan because plans and limits can change. Use the CLI `--limit` option or browser target selector at validation time.
+As of the 2026-08-19 source review, OpenAI documents 1,500 characters for Free and Go and 5,000 for Plus, Pro, Business, Enterprise, and Education. The profile does not store a plan because plans and limits can change. Use the CLI `--limit` option or browser target selector at validation time.
+
+Treat the configured limit as a ceiling, not a writing target. Leave reasonable headroom so small rendering or product changes do not immediately create overflow.
+
+## Projects override global Custom Instructions
+
+Project instructions are a separate scope and, according to current OpenAI documentation, **override global Custom Instructions inside that project**. This matters for users whose global profile contains important explanation, research, or formatting behavior.
+
+If a project needs those global behaviors, carry the relevant behavioral rules into the project's instructions together with project-specific rules. Do not blindly paste every global identity detail or unrelated preference. Keep project instructions scoped to what should actually apply inside that workspace.
+
+For example, a software project may need repository-specific rules plus the user's global “explain unfamiliar dependencies before jargon” and “deep research means multi-source evidence gathering” behaviors, while omitting unrelated UI/UX or writing preferences.
+
+Shared projects can have different memory boundaries from personal global ChatGPT context. Do not assume a project inherits all personal memory or personalization context.
+
+## Search and Deep Research are different product behaviors
+
+A Custom Instructions profile can request stronger evidence gathering, but it does not turn every standard Search response into the dedicated Deep Research product flow. Use ordinary Search for quick current lookups; use Deep Research when the task genuinely needs multi-step investigation, aggregation, and synthesis across many sources.
+
+The profile should still define what “deep” means behaviorally—source hierarchy, cross-checking, version/date checks, contradiction handling, calculations, counter-evidence, and a stopping rule—so the user's expectations remain explicit across supported contexts.
 
 ## Memory is not a config file
 
 Memory can automatically synthesize useful context from prior chats and other sources. It can evolve and may not expose every remembered detail. Use the profile for explicit, reviewable instructions and durable context; use Memory for context that benefits from evolving with conversation history.
 
-## Projects are a separate scope
-
-Project instructions and project memory should contain rules and context limited to that project. Do not copy every project convention into global personalization. Shared or project-only contexts can have different memory boundaries from global ChatGPT personalization.
-
-Always check current OpenAI documentation before relying on an exact label, availability claim, or limit.
+Always check current OpenAI documentation before relying on an exact label, availability claim, plan limit, or product interaction.

@@ -13,12 +13,25 @@
     "id": "deep-explanation",
     "prompt": "Explain reverse proxy from zero, but go deep enough that I can understand why it exists and how requests actually flow.",
     "criteria": [
-      "Build a mental model before technical detail",
-      "Define reverse proxy terminology",
-      "Preserve request-flow mechanism and trade-offs",
+      "Build prerequisite concepts and a mental model before technical detail",
+      "Identify the main actors and explain who communicates with whom",
+      "Define reverse-proxy terminology at or before first meaningful use",
+      "Preserve request-flow mechanism, trade-offs, and failure modes",
       "Do not fragment one continuous explanation into unnecessary numbered sections"
     ],
     "tags": ["explanation", "depth", "structure"]
+  },
+  {
+    "id": "awam-from-zero",
+    "prompt": "Jelaskan Cloudflare Tunnel dari nol dan sangat awam, tapi tetap sampai saya benar-benar paham cara kerjanya. Anggap saya belum tahu DNS, port, reverse proxy, outbound connection, origin, ingress, NAT, atau tunnel.",
+    "criteria": [
+      "Do not use several unexplained technical terms to define another unfamiliar term",
+      "Explain why the system exists before naming its architecture",
+      "Walk through one concrete end-to-end request flow with clear actors",
+      "Define every core technical term at or before first meaningful use",
+      "Preserve mechanism, security implications, limitations, and verification despite the beginner language"
+    ],
+    "tags": ["explanation", "beginner", "first-principles"]
   },
   {
     "id": "long-analysis",
@@ -35,7 +48,8 @@
     "prompt": "A Windows computer can access the internet but cannot see a shared printer. Give me a safe troubleshooting plan.",
     "criteria": [
       "Prioritize likely causes",
-      "Give the smallest relevant checks/fixes",
+      "Give the smallest relevant checks or fixes",
+      "Explain why each important check matters",
       "Include verification",
       "Mention important side effects when relevant"
     ],
@@ -47,9 +61,51 @@
     "criteria": [
       "Verify current product information",
       "Distinguish current facts from assumptions",
-      "Use concrete limits/dates when useful"
+      "Use concrete limits and dates when useful",
+      "Do not perform research theatre when one authoritative lookup is sufficient"
     ],
-    "tags": ["research", "current"]
+    "tags": ["research", "current", "lookup"]
+  },
+  {
+    "id": "deep-web-research",
+    "prompt": "Riset mendalam dari banyak sumber: compare three current AI coding services on price, effective usage limits, model availability, caching, and real-world usage. I care about usable work per dollar, not advertised price alone.",
+    "criteria": [
+      "Decompose the comparison into material claims before recommending",
+      "Use multiple targeted research angles instead of one broad query",
+      "Use current primary sources for pricing, limits, models, and product behavior",
+      "Cross-check important real-world claims with independent evidence",
+      "Use community evidence only where it adds behavior not established by primary sources and label it accordingly",
+      "Check dates, versions, tiers, and configuration differences",
+      "Normalize units and show material assumptions or calculations",
+      "Look for limitations and evidence against the leading conclusion",
+      "Do not stop at the first plausible recommendation",
+      "Separate verified facts, source claims, inference, assumptions, and unresolved uncertainty"
+    ],
+    "tags": ["research", "deep", "comparison", "quantitative"]
+  },
+  {
+    "id": "conflicting-sources",
+    "prompt": "Research a current software feature where official documentation, a release note, and recent user reports appear to disagree. Tell me what is actually supported now and why the sources differ.",
+    "criteria": [
+      "Inspect the conflicting evidence rather than choosing one source silently",
+      "Check publication or update dates and product versions",
+      "Distinguish documented availability from rollout or real-world reports",
+      "Explain the conflict and remaining uncertainty",
+      "Prefer the most direct and current evidence for each claim"
+    ],
+    "tags": ["research", "conflict", "current"]
+  },
+  {
+    "id": "quantitative-research",
+    "prompt": "Compare two pay-as-you-go AI APIs with different input, output, and cache pricing for a workload I describe. Research the current prices and calculate the effective cost rather than comparing headline numbers.",
+    "criteria": [
+      "Verify current pricing from primary sources",
+      "Separate input, output, cache-read, and cache-write assumptions when applicable",
+      "Normalize the workload into comparable units",
+      "Show calculations or enough intermediate values to audit the conclusion",
+      "State missing pricing details instead of inventing them"
+    ],
+    "tags": ["research", "quantitative", "comparison"]
   },
   {
     "id": "repository-analysis",
@@ -57,9 +113,22 @@
     "criteria": [
       "Inspect repository evidence when available",
       "Separate generic core from person-specific data",
+      "Inspect relevant schema, renderer, tests, documentation, and implementation rather than listing filenames only",
       "Explain architecture consequences instead of only listing files"
     ],
     "tags": ["research", "repository"]
+  },
+  {
+    "id": "repository-triangulation",
+    "prompt": "Investigate whether a technical project's documented feature is really implemented and stable. Use its docs, source/configuration, releases or changelog, and relevant issues when available.",
+    "criteria": [
+      "Do not treat README marketing as implementation proof",
+      "Inspect source or configuration that materially implements the feature",
+      "Use release or changelog evidence to establish version context",
+      "Use issues when they reveal limitations or real-world failure modes",
+      "Separate confirmed implementation from inference and unresolved behavior"
+    ],
+    "tags": ["research", "repository", "triangulation"]
   },
   {
     "id": "ui-ux-review",

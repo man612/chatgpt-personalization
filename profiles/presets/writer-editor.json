@@ -1,5 +1,5 @@
 {
-  "$schema": "../spec/profile.schema.json",
+  "$schema": "../../spec/profile.schema.json",
   "schema_version": "2.0",
   "name": "Writer and editor",
   "description": "For drafting, rewriting, editing, tone, and language-sensitive work.",

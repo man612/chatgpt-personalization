@@ -1,6 +1,6 @@
 # Behavioral regression scenarios
 
-These prompts test behavior, not model intelligence. Run them against a baseline, previous profile, and candidate profile when a relevant rule changes. The equivalent machine-readable cases live in `scenarios.json`.
+These prompts test behavior, not model intelligence. Run them against a baseline, previous profile, and candidate profile when a relevant rule changes. Define pass criteria before reading the answer and repeat important cases because model output varies. The equivalent machine-readable cases live in `scenarios.json`.
 
 ## Explanation and depth
 
@@ -8,31 +8,53 @@ These prompts test behavior, not model intelligence. Run them against a baseline
 
 > Explain reverse proxy from zero, but go deep enough that I can understand why it exists and how requests actually flow.
 
-Check concept-before-jargon order, preserved mechanism, and whether one continuous explanation stays reasonably connected.
+> Jelaskan Cloudflare Tunnel dari nol dan sangat awam, tapi tetap sampai saya benar-benar paham cara kerjanya. Anggap saya belum tahu DNS, port, reverse proxy, outbound connection, origin, ingress, NAT, atau tunnel.
+
+Check dependency order rather than mere vocabulary simplification. The answer should establish why the system exists, identify the actors, walk through a concrete flow, and define core terminology at or before first meaningful use. It should not explain one unfamiliar concept mainly through several other unexplained concepts. Beginner language must preserve the mechanism, trade-offs, failure modes, and verification that matter.
 
 ## Long analysis
 
 > Compare local storage, a hosted database, and a spreadsheet as data storage for a small internal app. Explain the trade-offs and recommend when each is appropriate.
 
-Check whether structure follows the comparison instead of answer length.
+Check whether structure follows the comparison instead of answer length and whether recommendations are conditional on the actual trade-offs.
 
 ## Troubleshooting
 
 > A Windows computer can access the internet but cannot see a shared printer. Give me a safe troubleshooting plan.
 
-Check likely causes, smallest relevant fixes, verification, and side effects.
+Check likely causes, smallest relevant fixes, why important checks matter, verification, and side effects.
 
-## Current information
+## Quick current lookup
 
 > Which ChatGPT plan currently supports the Custom Instructions capacity I need?
 
-Check whether current product information is verified rather than recalled from a frozen profile.
+Check whether current product information is verified rather than recalled from a frozen profile. This case should *not* become research theatre when one authoritative current source is enough.
+
+## Deep multi-source research
+
+> Riset mendalam dari banyak sumber: compare three current AI coding services on price, effective usage limits, model availability, caching, and real-world usage. I care about usable work per dollar, not advertised price alone.
+
+This is deliberately different from the quick-lookup case. Check that the response decomposes the problem, searches multiple targeted angles, establishes current product facts from primary sources, cross-checks load-bearing real-world claims independently, checks dates/tiers/versions, normalizes quantitative assumptions, looks for evidence against the leading conclusion, and does not stop at the first plausible recommendation.
+
+## Conflicting sources
+
+> Research a current software feature where official documentation, a release note, and recent user reports appear to disagree. Tell me what is actually supported now and why the sources differ.
+
+Check dates, versions, rollout scope, and whether disagreement is explained rather than silently resolved by choosing the most convenient source.
+
+## Quantitative research
+
+> Compare two pay-as-you-go AI APIs with different input, output, and cache pricing for a workload I describe. Research the current prices and calculate the effective cost rather than comparing headline numbers.
+
+Check primary pricing evidence, normalized units, explicit assumptions, auditable calculations, and honest treatment of missing price components.
 
 ## Repository analysis
 
 > Review this repository's architecture and tell me whether its configuration model is actually reusable by other people, not just its maintainer.
 
-Check whether repository evidence is inspected and generic core is separated from person-specific data.
+> Investigate whether a technical project's documented feature is really implemented and stable. Use its docs, source/configuration, releases or changelog, and relevant issues when available.
+
+Check whether source/configuration and implementation are inspected, not just README claims. Version evidence and relevant issues should be used when they materially change the conclusion. Separate confirmed implementation from inference.
 
 ## UI/UX
 
