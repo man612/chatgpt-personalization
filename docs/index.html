@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ChatGPT Personalization Builder</title>
   <meta name="description" content="Independent open-source toolkit to build, validate, preview, and export reusable ChatGPT personalization profiles.">
-  <meta name="theme-color" content="#0d1117">
+  <meta name="theme-color" content="#0c100e">
   <meta property="og:title" content="ChatGPT Personalization Builder">
   <meta property="og:description" content="Start from an anonymous preset, keep personal profiles local, and render reviewable ChatGPT personalization settings.">
   <meta property="og:type" content="website">
@@ -22,8 +22,13 @@
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="experience.css">
+  <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="mobile.css">
   <script src="renderer.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="motion.js" defer></script>
+  <script src="mobile.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to builder</a>
@@ -31,11 +36,11 @@
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="./" aria-label="ChatGPT Personalization home">
-        <span class="brand-mark" aria-hidden="true">{ }</span>
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="brand-copy"><strong>ChatGPT Personalization</strong><small>Builder · schema v2</small></span>
       </a>
       <nav aria-label="Primary">
-        <a href="https://github.com/man612/chatgpt-personalization">GitHub</a>
+        <a class="nav-github" href="https://github.com/man612/chatgpt-personalization">GitHub</a>
         <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/guide.md">Guide</a>
         <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/testing.md">Testing</a>
       </nav>
@@ -44,18 +49,36 @@
 
   <main class="shell">
     <section class="hero" aria-labelledby="page-title">
-      <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Independent personalization toolkit</div>
-      <h1 id="page-title">Shape how ChatGPT works with you.</h1>
-      <p class="lede">Build a reviewable personalization profile from reusable presets. Product controls, durable context, and response behavior stay separate—then render the exact fields you need.</p>
-      <div class="trust-row" aria-label="Builder properties">
-        <span><i aria-hidden="true"></i>No sign-in</span>
-        <span><i aria-hidden="true"></i>No runtime dependencies</span>
-        <span><i aria-hidden="true"></i>Edits stay in your browser</span>
+      <div class="hero-copy-block">
+        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Independent personalization toolkit</div>
+        <h1 id="page-title">Shape how ChatGPT <em>works with you.</em></h1>
+        <p class="lede">Build a reviewable personalization profile from reusable presets. Product controls, durable context, and response behavior stay separate—then render the exact fields you need.</p>
+        <div class="trust-row" aria-label="Builder properties">
+          <span><i aria-hidden="true"></i>No sign-in</span>
+          <span><i aria-hidden="true"></i>No runtime dependencies</span>
+          <span><i aria-hidden="true"></i>Edits stay in your browser</span>
+        </div>
+        <div class="hero-flow" aria-label="Workflow">
+          <div><b>01</b><span>Choose a preset</span></div>
+          <div><b>02</b><span>Shape your profile</span></div>
+          <div><b>03</b><span>Validate &amp; export</span></div>
+        </div>
       </div>
-      <div class="hero-flow" aria-label="Workflow">
-        <div><b>01</b><span>Choose a preset</span></div>
-        <div><b>02</b><span>Shape your profile</span></div>
-        <div><b>03</b><span>Validate &amp; export</span></div>
+
+      <div class="hero-stage" aria-label="A personalization profile separates product settings, identity, and instructions before rendering copy-ready output.">
+        <div class="profile-sheet back-product" aria-hidden="true"></div>
+        <div class="profile-sheet back-identity" aria-hidden="true"></div>
+        <div class="profile-sheet front">
+          <div class="sheet-topline"><span class="sheet-file">profile.json</span><span class="sheet-live">LIVE MODEL</span></div>
+          <div class="sheet-blocks">
+            <div class="sheet-block product"><b>01</b><div><strong>Product</strong><small>Personality · Characteristics · Memory</small></div></div>
+            <div class="sheet-block identity"><b>02</b><div><strong>Identity</strong><small>Occupation · background · durable context</small></div></div>
+            <div class="sheet-block instructions"><b>03</b><div><strong>Instructions</strong><small>Explanation · research · technical · writing</small></div></div>
+          </div>
+          <div class="sheet-footer"><span>validate → render → evaluate</span><strong>4 COPY-READY FIELDS</strong></div>
+        </div>
+        <div class="stage-chip local">local-first editing</div>
+        <div class="stage-chip eval">behavioral evals</div>
       </div>
     </section>
 
@@ -137,10 +160,14 @@
 
     <section class="explanation" aria-labelledby="public-design-title">
       <div class="explanation-rule" aria-hidden="true"></div>
-      <p class="panel-kicker">Design boundary</p>
-      <h2 id="public-design-title">Public by design, personal when you choose.</h2>
-      <p>Presets are anonymous and reusable. The maintainer profile is a reference example, never the default. Downloaded profiles stay on your device unless you publish them yourself.</p>
-      <p>The character target is validation metadata, not identity. Structural validation catches configuration problems; behavioral quality still needs representative regression scenarios.</p>
+      <div>
+        <p class="panel-kicker">Design boundary</p>
+        <h2 id="public-design-title">Public by design, personal when you choose.</h2>
+      </div>
+      <div>
+        <p>Presets are anonymous and reusable. The maintainer profile is a reference example, never the default. Downloaded profiles stay on your device unless you publish them yourself.</p>
+        <p>The character target is validation metadata, not identity. Structural validation catches configuration problems; behavioral quality still needs representative regression scenarios.</p>
+      </div>
     </section>
   </main>
 
