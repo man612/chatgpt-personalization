@@ -49,8 +49,16 @@
   .hero-stage { min-height: 410px; overflow: hidden; margin-inline: -4px; }
   .profile-sheet { width: min(335px, 86vw); border-radius: 23px; }
   .profile-sheet.front { min-height: 360px; padding: 11px; }
-  .profile-sheet.back-product { height: 328px; transform: translate(-30px,16px) rotate(-4deg); }
-  .profile-sheet.back-identity { height: 338px; transform: translate(30px,10px) rotate(4deg); }
+  .profile-sheet.back-product { height: 328px; transform: translate(-30px,16px) rotate(-4deg); animation-name: sheet-product-float-mobile; }
+  .profile-sheet.back-identity { height: 338px; transform: translate(30px,10px) rotate(4deg); animation-name: sheet-identity-float-mobile; }
+  @keyframes sheet-product-float-mobile {
+    0%,100% { transform: translate(-30px,16px) rotate(-4deg); }
+    50% { transform: translate(-37px,8px) rotate(-5deg); }
+  }
+  @keyframes sheet-identity-float-mobile {
+    0%,100% { transform: translate(30px,10px) rotate(4deg); }
+    50% { transform: translate(37px,4px) rotate(5deg); }
+  }
   .sheet-topline { min-height: 39px; padding-bottom: 9px; }
   .sheet-blocks { gap: 7px; padding-top: 9px; }
   .sheet-block { min-height: 67px; padding: 10px 11px; grid-template-columns: 30px minmax(0,1fr); gap: 9px; border-radius: 14px; }
@@ -157,7 +165,6 @@
     transform: rotate(45deg) translate(-1px,-1px);
     transition: transform 240ms var(--motion-ease);
   }
-  .root-section.is-collapsed > .section-toggle-placeholder { display: none; }
   .root-section.is-collapsed > legend .section-toggle::before { transform: rotate(-45deg); }
   .root-section.is-collapsed > :not(legend) { display: none !important; }
   .nested-section { padding: 13px; border-radius: 15px; }
