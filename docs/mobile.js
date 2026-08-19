@@ -114,7 +114,8 @@
 
     stepTabs.forEach((button, index) => {
       const active = index === currentStep;
-      button.toggleAttribute("aria-current", active);
+      if (active) button.setAttribute("aria-current", "step");
+      else button.removeAttribute("aria-current");
       button.classList.toggle("is-complete", index < currentStep);
       button.classList.toggle("is-current", active);
     });
@@ -127,7 +128,7 @@
     if (!surface || reduceMotion || typeof surface.animate !== "function") return;
     stepAnimation?.cancel?.();
     const offset = direction >= 0 ? 18 : -18;
-    stepAnimation = surface.animate([
+    const animation = surface.animate([
       { opacity: 0, transform: `translate3d(${offset}px,0,0) scale(.992)` },
       { opacity: 1, transform: "translate3d(0,0,0) scale(1)" },
     ], {
@@ -135,10 +136,9 @@
       easing: "cubic-bezier(.22,1,.36,1)",
       fill: "both",
     });
-    stepAnimation.finished.catch(() => {}).finally(() => {
-      if (stepAnimation) stepAnimation = null;
-      surface.style.opacity = "";
-      surface.style.transform = "";
+    stepAnimation = animation;
+    animation.finished.catch(() => {}).finally(() => {
+      if (stepAnimation === animation) stepAnimation = null;
     });
   }
 
@@ -504,7 +504,12 @@
       if (placeholders[textarea.id]) textarea.placeholder = placeholders[textarea.id];
       scheduleAutosize(textarea);
     });
-    requestAnimationFrame(() => segmentedGroups.forEach((record) => positionSegmentIndicator(record, false)));
+    requestAnimationFrame(() => {
+      segmentedGroups.forEach((record) => {
+        if (!record.group.isConnected) { segmentedGroups.delete(record); return; }
+        positionSegmentIndicator(record, false);
+      });
+    });
   }
 
   if (profileForm) {
@@ -534,7 +539,12 @@
   }
 
   window.addEventListener("resize", () => {
-    requestAnimationFrame(() => segmentedGroups.forEach((record) => positionSegmentIndicator(record, false)));
+    requestAnimationFrame(() => {
+      segmentedGroups.forEach((record) => {
+        if (!record.group.isConnected) { segmentedGroups.delete(record); return; }
+        positionSegmentIndicator(record, false);
+      });
+    });
   }, { passive: true });
 
   enhanceFormUI();
