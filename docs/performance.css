@@ -6,7 +6,7 @@
 }
 
 /* Long-form desktop sections can be skipped while far off-screen.
-   Mobile shows one high-level step at a time, so containment is unnecessary there. */
+   Mobile shows one high-level step at a time, so it uses containment instead. */
 @media (min-width: 681px) {
   .root-section {
     content-visibility: auto;
@@ -76,13 +76,16 @@
   .control-deck { background: color-mix(in srgb, var(--panel) 98%, black) !important; }
   .stage-chip { background: var(--panel-2) !important; }
 
-  /* No fixed descendant containment on mobile. Dialogs use the browser top layer instead. */
-  .root-section,
-  .nested-section,
-  .output-card {
-    contain: none !important;
-    content-visibility: visible !important;
+  /* The mobile selector lives in the top layer, so visible task surfaces can safely contain paint/layout again. */
+  body.mobile-flow .control-deck,
+  body.mobile-flow .root-section,
+  body.mobile-flow .preview-panel,
+  body.mobile-flow .output-card {
+    contain: layout paint style;
   }
+
+  /* Hidden steps are display:none, so do not ask the browser to maintain long offscreen content trees. */
+  body.mobile-flow .root-section { content-visibility: visible !important; }
 
   .copy-button,
   .text-button,
@@ -93,10 +96,14 @@
   .control-deck,
   .panel,
   .mobile-flow-nav {
-    box-shadow: 0 12px 32px rgba(0,0,0,.18) !important;
+    box-shadow: 0 10px 28px rgba(0,0,0,.16) !important;
   }
-  .site-header.is-scrolled { box-shadow: 0 14px 34px rgba(0,0,0,.2) !important; }
 
   .preview-use-note { margin-inline: 9px; font-size: 11px; }
   .output-heading, .output-heading > div { flex-wrap: wrap; }
+
+  /* The mobile flow has its own progress navigator; skip fallback JS page-progress work if scroll timelines are absent. */
+  @supports not (animation-timeline: scroll()) {
+    body::before { transform: scaleX(0); }
+  }
 }
