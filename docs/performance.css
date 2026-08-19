@@ -1,28 +1,27 @@
-/* Performance layer: preserve the experience while reducing hidden layout/paint work. */
+/* Performance layer: preserve rich motion while avoiding hidden layout/paint work. */
 
-/* Reveal still moves and fades, but avoids animated blur, which requires painting. */
 [data-reveal] {
   filter: none !important;
   transition-property: opacity, transform !important;
 }
 
-/* The editor can become very long. Let the browser skip rendering sections that are far off-screen. */
-.root-section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 620px;
+/* Long-form desktop sections can be skipped while far off-screen.
+   Mobile shows one high-level step at a time, so containment is unnecessary there. */
+@media (min-width: 681px) {
+  .root-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 620px;
+  }
+
+  .explanation {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
 }
 
-.explanation {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 320px;
-}
-
-/* Do not reserve a compositor layer permanently for the hero card. JS promotes it only while needed. */
 .profile-sheet.front { will-change: auto !important; }
 .profile-sheet.front.motion-promoted { will-change: transform !important; }
 
-/* Pause decorative infinite motion while its whole visual group is outside the viewport.
-   The effect is unchanged whenever the user can actually see it. */
 .hero-stage.motion-paused .profile-sheet.back-product,
 .hero-stage.motion-paused .profile-sheet.back-identity,
 .hero-stage.motion-paused .stage-chip,
@@ -31,16 +30,13 @@
   animation-play-state: paused !important;
 }
 
-/* Use compositor-driven CSS scroll progress where supported instead of updating a CSS variable from JS every frame. */
 @supports (animation-timeline: scroll()) {
   body::before {
     transform: scaleX(0);
     animation: page-scroll-progress linear both;
     animation-timeline: scroll(root block);
   }
-  @keyframes page-scroll-progress {
-    to { transform: scaleX(1); }
-  }
+  @keyframes page-scroll-progress { to { transform: scaleX(1); } }
 }
 
 .output-target {
@@ -68,13 +64,9 @@
 }
 .preview-use-note strong { color: var(--ink); }
 
-/* Mobile is where translucent fixed surfaces and huge paint areas cost the most.
-   Keep the same layering and depth, but use opaque surfaces instead of live backdrop blur. */
 @media (max-width: 680px) {
   .site-header,
   .control-deck,
-  .select-menu,
-  .builder-mobile-dock,
   .stage-chip {
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
@@ -82,54 +74,29 @@
 
   .site-header { background: color-mix(in srgb, var(--canvas-2) 97%, black) !important; }
   .control-deck { background: color-mix(in srgb, var(--panel) 98%, black) !important; }
-  .select-menu { background: var(--panel-3) !important; }
-  .builder-mobile-dock { background: color-mix(in srgb, var(--panel-3) 98%, black) !important; }
   .stage-chip { background: var(--panel-2) !important; }
 
-  body:has(.smart-select.open)::after {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    background: rgba(0,0,0,.68) !important;
-  }
-
-  /* Isolate expensive form sections so editing one field does not invalidate unrelated paint areas. */
+  /* No fixed descendant containment on mobile. Dialogs use the browser top layer instead. */
   .root-section,
   .nested-section,
   .output-card {
-    contain: layout paint style;
+    contain: none !important;
+    content-visibility: visible !important;
   }
 
-  /* Comfortable touch targets: match the 44px enhanced target guidance instead of merely passing the AA minimum. */
-  .section-toggle {
-    width: 44px !important;
-    height: 44px !important;
-  }
   .copy-button,
   .text-button,
-  .nav-github {
-    min-height: 44px !important;
-  }
+  .nav-github { min-height: 44px !important; }
   .copy-button { min-width: 72px !important; }
 
-  /* Avoid expensive large shadow changes on moving mobile surfaces while keeping visible depth. */
   .site-header,
   .control-deck,
   .panel,
-  .builder-mobile-dock {
+  .mobile-flow-nav {
     box-shadow: 0 12px 32px rgba(0,0,0,.18) !important;
   }
-
   .site-header.is-scrolled { box-shadow: 0 14px 34px rgba(0,0,0,.2) !important; }
 
-  .preview-use-note {
-    margin-inline: 9px;
-    font-size: 11px;
-  }
-
-  .output-heading {
-    flex-wrap: wrap;
-  }
-  .output-heading > div {
-    flex-wrap: wrap;
-  }
+  .preview-use-note { margin-inline: 9px; font-size: 11px; }
+  .output-heading, .output-heading > div { flex-wrap: wrap; }
 }
