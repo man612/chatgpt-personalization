@@ -20,15 +20,53 @@
   <meta name="twitter:description" content="Build versioned, reviewable ChatGPT personalization profiles from reusable presets.">
   <meta name="twitter:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="experience.css">
-  <link rel="stylesheet" href="motion.css">
-  <link rel="stylesheet" href="mobile.css">
-  <script src="renderer.js" defer></script>
-  <script src="app.js" defer></script>
-  <script src="motion.js" defer></script>
-  <script src="mobile.js" defer></script>
+  <link rel="icon" href="favicon.svg?v=2026-08-19.2046" type="image/svg+xml">
+  <script>
+    (() => {
+      const BUILD = "2026-08-19.2046";
+      window.__BUILDER_BUILD__ = BUILD;
+      let lastCheck = 0;
+
+      async function checkFreshness() {
+        const now = Date.now();
+        if (now - lastCheck < 120000) return;
+        lastCheck = now;
+        try {
+          const response = await fetch(`version.json?_=${now}`, { cache: "reload" });
+          if (!response.ok) return;
+          const latest = await response.json();
+          if (!latest?.build || latest.build === BUILD) return;
+
+          const guardKey = `builder-refresh:${latest.build}`;
+          try {
+            if (sessionStorage.getItem(guardKey) === "1") return;
+            sessionStorage.setItem(guardKey, "1");
+          } catch (_) {}
+
+          const url = new URL(window.location.href);
+          url.searchParams.set("build", latest.build);
+          url.searchParams.set("_refresh", now.toString(36));
+          window.location.replace(url.toString());
+        } catch (_) {
+          /* Offline or transient network errors should never block the builder. */
+        }
+      }
+
+      window.addEventListener("pageshow", checkFreshness, { once: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") checkFreshness();
+      });
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="experience.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="motion.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="mobile.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="performance.css?v=2026-08-19.2046">
+  <script src="renderer.js?v=2026-08-19.2046" defer></script>
+  <script src="app.js?v=2026-08-19.2046" defer></script>
+  <script src="motion.js?v=2026-08-19.2046" defer></script>
+  <script src="mobile.js?v=2026-08-19.2046" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to builder</a>
@@ -109,8 +147,8 @@
       </div>
 
       <div class="deck-actions">
-        <button id="reset-button" class="button secondary" type="button"><span aria-hidden="true">↺</span> Reset</button>
-        <button id="download-button" class="button primary" type="button">Download JSON <span aria-hidden="true">↓</span></button>
+        <button id="reset-button" class="button secondary" type="button">Reset to preset</button>
+        <button id="download-button" class="button primary" type="button">Save profile JSON ↓</button>
       </div>
     </section>
 
@@ -124,7 +162,7 @@
             <h2>Edit profile</h2>
             <p class="panel-caption">Change the profile, not a giant prompt blob.</p>
           </div>
-          <button id="validate-button" class="text-button" type="button">Validate now</button>
+          <button id="validate-button" class="text-button" type="button">Check profile</button>
         </div>
         <div id="validation-summary" class="validation-summary" aria-live="polite"></div>
         <form id="profile-form" novalidate></form>
@@ -134,7 +172,7 @@
           <textarea id="json-editor" spellcheck="false" aria-label="Profile JSON"></textarea>
           <div class="json-actions">
             <button id="format-json-button" class="button secondary" type="button">Format JSON</button>
-            <button id="apply-json-button" class="button secondary" type="button">Apply JSON</button>
+            <button id="apply-json-button" class="button secondary" type="button">Apply JSON changes</button>
           </div>
         </details>
       </div>
@@ -143,8 +181,8 @@
         <div class="panel-heading">
           <div>
             <p class="panel-kicker">Rendered output</p>
-            <h2>Copy-ready fields</h2>
-            <p class="panel-caption">Always rendered from the current profile.</p>
+            <h2>Use in ChatGPT</h2>
+            <p class="panel-caption">Apply product controls manually, then copy the three text fields to their matching Personalization fields.</p>
           </div>
           <span id="character-summary" class="character-summary"></span>
         </div>
