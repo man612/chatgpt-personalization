@@ -3,7 +3,16 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const supportsScrollTimeline = CSS.supports?.("animation-timeline: scroll()") || false;
   document.documentElement.classList.add("motion-ready");
+
+  /* Load the performance layer without changing the base visual architecture. */
+  if (!document.querySelector('link[href="performance.css"]')) {
+    const perfStyles = document.createElement("link");
+    perfStyles.rel = "stylesheet";
+    perfStyles.href = "performance.css";
+    document.head.appendChild(perfStyles);
+  }
 
   const pageEnter = document.createElement("div");
   pageEnter.className = "page-enter";
@@ -46,14 +55,28 @@
     revealNow();
   }
 
+  /* Decorative infinite motion is paused only while the group is completely off-screen. */
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    const pauseObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.target.classList.toggle("motion-paused", !entry.isIntersecting));
+    }, { rootMargin: "120px 0px 120px" });
+    [document.querySelector(".hero-stage"), document.querySelector(".explanation")]
+      .filter(Boolean)
+      .forEach((element) => pauseObserver.observe(element));
+  }
+
   const header = document.querySelector(".site-header");
   let previousY = window.scrollY;
   let scrollTicking = false;
 
   function updateScrollUI() {
     const y = window.scrollY;
-    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    document.documentElement.style.setProperty("--page-progress", Math.min(1, y / max));
+
+    /* Modern browsers can animate the progress bar on the compositor via a CSS scroll timeline. */
+    if (!supportsScrollTimeline) {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      document.documentElement.style.setProperty("--page-progress", Math.min(1, y / max));
+    }
 
     if (header) {
       header.classList.toggle("is-scrolled", y > 18);
@@ -103,7 +126,8 @@
       const x = (event.clientX - rect.left - rect.width / 2) * .08;
       const y = (event.clientY - rect.top - rect.height / 2) * .12;
       magnetic.style.transform = `translate(${x}px, ${y}px)`;
-    });
+    }, { passive: true });
+
     document.addEventListener("pointerout", (event) => {
       const magnetic = event.target.closest?.("[data-magnetic]");
       if (!magnetic || magnetic.contains(event.relatedTarget)) return;
@@ -113,6 +137,7 @@
     const stage = document.querySelector(".hero-stage");
     const frontSheet = stage?.querySelector(".profile-sheet.front");
     if (stage && frontSheet) {
+      stage.addEventListener("pointerenter", () => frontSheet.classList.add("motion-promoted"));
       stage.addEventListener("pointermove", (event) => {
         const rect = stage.getBoundingClientRect();
         const nx = (event.clientX - rect.left) / rect.width - .5;
@@ -120,11 +145,12 @@
         frontSheet.style.setProperty("--stage-ry", `${nx * 8}deg`);
         frontSheet.style.setProperty("--stage-rx", `${ny * -6}deg`);
         frontSheet.style.setProperty("--stage-y", `${ny * -7}px`);
-      });
+      }, { passive: true });
       stage.addEventListener("pointerleave", () => {
         frontSheet.style.setProperty("--stage-ry", "0deg");
         frontSheet.style.setProperty("--stage-rx", "0deg");
         frontSheet.style.setProperty("--stage-y", "0px");
+        window.setTimeout(() => frontSheet.classList.remove("motion-promoted"), 220);
       });
     }
   }
@@ -137,7 +163,7 @@
       const rect = card.getBoundingClientRect();
       card.style.setProperty("--card-x", `${event.clientX - rect.left}px`);
       card.style.setProperty("--card-y", `${event.clientY - rect.top}px`);
-    });
+    }, { passive: true });
   }
 
   function enhanceCards(root = document) {
@@ -189,17 +215,61 @@
     if (downloadButton) burstFrom(downloadButton);
   });
 
-  const dynamicObserver = new MutationObserver((mutations) => {
-    let rootsChanged = false;
-    mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
-      if (!(node instanceof Element)) return;
-      enhanceButtons(node.parentElement || node);
-      enhanceCards(node.parentElement || node);
-      if (node.matches?.(".root-section") || node.querySelector?.(".root-section")) rootsChanged = true;
-    }));
-    if (rootsChanged) requestAnimationFrame(observeRootSections);
+  /* The form is the only dynamic region we need to watch. Avoid observing the whole body,
+     where every live output text replacement previously woke the observer. */
+  const profileForm = document.querySelector("#profile-form");
+  if (profileForm) {
+    const dynamicObserver = new MutationObserver((mutations) => {
+      let rootsChanged = false;
+      mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+        if (!(node instanceof Element)) return;
+        enhanceCards(node.parentElement || node);
+        if (node.matches?.(".root-section") || node.querySelector?.(".root-section")) rootsChanged = true;
+      }));
+      if (rootsChanged) requestAnimationFrame(observeRootSections);
+    });
+    dynamicObserver.observe(profileForm, { childList: true, subtree: true });
+  }
+
+  /* Clarify action labels without changing builder behavior. */
+  const relabel = (selector, text, ariaLabel = text) => {
+    const element = document.querySelector(selector);
+    if (!element) return;
+    element.textContent = text;
+    element.setAttribute("aria-label", ariaLabel);
+  };
+  relabel("#reset-button", "Reset to preset", "Reset all edits to the currently selected starting preset");
+  relabel("#download-button", "Save profile JSON ↓", "Save the current personalization profile as a JSON file");
+  relabel("#validate-button", "Check profile", "Validate the current profile");
+  relabel("#apply-json-button", "Apply JSON changes", "Apply the JSON editor contents to the visual builder");
+
+  const previewHeading = document.querySelector(".preview-panel .panel-heading h2");
+  const previewCaption = document.querySelector(".preview-panel .panel-caption");
+  if (previewHeading) previewHeading.textContent = "Use in ChatGPT";
+  if (previewCaption) previewCaption.textContent = "Apply product controls manually, then copy the three text fields to their matching Personalization fields.";
+
+  const outputTargets = [
+    ["settings-output", "Apply manually"],
+    ["occupation-output", "Paste → Occupation"],
+    ["about-output", "Paste → More about you"],
+    ["instructions-output", "Paste → Custom Instructions"],
+  ];
+  outputTargets.forEach(([outputId, label]) => {
+    const heading = document.querySelector(`#${outputId}`)?.closest(".output-card")?.querySelector(".output-heading > div");
+    if (!heading || heading.querySelector(".output-target")) return;
+    const target = document.createElement("span");
+    target.className = "output-target";
+    target.textContent = label;
+    heading.appendChild(target);
   });
-  dynamicObserver.observe(document.body, { childList: true, subtree: true });
+
+  const outputStack = document.querySelector(".output-stack");
+  if (outputStack && !document.querySelector(".preview-use-note")) {
+    const note = document.createElement("p");
+    note.className = "preview-use-note";
+    note.innerHTML = "<strong>Recommended order:</strong> match Product settings first, then paste Occupation, More about you, and Custom Instructions into the fields with the same names in ChatGPT Personalization.";
+    outputStack.before(note);
+  }
 
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {

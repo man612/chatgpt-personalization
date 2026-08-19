@@ -1,0 +1,135 @@
+/* Performance layer: preserve the experience while reducing hidden layout/paint work. */
+
+/* Reveal still moves and fades, but avoids animated blur, which requires painting. */
+[data-reveal] {
+  filter: none !important;
+  transition-property: opacity, transform !important;
+}
+
+/* The editor can become very long. Let the browser skip rendering sections that are far off-screen. */
+.root-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 620px;
+}
+
+.explanation {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+/* Do not reserve a compositor layer permanently for the hero card. JS promotes it only while needed. */
+.profile-sheet.front { will-change: auto !important; }
+.profile-sheet.front.motion-promoted { will-change: transform !important; }
+
+/* Pause decorative infinite motion while its whole visual group is outside the viewport.
+   The effect is unchanged whenever the user can actually see it. */
+.hero-stage.motion-paused .profile-sheet.back-product,
+.hero-stage.motion-paused .profile-sheet.back-identity,
+.hero-stage.motion-paused .stage-chip,
+.hero-stage.motion-paused .sheet-live::before,
+.explanation.motion-paused .explanation-rule {
+  animation-play-state: paused !important;
+}
+
+/* Use compositor-driven CSS scroll progress where supported instead of updating a CSS variable from JS every frame. */
+@supports (animation-timeline: scroll()) {
+  body::before {
+    transform: scaleX(0);
+    animation: page-scroll-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes page-scroll-progress {
+    to { transform: scaleX(1); }
+  }
+}
+
+.output-target {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  background: rgba(255,255,255,.025);
+  font: 700 9px/1.2 var(--mono);
+  white-space: nowrap;
+}
+
+.preview-use-note {
+  margin: 0 12px 2px;
+  padding: 11px 12px;
+  border: 1px solid color-mix(in srgb, var(--output) 28%, var(--line-soft));
+  border-radius: 14px;
+  background: var(--output-soft);
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.preview-use-note strong { color: var(--ink); }
+
+/* Mobile is where translucent fixed surfaces and huge paint areas cost the most.
+   Keep the same layering and depth, but use opaque surfaces instead of live backdrop blur. */
+@media (max-width: 680px) {
+  .site-header,
+  .control-deck,
+  .select-menu,
+  .builder-mobile-dock,
+  .stage-chip {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .site-header { background: color-mix(in srgb, var(--canvas-2) 97%, black) !important; }
+  .control-deck { background: color-mix(in srgb, var(--panel) 98%, black) !important; }
+  .select-menu { background: var(--panel-3) !important; }
+  .builder-mobile-dock { background: color-mix(in srgb, var(--panel-3) 98%, black) !important; }
+  .stage-chip { background: var(--panel-2) !important; }
+
+  body:has(.smart-select.open)::after {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgba(0,0,0,.68) !important;
+  }
+
+  /* Isolate expensive form sections so editing one field does not invalidate unrelated paint areas. */
+  .root-section,
+  .nested-section,
+  .output-card {
+    contain: layout paint style;
+  }
+
+  /* Comfortable touch targets: match the 44px enhanced target guidance instead of merely passing the AA minimum. */
+  .section-toggle {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .copy-button,
+  .text-button,
+  .nav-github {
+    min-height: 44px !important;
+  }
+  .copy-button { min-width: 72px !important; }
+
+  /* Avoid expensive large shadow changes on moving mobile surfaces while keeping visible depth. */
+  .site-header,
+  .control-deck,
+  .panel,
+  .builder-mobile-dock {
+    box-shadow: 0 12px 32px rgba(0,0,0,.18) !important;
+  }
+
+  .site-header.is-scrolled { box-shadow: 0 14px 34px rgba(0,0,0,.2) !important; }
+
+  .preview-use-note {
+    margin-inline: 9px;
+    font-size: 11px;
+  }
+
+  .output-heading {
+    flex-wrap: wrap;
+  }
+  .output-heading > div {
+    flex-wrap: wrap;
+  }
+}
