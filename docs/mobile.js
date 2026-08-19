@@ -75,11 +75,40 @@
   }
   enhanceAllSections();
 
+  function syncSelectLayer(selectShell) {
+    const isOpen = selectShell.classList.contains("open");
+    const controlDeck = selectShell.closest(".control-deck");
+    const rootSection = selectShell.closest(".root-section");
+
+    if (controlDeck) controlDeck.style.zIndex = isOpen ? "700" : "";
+    if (rootSection) {
+      rootSection.style.zIndex = isOpen ? "700" : "";
+      rootSection.style.isolation = isOpen ? "auto" : "";
+      rootSection.style.transform = isOpen ? "none" : "";
+    }
+    dock.style.zIndex = isOpen ? "900" : "900";
+  }
+
+  function enhanceSelectLayer(selectShell) {
+    if (!selectShell || selectShell.dataset.mobileLayer === "true") return;
+    selectShell.dataset.mobileLayer = "true";
+    const observer = new MutationObserver(() => syncSelectLayer(selectShell));
+    observer.observe(selectShell, { attributes: true, attributeFilter: ["class"] });
+    syncSelectLayer(selectShell);
+  }
+
+  function enhanceAllSelectLayers(root = document) {
+    root.querySelectorAll?.(".smart-select").forEach(enhanceSelectLayer);
+  }
+  enhanceAllSelectLayers();
+
   const sectionObserver = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
       if (!(node instanceof Element)) return;
       if (node.matches(".root-section")) enhanceRootSection(node);
       enhanceAllSections(node);
+      if (node.matches(".smart-select")) enhanceSelectLayer(node);
+      enhanceAllSelectLayers(node);
     }));
   });
   const profileForm = document.querySelector("#profile-form");
