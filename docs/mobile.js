@@ -7,7 +7,6 @@
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const body = document.body;
   const controlDeck = document.querySelector(".control-deck");
-  const status = document.querySelector("#status");
   const editor = document.querySelector(".editor-panel");
   const editorHeading = editor?.querySelector(".panel-heading h2");
   const editorCaption = editor?.querySelector(".panel-caption");
@@ -24,20 +23,45 @@
     { id: "product", label: "Product", title: "Product settings", caption: "Match ChatGPT controls such as Personality, Characteristics, and Memory." },
     { id: "identity", label: "About you", title: "About you", caption: "Add durable context that helps ChatGPT understand your work, background, and recurring use." },
     { id: "instructions", label: "Response", title: "Response behavior", caption: "Define how explanations, research, technical work, UI/UX reviews, and writing should behave." },
-    { id: "output", label: "Use in ChatGPT", title: "Use in ChatGPT", caption: "Apply the product controls, then paste each rendered text field into the matching Personalization field." },
+    { id: "output", label: "Use", title: "Use in ChatGPT", caption: "Apply product controls, then paste each rendered text field into the matching Personalization field." },
   ];
+
+  const replayedInputs = new WeakSet();
+  const pendingInputs = new Map();
+
+  function flushPendingInput(target) {
+    const timer = pendingInputs.get(target);
+    if (!timer) return;
+    clearTimeout(timer);
+    pendingInputs.delete(target);
+    const replay = new Event("input", { bubbles: true });
+    replayedInputs.add(replay);
+    target.dispatchEvent(replay);
+  }
+
+  function flushPendingInputs() {
+    [...pendingInputs.keys()].forEach(flushPendingInput);
+  }
 
   const flowNav = document.createElement("nav");
   flowNav.className = "mobile-flow-nav";
   flowNav.setAttribute("aria-label", "Personalization builder steps");
   flowNav.innerHTML = `
-    <button type="button" class="mobile-back" aria-label="Previous step">←</button>
-    <div class="mobile-step-copy" aria-live="polite">
-      <small></small>
-      <strong></strong>
-      <span class="mobile-step-track" aria-hidden="true">${steps.map(() => "<i></i>").join("")}</span>
+    <div class="mobile-flow-top">
+      <button type="button" class="mobile-back" aria-label="Previous step">←</button>
+      <div class="mobile-step-copy" aria-live="polite">
+        <small></small>
+        <strong></strong>
+      </div>
+      <button type="button" class="mobile-next">Next</button>
     </div>
-    <button type="button" class="mobile-next">Next</button>
+    <div class="mobile-step-tabs" aria-label="Jump to a builder step">
+      <span class="mobile-step-indicator" aria-hidden="true"></span>
+      ${steps.map((step, index) => `
+        <button type="button" class="mobile-step-tab" data-step-index="${index}" aria-label="Go to step ${index + 1}: ${step.label}">
+          <span>${index + 1}</span><small>${step.label}</small>
+        </button>`).join("")}
+    </div>
   `;
   controlDeck?.before(flowNav);
 
@@ -45,46 +69,113 @@
   const nextButton = flowNav.querySelector(".mobile-next");
   const stepMeta = flowNav.querySelector(".mobile-step-copy small");
   const stepLabel = flowNav.querySelector(".mobile-step-copy strong");
-  const stepBars = [...flowNav.querySelectorAll(".mobile-step-track i")];
+  const stepTabs = [...flowNav.querySelectorAll(".mobile-step-tab")];
+  const stepIndicator = flowNav.querySelector(".mobile-step-indicator");
   let currentStep = 0;
+  let stepAnimation = null;
+  let indicatorFrame = 0;
+
+  function getStepSurface(stepId) {
+    if (stepId === "setup") return controlDeck;
+    if (stepId === "product") return profileForm?.querySelector(".section-product") || editor;
+    if (stepId === "identity") return profileForm?.querySelector(".section-identity") || editor;
+    if (stepId === "instructions") return profileForm?.querySelector(".section-instructions") || editor;
+    if (stepId === "output") return preview;
+    return null;
+  }
 
   function scrollToFlow() {
-    const top = flowNav.getBoundingClientRect().top + window.scrollY - 76;
+    const top = flowNav.getBoundingClientRect().top + window.scrollY - 74;
     window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
-  function setStep(index, shouldScroll = true) {
-    currentStep = Math.max(0, Math.min(steps.length - 1, index));
+  function positionStepIndicator(animate = true) {
+    cancelAnimationFrame(indicatorFrame);
+    indicatorFrame = requestAnimationFrame(() => {
+      const active = stepTabs[currentStep];
+      if (!active || !stepIndicator) return;
+      const hostRect = active.parentElement.getBoundingClientRect();
+      const rect = active.getBoundingClientRect();
+      if (!animate) stepIndicator.classList.add("no-transition");
+      stepIndicator.style.width = `${rect.width}px`;
+      stepIndicator.style.transform = `translate3d(${rect.left - hostRect.left}px,0,0)`;
+      if (!animate) requestAnimationFrame(() => stepIndicator.classList.remove("no-transition"));
+    });
+  }
+
+  function updateStepChrome() {
     const step = steps[currentStep];
     body.dataset.mobileStep = step.id;
     stepMeta.textContent = `Step ${currentStep + 1} of ${steps.length}`;
-    stepLabel.textContent = step.label;
+    stepLabel.textContent = step.title;
     backButton.disabled = currentStep === 0;
     nextButton.disabled = currentStep === steps.length - 1;
     nextButton.textContent = currentStep === steps.length - 1 ? "Done" : "Next";
-    stepBars.forEach((bar, barIndex) => {
-      bar.classList.toggle("done", barIndex < currentStep);
-      bar.classList.toggle("current", barIndex === currentStep);
+
+    stepTabs.forEach((button, index) => {
+      const active = index === currentStep;
+      if (active) button.setAttribute("aria-current", "step");
+      else button.removeAttribute("aria-current");
+      button.classList.toggle("is-complete", index < currentStep);
+      button.classList.toggle("is-current", active);
     });
 
     if (editorHeading && step.id !== "output" && step.id !== "setup") editorHeading.textContent = step.title;
     if (editorCaption && step.id !== "output" && step.id !== "setup") editorCaption.textContent = step.caption;
+  }
 
-    if (shouldScroll) requestAnimationFrame(scrollToFlow);
+  function animateStepSurface(surface, direction) {
+    if (!surface || reduceMotion || typeof surface.animate !== "function") return;
+    stepAnimation?.cancel?.();
+    const offset = direction >= 0 ? 18 : -18;
+    const animation = surface.animate([
+      { opacity: 0, transform: `translate3d(${offset}px,0,0) scale(.992)` },
+      { opacity: 1, transform: "translate3d(0,0,0) scale(1)" },
+    ], {
+      duration: 260,
+      easing: "cubic-bezier(.22,1,.36,1)",
+      fill: "both",
+    });
+    stepAnimation = animation;
+    animation.finished.catch(() => {}).finally(() => {
+      if (stepAnimation === animation) stepAnimation = null;
+    });
+  }
+
+  function setStep(index, shouldScroll = true, animate = true) {
+    flushPendingInputs();
+    const target = Math.max(0, Math.min(steps.length - 1, index));
+    if (target === currentStep) {
+      if (shouldScroll) scrollToFlow();
+      return;
+    }
+
+    const direction = target > currentStep ? 1 : -1;
+    currentStep = target;
+    updateStepChrome();
+    positionStepIndicator(animate && !reduceMotion);
+
+    requestAnimationFrame(() => {
+      animateStepSurface(getStepSurface(steps[currentStep].id), direction);
+      if (shouldScroll) scrollToFlow();
+    });
   }
 
   backButton.addEventListener("click", () => setStep(currentStep - 1));
   nextButton.addEventListener("click", () => setStep(currentStep + 1));
-  setStep(0, false);
+  stepTabs.forEach((button) => {
+    button.addEventListener("click", () => setStep(Number(button.dataset.stepIndex)));
+  });
 
-  /* Advanced JSON belongs with setup/persistence on mobile, not inside every editing step. */
+  updateStepChrome();
+  positionStepIndicator(false);
+  window.addEventListener("resize", () => positionStepIndicator(false), { passive: true });
+
   if (jsonDetails && controlDeck) {
     jsonDetails.classList.add("mobile-json-details");
     controlDeck.appendChild(jsonDetails);
   }
 
-  /* One native top-layer dialog owns all remaining select menus on mobile.
-     This avoids z-index wars and containment bugs from fixed descendants. */
   const dialog = document.createElement("dialog");
   dialog.className = "mobile-choice-dialog";
   dialog.innerHTML = `
@@ -101,6 +192,7 @@
   const dialogClose = dialog.querySelector(".mobile-dialog-close");
   let dialogSelect = null;
   let dialogTrigger = null;
+  let dialogClosing = false;
 
   function selectLabel(select) {
     const explicit = select.getAttribute("aria-labelledby");
@@ -112,8 +204,34 @@
     return fieldLabel?.textContent.trim() || "Choose an option";
   }
 
+  function finishDialogClose() {
+    if (!dialog.open) return;
+    dialog.close();
+  }
+
   function closeDialog() {
-    if (dialog.open) dialog.close();
+    if (!dialog.open || dialogClosing) return;
+    if (reduceMotion || typeof dialog.animate !== "function") {
+      finishDialogClose();
+      return;
+    }
+    dialogClosing = true;
+    dialog.classList.add("is-closing");
+    const animation = dialog.animate([
+      { opacity: 1, transform: "translate3d(0,0,0) scale(1)" },
+      { opacity: 0, transform: "translate3d(0,16px,0) scale(.985)" },
+    ], { duration: 150, easing: "cubic-bezier(.4,0,1,1)" });
+    animation.finished.catch(() => {}).finally(finishDialogClose);
+  }
+
+  function animateSelected(button) {
+    if (reduceMotion || typeof button.animate !== "function") return Promise.resolve();
+    const animation = button.animate([
+      { transform: "scale(1)" },
+      { transform: "scale(.975)" },
+      { transform: "scale(1)" },
+    ], { duration: 150, easing: "cubic-bezier(.2,.8,.2,1)" });
+    return animation.finished.catch(() => {});
   }
 
   function renderDialogOptions(select) {
@@ -145,9 +263,12 @@
       small.textContent = option.dataset.description;
       button.appendChild(small);
     }
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       select.value = option.value;
       select.dispatchEvent(new Event("change", { bubbles: true }));
+      [...dialogOptions.querySelectorAll('.mobile-dialog-option')].forEach((item) => item.setAttribute("aria-checked", "false"));
+      button.setAttribute("aria-checked", "true");
+      await animateSelected(button);
       closeDialog();
     });
     dialogOptions.appendChild(button);
@@ -163,6 +284,9 @@
     renderDialogOptions(select);
     trigger.setAttribute("aria-expanded", "true");
     dialog.showModal();
+    requestAnimationFrame(() => {
+      dialogOptions.querySelector('[aria-checked="true"]')?.scrollIntoView({ block: "nearest" });
+    });
   }
 
   dialogClose.addEventListener("click", closeDialog);
@@ -174,6 +298,8 @@
     if (event.target === dialog) closeDialog();
   });
   dialog.addEventListener("close", () => {
+    dialog.classList.remove("is-closing");
+    dialogClosing = false;
     dialogTrigger?.setAttribute("aria-expanded", "false");
     const target = dialogTrigger;
     dialogSelect = null;
@@ -226,8 +352,10 @@
         button.appendChild(small);
       }
       button.addEventListener("click", () => {
+        if (select.value === option.value) return;
         select.value = option.value;
         select.dispatchEvent(new Event("change", { bubbles: true }));
+        animateSelected(button);
       });
       group.appendChild(button);
       return { button, option };
@@ -262,10 +390,23 @@
     button.addEventListener("click", () => {
       select.value = select.value === "true" ? "false" : "true";
       select.dispatchEvent(new Event("change", { bubbles: true }));
+      animateSelected(button);
     });
     select.addEventListener("change", sync);
     shell.appendChild(button);
     sync();
+  }
+
+  const segmentedGroups = new Set();
+
+  function positionSegmentIndicator(record, animate = true) {
+    const { group, buttons, select, indicator } = record;
+    const selected = buttons.find(({ option }) => option.value === select.value)?.button;
+    if (!selected || !group.isConnected) return;
+    if (!animate) indicator.classList.add("no-transition");
+    indicator.style.width = `${selected.offsetWidth}px`;
+    indicator.style.transform = `translate3d(${selected.offsetLeft}px,0,0)`;
+    if (!animate) requestAnimationFrame(() => indicator.classList.remove("no-transition"));
   }
 
   function enhanceSegmented(select) {
@@ -285,6 +426,10 @@
     group.className = "mobile-segmented";
     group.setAttribute("role", "radiogroup");
     group.setAttribute("aria-label", selectLabel(select));
+    const indicator = document.createElement("span");
+    indicator.className = "mobile-segment-indicator";
+    indicator.setAttribute("aria-hidden", "true");
+    group.appendChild(indicator);
 
     const buttons = Array.from(select.options).map((option) => {
       const button = document.createElement("button");
@@ -293,6 +438,7 @@
       button.setAttribute("aria-label", option.textContent);
       button.textContent = labels[option.value] || option.textContent;
       button.addEventListener("click", () => {
+        if (select.value === option.value) return;
         select.value = option.value;
         select.dispatchEvent(new Event("change", { bubbles: true }));
       });
@@ -300,7 +446,12 @@
       return { button, option };
     });
 
-    const sync = () => buttons.forEach(({ button, option }) => button.setAttribute("aria-checked", String(option.value === select.value)));
+    const record = { group, buttons, select, indicator };
+    segmentedGroups.add(record);
+    const sync = () => {
+      buttons.forEach(({ button, option }) => button.setAttribute("aria-checked", String(option.value === select.value)));
+      requestAnimationFrame(() => positionSegmentIndicator(record, !reduceMotion));
+    };
     select.addEventListener("change", sync);
     shell.appendChild(group);
     sync();
@@ -325,10 +476,25 @@
     "field-identity-stable_preferences": "One long-term preference per line",
   };
 
-  function autosize(textarea) {
-    if (!(textarea instanceof HTMLTextAreaElement)) return;
+  const supportsFieldSizing = CSS.supports?.("field-sizing: content") || false;
+  const autosizeQueue = new Set();
+  let autosizeFrame = 0;
+
+  function autosizeNow(textarea) {
+    if (!(textarea instanceof HTMLTextAreaElement) || supportsFieldSizing) return;
     textarea.style.height = "auto";
-    textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, 92), 260)}px`;
+    textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, 92), 280)}px`;
+  }
+
+  function scheduleAutosize(textarea) {
+    if (!(textarea instanceof HTMLTextAreaElement) || supportsFieldSizing) return;
+    autosizeQueue.add(textarea);
+    if (autosizeFrame) return;
+    autosizeFrame = requestAnimationFrame(() => {
+      autosizeQueue.forEach(autosizeNow);
+      autosizeQueue.clear();
+      autosizeFrame = 0;
+    });
   }
 
   function enhanceFormUI(root = profileForm) {
@@ -336,42 +502,50 @@
     root.querySelectorAll("select").forEach(enhanceSelect);
     root.querySelectorAll("textarea").forEach((textarea) => {
       if (placeholders[textarea.id]) textarea.placeholder = placeholders[textarea.id];
-      autosize(textarea);
+      scheduleAutosize(textarea);
+    });
+    requestAnimationFrame(() => {
+      segmentedGroups.forEach((record) => {
+        if (!record.group.isConnected) { segmentedGroups.delete(record); return; }
+        positionSegmentIndicator(record, false);
+      });
     });
   }
 
-  /* Keep native typing immediate, but coalesce expensive validation/render preview work. */
   if (profileForm) {
-    const replayedInputs = new WeakSet();
-    const pendingInputs = new Map();
-
     profileForm.addEventListener("input", (event) => {
       if (replayedInputs.has(event)) return;
       const target = event.target;
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
-      if (target instanceof HTMLTextAreaElement) autosize(target);
+      if (target instanceof HTMLTextAreaElement) scheduleAutosize(target);
 
       event.stopImmediatePropagation();
       const existing = pendingInputs.get(target);
       if (existing) clearTimeout(existing);
-      const timer = setTimeout(() => {
-        pendingInputs.delete(target);
-        const replay = new Event("input", { bubbles: true });
-        replayedInputs.add(replay);
-        target.dispatchEvent(replay);
-      }, 110);
+      const timer = setTimeout(() => flushPendingInput(target), 150);
       pendingInputs.set(target, timer);
     }, true);
 
+    profileForm.addEventListener("blur", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) flushPendingInput(target);
+    }, true);
+
     const observer = new MutationObserver((mutations) => {
-      let needsEnhancement = false;
-      mutations.forEach((mutation) => {
-        if (mutation.addedNodes.length) needsEnhancement = true;
-      });
-      if (needsEnhancement) requestAnimationFrame(() => enhanceFormUI(profileForm));
+      if (!mutations.some((mutation) => mutation.addedNodes.length)) return;
+      requestAnimationFrame(() => enhanceFormUI(profileForm));
     });
     observer.observe(profileForm, { childList: true, subtree: true });
   }
+
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(() => {
+      segmentedGroups.forEach((record) => {
+        if (!record.group.isConnected) { segmentedGroups.delete(record); return; }
+        positionSegmentIndicator(record, false);
+      });
+    });
+  }, { passive: true });
 
   enhanceFormUI();
 })();

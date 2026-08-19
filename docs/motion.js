@@ -3,16 +3,9 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const mobileExperience = window.matchMedia("(max-width: 680px)").matches;
   const supportsScrollTimeline = CSS.supports?.("animation-timeline: scroll()") || false;
   document.documentElement.classList.add("motion-ready");
-
-  /* Load the performance layer without changing the base visual architecture. */
-  if (!document.querySelector('link[href="performance.css"]')) {
-    const perfStyles = document.createElement("link");
-    perfStyles.rel = "stylesheet";
-    perfStyles.href = "performance.css";
-    document.head.appendChild(perfStyles);
-  }
 
   const pageEnter = document.createElement("div");
   pageEnter.className = "page-enter";
@@ -20,9 +13,10 @@
   document.body.prepend(pageEnter);
   window.setTimeout(() => pageEnter.remove(), 900);
 
-  const revealSelectors = [
-    ".hero-stage", ".control-deck", ".status", ".editor-panel", ".preview-panel", ".explanation", ".footer-inner"
-  ];
+  const revealSelectors = mobileExperience
+    ? [".hero-stage", ".control-deck", ".status", ".explanation", ".footer-inner"]
+    : [".hero-stage", ".control-deck", ".status", ".editor-panel", ".preview-panel", ".explanation", ".footer-inner"];
+
   revealSelectors.forEach((selector, selectorIndex) => {
     document.querySelectorAll(selector).forEach((element) => {
       element.setAttribute("data-reveal", "");
@@ -55,7 +49,6 @@
     revealNow();
   }
 
-  /* Decorative infinite motion is paused only while the group is completely off-screen. */
   if (!reduceMotion && "IntersectionObserver" in window) {
     const pauseObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => entry.target.classList.toggle("motion-paused", !entry.isIntersecting));
@@ -65,37 +58,37 @@
       .forEach((element) => pauseObserver.observe(element));
   }
 
-  const header = document.querySelector(".site-header");
-  let previousY = window.scrollY;
-  let scrollTicking = false;
+  /* Desktop keeps the animated hide/reveal header. Mobile already has a sticky step navigator,
+     so avoid a second main-thread scroll-linked state machine there. */
+  if (!mobileExperience) {
+    const header = document.querySelector(".site-header");
+    let previousY = window.scrollY;
+    let scrollTicking = false;
 
-  function updateScrollUI() {
-    const y = window.scrollY;
-
-    /* Modern browsers can animate the progress bar on the compositor via a CSS scroll timeline. */
-    if (!supportsScrollTimeline) {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      document.documentElement.style.setProperty("--page-progress", Math.min(1, y / max));
+    function updateScrollUI() {
+      const y = window.scrollY;
+      if (!supportsScrollTimeline) {
+        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        document.documentElement.style.setProperty("--page-progress", Math.min(1, y / max));
+      }
+      if (header) {
+        header.classList.toggle("is-scrolled", y > 18);
+        const movingDown = y > previousY;
+        const shouldHide = movingDown && y > 190 && Math.abs(y - previousY) > 2;
+        header.classList.toggle("is-hidden", shouldHide);
+        if (!movingDown) header.classList.remove("is-hidden");
+      }
+      previousY = y;
+      scrollTicking = false;
     }
 
-    if (header) {
-      header.classList.toggle("is-scrolled", y > 18);
-      const movingDown = y > previousY;
-      const shouldHide = movingDown && y > 190 && Math.abs(y - previousY) > 2;
-      header.classList.toggle("is-hidden", shouldHide);
-      if (!movingDown) header.classList.remove("is-hidden");
-    }
-
-    previousY = y;
-    scrollTicking = false;
+    window.addEventListener("scroll", () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(updateScrollUI);
+    }, { passive: true });
+    updateScrollUI();
   }
-
-  window.addEventListener("scroll", () => {
-    if (scrollTicking) return;
-    scrollTicking = true;
-    requestAnimationFrame(updateScrollUI);
-  }, { passive: true });
-  updateScrollUI();
 
   function addRipple(button) {
     if (!button || button.dataset.motionRipple === "true") return;
@@ -156,10 +149,9 @@
   }
 
   function addSpotlight(card) {
-    if (!card || card.dataset.motionSpotlight === "true") return;
+    if (!finePointer || !card || card.dataset.motionSpotlight === "true") return;
     card.dataset.motionSpotlight = "true";
     card.addEventListener("pointermove", (event) => {
-      if (!finePointer) return;
       const rect = card.getBoundingClientRect();
       card.style.setProperty("--card-x", `${event.clientX - rect.left}px`);
       card.style.setProperty("--card-y", `${event.clientY - rect.top}px`);
@@ -167,13 +159,14 @@
   }
 
   function enhanceCards(root = document) {
+    if (!finePointer) return;
     root.querySelectorAll?.(".root-section, .output-card").forEach(addSpotlight);
   }
   enhanceCards();
 
   let sectionObserver = null;
   function observeRootSections() {
-    if (!("IntersectionObserver" in window)) return;
+    if (mobileExperience || !("IntersectionObserver" in window)) return;
     sectionObserver?.disconnect();
     const sections = [...document.querySelectorAll(".root-section")];
     if (!sections.length) return;
@@ -192,12 +185,13 @@
     if (reduceMotion || !element) return;
     const rect = element.getBoundingClientRect();
     const palette = ["#6fcd83", "#72aee8", "#b59be8", "#e3b45f", "#e88970"];
-    for (let index = 0; index < 10; index += 1) {
+    const count = mobileExperience ? 8 : 10;
+    for (let index = 0; index < count; index += 1) {
       const particle = document.createElement("i");
       particle.className = "motion-particle";
       particle.style.left = `${rect.left + rect.width / 2}px`;
       particle.style.top = `${rect.top + rect.height / 2}px`;
-      const angle = (Math.PI * 2 * index) / 10 + Math.random() * .22;
+      const angle = (Math.PI * 2 * index) / count + Math.random() * .22;
       const distance = 34 + Math.random() * 48;
       particle.style.setProperty("--particle-x", `${Math.cos(angle) * distance}px`);
       particle.style.setProperty("--particle-y", `${Math.sin(angle) * distance}px`);
@@ -215,10 +209,8 @@
     if (downloadButton) burstFrom(downloadButton);
   });
 
-  /* The form is the only dynamic region we need to watch. Avoid observing the whole body,
-     where every live output text replacement previously woke the observer. */
   const profileForm = document.querySelector("#profile-form");
-  if (profileForm) {
+  if (profileForm && !mobileExperience) {
     const dynamicObserver = new MutationObserver((mutations) => {
       let rootsChanged = false;
       mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
@@ -231,7 +223,6 @@
     dynamicObserver.observe(profileForm, { childList: true, subtree: true });
   }
 
-  /* Clarify action labels without changing builder behavior. */
   const relabel = (selector, text, ariaLabel = text) => {
     const element = document.querySelector(selector);
     if (!element) return;

@@ -20,15 +20,116 @@
   <meta name="twitter:description" content="Build versioned, reviewable ChatGPT personalization profiles from reusable presets.">
   <meta name="twitter:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="experience.css">
-  <link rel="stylesheet" href="motion.css">
-  <link rel="stylesheet" href="mobile.css">
-  <script src="renderer.js" defer></script>
-  <script src="app.js" defer></script>
-  <script src="motion.js" defer></script>
-  <script src="mobile.js" defer></script>
+  <link rel="icon" href="favicon.svg?v=2026-08-19.2046" type="image/svg+xml">
+  <style>
+    .builder-update-notice {
+      position: fixed;
+      z-index: 1800;
+      top: max(76px, env(safe-area-inset-top));
+      left: 50%;
+      width: min(520px, calc(100% - 20px));
+      padding: 10px;
+      border: 1px solid rgba(111,205,131,.34);
+      border-radius: 16px;
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      align-items: center;
+      gap: 10px;
+      background: #19221c;
+      color: #f3f5ef;
+      box-shadow: 0 18px 54px rgba(0,0,0,.32);
+      font: 13px/1.4 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transform: translate(-50%, -10px);
+      opacity: 0;
+      animation: builder-update-in 220ms cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .builder-update-notice small { display: block; margin-top: 2px; color: #c4ccc2; font-size: 11px; }
+    .builder-update-notice button {
+      min-height: 42px;
+      padding: 7px 12px;
+      border: 1px solid rgba(111,205,131,.42);
+      border-radius: 11px;
+      background: #6fcd83;
+      color: #0a130d;
+      font: inherit;
+      font-weight: 800;
+    }
+    @keyframes builder-update-in { to { opacity: 1; transform: translate(-50%, 0); } }
+    @media (prefers-reduced-motion: reduce) { .builder-update-notice { animation: none; opacity: 1; transform: translate(-50%,0); } }
+  </style>
+  <script>
+    (() => {
+      const BUILD = "2026-08-19.2046";
+      window.__BUILDER_BUILD__ = BUILD;
+      window.__BUILDER_DIRTY__ = false;
+      let lastCheck = 0;
+
+      document.addEventListener("input", (event) => {
+        if (event.target?.closest?.("#profile-form, #json-editor")) window.__BUILDER_DIRTY__ = true;
+      }, true);
+      document.addEventListener("change", (event) => {
+        if (event.target?.closest?.("#profile-form, .control-deck")) window.__BUILDER_DIRTY__ = true;
+      }, true);
+
+      function refreshTo(latestBuild, now = Date.now()) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("build", latestBuild);
+        url.searchParams.set("_refresh", now.toString(36));
+        window.location.replace(url.toString());
+      }
+
+      function showUpdateNotice(latestBuild) {
+        if (document.querySelector(".builder-update-notice")) return;
+        const notice = document.createElement("aside");
+        notice.className = "builder-update-notice";
+        notice.setAttribute("role", "region");
+        notice.setAttribute("aria-label", "Builder update available");
+        notice.innerHTML = `<div><strong>Builder update available</strong><small>Your current edits are untouched. Refresh when you are ready.</small></div><button type="button">Refresh</button>`;
+        notice.querySelector("button").addEventListener("click", () => refreshTo(latestBuild));
+        document.body.appendChild(notice);
+      }
+
+      async function checkFreshness() {
+        const now = Date.now();
+        if (now - lastCheck < 120000) return;
+        lastCheck = now;
+        try {
+          const response = await fetch(`version.json?_=${now}`, { cache: "reload" });
+          if (!response.ok) return;
+          const latest = await response.json();
+          if (!latest?.build || latest.build === BUILD) return;
+
+          if (window.__BUILDER_DIRTY__) {
+            showUpdateNotice(latest.build);
+            return;
+          }
+
+          const guardKey = `builder-refresh:${latest.build}`;
+          try {
+            if (sessionStorage.getItem(guardKey) === "1") return;
+            sessionStorage.setItem(guardKey, "1");
+          } catch (_) {}
+          refreshTo(latest.build, now);
+        } catch (_) {
+          /* Offline or transient network errors should never block the builder. */
+        }
+      }
+
+      window.addEventListener("pageshow", checkFreshness, { once: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") checkFreshness();
+      });
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="experience.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="motion.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="mobile.css?v=2026-08-19.2046">
+  <link rel="stylesheet" href="performance.css?v=2026-08-19.2046">
+  <script src="renderer.js?v=2026-08-19.2046" defer></script>
+  <script src="app.js?v=2026-08-19.2046" defer></script>
+  <script src="motion.js?v=2026-08-19.2046" defer></script>
+  <script src="mobile.js?v=2026-08-19.2046" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to builder</a>
@@ -109,8 +210,8 @@
       </div>
 
       <div class="deck-actions">
-        <button id="reset-button" class="button secondary" type="button"><span aria-hidden="true">↺</span> Reset</button>
-        <button id="download-button" class="button primary" type="button">Download JSON <span aria-hidden="true">↓</span></button>
+        <button id="reset-button" class="button secondary" type="button">Reset to preset</button>
+        <button id="download-button" class="button primary" type="button">Save profile JSON ↓</button>
       </div>
     </section>
 
@@ -124,7 +225,7 @@
             <h2>Edit profile</h2>
             <p class="panel-caption">Change the profile, not a giant prompt blob.</p>
           </div>
-          <button id="validate-button" class="text-button" type="button">Validate now</button>
+          <button id="validate-button" class="text-button" type="button">Check profile</button>
         </div>
         <div id="validation-summary" class="validation-summary" aria-live="polite"></div>
         <form id="profile-form" novalidate></form>
@@ -134,7 +235,7 @@
           <textarea id="json-editor" spellcheck="false" aria-label="Profile JSON"></textarea>
           <div class="json-actions">
             <button id="format-json-button" class="button secondary" type="button">Format JSON</button>
-            <button id="apply-json-button" class="button secondary" type="button">Apply JSON</button>
+            <button id="apply-json-button" class="button secondary" type="button">Apply JSON changes</button>
           </div>
         </details>
       </div>
@@ -143,8 +244,8 @@
         <div class="panel-heading">
           <div>
             <p class="panel-kicker">Rendered output</p>
-            <h2>Copy-ready fields</h2>
-            <p class="panel-caption">Always rendered from the current profile.</p>
+            <h2>Use in ChatGPT</h2>
+            <p class="panel-caption">Apply product controls manually, then copy the three text fields to their matching Personalization fields.</p>
           </div>
           <span id="character-summary" class="character-summary"></span>
         </div>
