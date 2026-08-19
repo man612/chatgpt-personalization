@@ -46,6 +46,8 @@ jobs:
         run: |
           node --check docs/renderer.js
           node --check docs/app.js
+          node --check docs/motion.js
+          node --check docs/mobile.js
           node --check tests/render_profile.js
       - name: Compare browser and Python renderers
         run: python tests/check_renderer_parity.py
