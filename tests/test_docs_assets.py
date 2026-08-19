@@ -37,6 +37,13 @@ class DocsAssetVersionTests(unittest.TestCase):
         self.assertIn('fetch(`version.json?_=${now}`, { cache: "reload" })', html)
         self.assertIn('window.location.replace(url.toString())', html)
 
+    def test_freshness_never_auto_reloads_over_unsaved_edits(self):
+        html = (DOCS / "index.html").read_text(encoding="utf-8")
+        self.assertIn("window.__BUILDER_DIRTY__ = false", html)
+        self.assertIn("if (window.__BUILDER_DIRTY__)", html)
+        self.assertIn("showUpdateNotice(latest.build)", html)
+        self.assertIn("Your current edits are untouched", html)
+
     def test_performance_css_loads_before_runtime_scripts(self):
         html = (DOCS / "index.html").read_text(encoding="utf-8")
         self.assertLess(html.index("performance.css"), html.index("renderer.js"))
