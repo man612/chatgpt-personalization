@@ -13,9 +13,9 @@
   dock.className = "builder-mobile-dock";
   dock.setAttribute("aria-label", "Builder quick actions");
   dock.innerHTML = `
-    <button type="button" data-target="editor"><span class="dock-icon">✎</span><span>Edit</span></button>
-    <button type="button" class="dock-export"><span class="dock-icon">↓</span><span>Export JSON</span></button>
-    <button type="button" data-target="preview"><span class="dock-icon">▤</span><span>Output</span></button>
+    <button type="button" data-target="editor"><span class="dock-icon">✎</span><span>Edit profile</span></button>
+    <button type="button" class="dock-export"><span class="dock-icon">↓</span><span>Save JSON</span></button>
+    <button type="button" data-target="preview"><span class="dock-icon">▤</span><span>Use output</span></button>
   `;
   document.body.appendChild(dock);
 
@@ -101,6 +101,34 @@
   }
   enhanceAllSelectLayers();
 
+  const profileForm = document.querySelector("#profile-form");
+
+  /* Keep native typing immediate, but coalesce the expensive derived preview.
+     app.js listens for bubbling input events and runs validation + rendering synchronously.
+     We hold only those derived events for a very short idle window; the field itself updates instantly. */
+  if (profileForm) {
+    const replayedInputs = new WeakSet();
+    const pendingInputs = new Map();
+
+    profileForm.addEventListener("input", (event) => {
+      if (replayedInputs.has(event)) return;
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
+
+      event.stopImmediatePropagation();
+      const existing = pendingInputs.get(target);
+      if (existing) clearTimeout(existing);
+
+      const timer = setTimeout(() => {
+        pendingInputs.delete(target);
+        const replay = new Event("input", { bubbles: true });
+        replayedInputs.add(replay);
+        target.dispatchEvent(replay);
+      }, 90);
+      pendingInputs.set(target, timer);
+    }, true);
+  }
+
   const sectionObserver = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
       if (!(node instanceof Element)) return;
@@ -110,18 +138,23 @@
       enhanceAllSelectLayers(node);
     }));
   });
-  const profileForm = document.querySelector("#profile-form");
   if (profileForm) sectionObserver.observe(profileForm, { childList: true, subtree: true });
 
   let lastY = window.scrollY;
   let quietTimer;
+  let scrollTicking = false;
   window.addEventListener("scroll", () => {
-    const y = window.scrollY;
-    const movingDown = y > lastY;
-    if (movingDown && y > 260) dock.classList.add("is-quiet");
-    else dock.classList.remove("is-quiet");
-    clearTimeout(quietTimer);
-    quietTimer = setTimeout(() => dock.classList.remove("is-quiet"), 260);
-    lastY = y;
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      const movingDown = y > lastY;
+      if (movingDown && y > 260) dock.classList.add("is-quiet");
+      else dock.classList.remove("is-quiet");
+      clearTimeout(quietTimer);
+      quietTimer = setTimeout(() => dock.classList.remove("is-quiet"), 260);
+      lastY = y;
+      scrollTicking = false;
+    });
   }, { passive: true });
 })();
