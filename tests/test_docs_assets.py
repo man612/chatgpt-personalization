@@ -35,12 +35,35 @@ class DocsAssetVersionTests(unittest.TestCase):
         self.assertIsNotNone(match)
         self.assertEqual(version, match.group(1))
         self.assertIn('fetch(`version.json?_=${now}`, { cache: "reload" })', html)
+        self.assertIn('window.location.replace(url.toString())', html)
 
     def test_performance_css_loads_before_runtime_scripts(self):
         html = (DOCS / "index.html").read_text(encoding="utf-8")
         self.assertLess(html.index("performance.css"), html.index("renderer.js"))
         motion = (DOCS / "motion.js").read_text(encoding="utf-8")
         self.assertNotIn('document.createElement("link")', motion)
+
+    def test_mobile_steps_are_direct_navigation_not_decorative_progress(self):
+        mobile = (DOCS / "mobile.js").read_text(encoding="utf-8")
+        css = (DOCS / "mobile.css").read_text(encoding="utf-8")
+        self.assertIn('class="mobile-step-tab" data-step-index=', mobile)
+        self.assertIn('button.addEventListener("click", () => setStep(Number(button.dataset.stepIndex)))', mobile)
+        self.assertIn('button.setAttribute("aria-current", "step")', mobile)
+        self.assertIn(".mobile-step-indicator", css)
+
+    def test_mobile_selected_states_have_motion_and_reduced_motion_fallback(self):
+        mobile = (DOCS / "mobile.js").read_text(encoding="utf-8")
+        css = (DOCS / "mobile.css").read_text(encoding="utf-8")
+        self.assertIn("mobile-segment-indicator", mobile)
+        self.assertIn("dialog.animate([", mobile)
+        self.assertIn("animateStepSurface", mobile)
+        self.assertIn("@media (prefers-reduced-motion: reduce)", css)
+
+    def test_mobile_does_not_restore_the_old_fixed_bottom_dock(self):
+        mobile = (DOCS / "mobile.js").read_text(encoding="utf-8")
+        css = (DOCS / "mobile.css").read_text(encoding="utf-8")
+        self.assertNotIn("builder-mobile-dock", mobile)
+        self.assertNotIn("builder-mobile-dock", css)
 
 
 if __name__ == "__main__":
