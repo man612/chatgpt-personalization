@@ -20,6 +20,10 @@ All notable changes to this project are documented here.
 - Improved README mobile readability, onboarding, support links, contributing guidance, and license explanation.
 - Standardized the README trust row as three compact CI, license, and schema badges.
 - Added a dedicated 1280×640 social preview asset plus Open Graph/Twitter metadata and a lightweight favicon for the browser builder.
+- Repaired the social-preview asset as a valid PNG binary after the previous repository blob could not be rendered by GitHub.
+- Rebuilt the browser builder presentation as separate experience, motion, and mobile layers instead of a single generic responsive form surface.
+- Added a dimensional profile-model hero, differentiated Product/Identity/Instructions/Output surfaces, scroll and pointer micro-interactions, mobile section collapsing, custom mobile select sheets, and a safe-area-aware bottom action dock.
+- Added reduced-motion fallbacks and CI syntax checks for the dedicated motion and mobile scripts while keeping renderer output unchanged.
 - Added a clear independent-project disclaimer to avoid implying OpenAI affiliation or endorsement.
 - Added a project code of conduct and expanded the security policy.
 - Added Dependabot monitoring for GitHub Actions and updated the workflow to the current v7 major releases of `actions/checkout`, `actions/setup-python`, and `actions/setup-node`.

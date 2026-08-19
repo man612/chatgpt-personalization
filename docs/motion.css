@@ -1,0 +1,237 @@
+/* Motion layer: interaction and movement only. */
+:root {
+  --motion-fast: 170ms;
+  --motion-base: 360ms;
+  --motion-slow: 720ms;
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-ease-soft: cubic-bezier(.2, .75, .25, 1);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 999;
+  height: 3px;
+  background: linear-gradient(90deg, var(--product), var(--identity), var(--instructions), var(--output));
+  transform: scaleX(var(--page-progress, 0));
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.site-header {
+  transition: transform var(--motion-base) var(--motion-ease), opacity var(--motion-base) ease, box-shadow var(--motion-base) ease, background var(--motion-base) ease;
+}
+.site-header.is-scrolled { box-shadow: 0 20px 52px rgba(0,0,0,.18); }
+.site-header.is-hidden { transform: translateY(-130%); opacity: .15; }
+
+.brand-mark i { animation: brand-stack 2.7s var(--motion-ease) infinite alternate; }
+.brand-mark i:nth-child(2) { animation-delay: -.9s; }
+.brand-mark i:nth-child(3) { animation-delay: -1.7s; }
+@keyframes brand-stack {
+  0%, 28% { transform: scaleX(.72); opacity: .72; }
+  72%, 100% { transform: scaleX(1.04); opacity: 1; }
+}
+
+.hero-copy-block > * {
+  opacity: 0;
+  transform: translateY(22px);
+  animation: hero-enter 760ms var(--motion-ease) forwards;
+}
+.hero-copy-block > *:nth-child(1) { animation-delay: 70ms; }
+.hero-copy-block > *:nth-child(2) { animation-delay: 150ms; }
+.hero-copy-block > *:nth-child(3) { animation-delay: 230ms; }
+.hero-copy-block > *:nth-child(4) { animation-delay: 310ms; }
+.hero-copy-block > *:nth-child(5) { animation-delay: 390ms; }
+@keyframes hero-enter { to { opacity: 1; transform: none; } }
+
+.hero h1 em {
+  position: relative;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 97%;
+  background-size: 0 6%;
+  animation: hero-marker 1s var(--motion-ease) 650ms forwards;
+}
+@keyframes hero-marker { to { background-size: 100% 6%; } }
+
+.hero-stage { transform-style: preserve-3d; }
+.profile-sheet.front {
+  transform: rotateX(var(--stage-rx, 0deg)) rotateY(var(--stage-ry, 0deg)) translate3d(0, var(--stage-y, 0px), 0);
+  transition: transform 180ms ease-out, box-shadow 300ms ease;
+  will-change: transform;
+}
+.profile-sheet.back-product { animation: sheet-product-float 6.2s ease-in-out infinite; }
+.profile-sheet.back-identity { animation: sheet-identity-float 6.8s ease-in-out infinite; }
+@keyframes sheet-product-float {
+  0%,100% { transform: translate(-54px,20px) rotate(-6deg); }
+  50% { transform: translate(-66px,6px) rotate(-8deg); }
+}
+@keyframes sheet-identity-float {
+  0%,100% { transform: translate(50px,14px) rotate(5deg); }
+  50% { transform: translate(64px,2px) rotate(7deg); }
+}
+.stage-chip { animation: stage-chip-float 4.4s ease-in-out infinite; }
+.stage-chip.eval { animation-delay: -2.1s; }
+@keyframes stage-chip-float { 50% { translate: 0 -10px; } }
+.sheet-live::before { animation: live-dot 1.6s ease-in-out infinite; }
+@keyframes live-dot { 50% { transform: scale(1.35); opacity: .45; } }
+
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0) scale(.988);
+  filter: blur(5px);
+  transition: opacity var(--motion-slow) var(--motion-ease), transform var(--motion-slow) var(--motion-ease), filter var(--motion-slow) ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; filter: none; }
+
+[data-stagger] > * {
+  opacity: 0;
+  transform: translateY(18px) scale(.985);
+  transition: opacity 600ms var(--motion-ease), transform 600ms var(--motion-ease);
+  transition-delay: calc(var(--stagger-index, 0) * 70ms);
+}
+[data-stagger].is-visible > * { opacity: 1; transform: none; }
+
+.button, .copy-button, .text-button, .select-trigger {
+  -webkit-tap-highlight-color: transparent;
+}
+.button, .copy-button, .text-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) ease, border-color var(--motion-fast) ease, background var(--motion-fast) ease;
+}
+.button::after, .copy-button::after, .text-button::after {
+  content: "";
+  position: absolute;
+  left: var(--ripple-x, 50%);
+  top: var(--ripple-y, 50%);
+  width: 12px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  z-index: -1;
+}
+.button.is-rippling::after, .copy-button.is-rippling::after, .text-button.is-rippling::after { animation: ripple 620ms ease-out; }
+@keyframes ripple {
+  0% { opacity: .15; transform: translate(-50%,-50%) scale(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(30); }
+}
+.button:active, .copy-button:active, .text-button:active { transform: scale(.965); }
+
+.control-card, .root-section, .output-card, .nested-section {
+  transition: transform 300ms var(--motion-ease), box-shadow 300ms ease, border-color 300ms ease, background 300ms ease;
+}
+.root-section.is-current-section {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 60px rgba(0,0,0,.12);
+  border-color: var(--line-med);
+}
+
+.root-section, .output-card {
+  position: relative;
+  isolation: isolate;
+}
+.root-section::after, .output-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(320px circle at var(--card-x, 50%) var(--card-y, 50%), rgba(255,255,255,.07), transparent 58%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.root-section:hover::after, .output-card:hover::after { opacity: 1; }
+
+.field:focus-within > label {
+  color: var(--identity);
+  transform: translateX(2px);
+}
+.field > label { transition: color 180ms ease, transform 180ms var(--motion-ease); }
+
+.select-trigger { transition: transform 180ms var(--motion-ease), border-color 180ms ease, background 180ms ease, box-shadow 180ms ease; }
+.select-trigger:active { transform: scale(.99); }
+.smart-select.open .select-trigger { transform: translateY(-1px); }
+.select-option { transition: transform 150ms var(--motion-ease), background 150ms ease, border-color 150ms ease; }
+.select-option:hover, .select-option.active { transform: translateX(3px); }
+
+.output-card.is-updated { animation: output-pop 480ms var(--motion-ease); }
+@keyframes output-pop {
+  0% { transform: scale(.985); border-color: var(--identity); }
+  55% { transform: scale(1.006); }
+  100% { transform: none; }
+}
+.copy-button.copied { animation: copy-pop 460ms var(--motion-ease); }
+@keyframes copy-pop { 45% { transform: scale(1.09) rotate(-1deg); } }
+
+.validation-summary.valid { animation: validation-ok 520ms var(--motion-ease); }
+@keyframes validation-ok { 45% { transform: translateX(3px); } }
+
+.json-details[open] { animation: details-open 360ms var(--motion-ease); }
+@keyframes details-open { from { opacity: .55; transform: translateY(-5px); } }
+
+.explanation-rule { transform-origin: left center; animation: rule-breathe 2.7s ease-in-out infinite; }
+@keyframes rule-breathe { 50% { transform: scaleX(1.35); opacity: .6; } }
+
+.motion-particle {
+  position: fixed;
+  z-index: 9999;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  pointer-events: none;
+  background: var(--particle-color, var(--product));
+  animation: particle-fly 760ms var(--motion-ease) forwards;
+}
+@keyframes particle-fly {
+  to { transform: translate(var(--particle-x), var(--particle-y)) rotate(var(--particle-r)); opacity: 0; scale: .35; }
+}
+
+.page-enter {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--canvas);
+  pointer-events: none;
+  transform-origin: top;
+  animation: page-enter 720ms var(--motion-ease) forwards;
+}
+@keyframes page-enter { to { transform: translateY(-100%); } }
+
+@media (hover: hover) and (pointer: fine) {
+  [data-magnetic] { transition: transform 160ms ease-out; will-change: transform; }
+  .button:hover, .copy-button:hover { box-shadow: 0 10px 28px rgba(0,0,0,.13); }
+  .output-card:hover { transform: translateY(-4px); }
+  .root-section:hover { transform: translateY(-3px); }
+}
+
+@media (max-width: 680px) {
+  body::before { height: 2px; }
+  [data-reveal] { transform: translate3d(0, 18px, 0) scale(.994); filter: blur(2px); }
+  [data-stagger] > * { transform: translateY(12px); }
+  .hero-copy-block > * { animation-duration: 620ms; }
+  .hero-stage { perspective: none; }
+  .profile-sheet.front { transform: translateY(var(--stage-y, 0px)); }
+  .profile-sheet.back-product, .profile-sheet.back-identity { animation-duration: 8s; }
+  .root-section:hover, .output-card:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  [data-reveal], [data-stagger] > *, .hero-copy-block > * { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .site-header.is-hidden { transform: none; opacity: 1; }
+  .profile-sheet.back-product { transform: translate(-40px,14px) rotate(-4deg); }
+  .profile-sheet.back-identity { transform: translate(40px,10px) rotate(4deg); }
+}
