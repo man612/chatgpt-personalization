@@ -86,7 +86,6 @@
       rootSection.style.isolation = isOpen ? "auto" : "";
       rootSection.style.transform = isOpen ? "none" : "";
     }
-    dock.style.zIndex = isOpen ? "900" : "900";
   }
 
   function enhanceSelectLayer(selectShell) {
