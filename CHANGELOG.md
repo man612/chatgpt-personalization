@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+### Operational profiles
+
+- Added `profiles/operational/` for version-controlled, public-safe account targets used for self-audit and AI-assisted setup.
+- Added `profiles/operational/yasman.json` as the maintainer's current operational ChatGPT setup while keeping `profiles/maintainers/yasman.json` as a stable public reference example.
+- Documented AI audit precedence: explicit current user intent first, observable product state second, operational target for desired state, and unobservable settings reported as unverified rather than mismatched.
+- Kept private or experimental variants in the existing gitignored `profiles/local/` workflow instead of expanding the public operational profile with sensitive or transient context.
+- Added regression tests for operational-profile validity, schema resolution, rendered-field headroom, expected setup behaviors, and separation from the public reference profile.
+
 ### Behavioral hardening
 
 - Strengthened the maintainer reference profile so beginner-oriented explanations assume unknown domain vocabulary without reducing reasoning depth.
