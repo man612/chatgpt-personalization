@@ -1,11 +1,12 @@
 # Profiles
 
-The repository separates **reusable presets** from **real personal profiles**. This matters because a public starter template and one person's long-term context are different things.
+The repository separates **reusable presets**, **public reference profiles**, **operational account targets**, and **private local profiles**. These roles are intentionally different: a generic starter, a public example, a real account source of truth, and private working context should not collapse into one file.
 
 ```text
 profiles/
 ├── presets/       reusable, anonymous starting points
-├── maintainers/   public reference profiles used by project maintainers
+├── maintainers/   public reference implementations
+├── operational/   public-safe account targets for self-audit and AI-assisted setup
 └── local/         private profiles for your own machine; JSON files are gitignored
 ```
 
@@ -17,9 +18,17 @@ Choose the nearest preset, then customize it. `blank.json` is the least opiniona
 
 ## Maintainer profiles
 
-Files in `maintainers/` are public reference implementations. They show how the same generic schema can represent a real person without adding person-specific branches to the renderer, linter, schema, or browser builder.
+Files in `maintainers/` are intentionally public reference implementations. They show how the generic schema can represent a real person without adding person-specific branches to the renderer, linter, schema, or browser builder.
 
-`maintainers/yasman.json` is the maintainer's working profile. It is **not** a universal recommendation and is not the default template in the browser builder.
+`maintainers/yasman.json` is a reference example, not the maintainer's live account source of truth, not a universal recommendation, and not the default template in the browser builder.
+
+## Operational profiles
+
+Files in `operational/` are version-controlled targets for an actual account or user workflow. They are useful when a human or AI assistant needs to audit current ChatGPT settings, detect drift, or regenerate the intended Personalization fields.
+
+Operational profiles use the same v2 schema and renderer as the rest of the repository. They are deliberately separate from maintainer examples so a public reference can stay stable while the real desired setup evolves.
+
+Because this repository is public, committed operational profiles must remain public-safe. Read [`operational/README.md`](operational/README.md) before adding one.
 
 ## Local profiles
 
@@ -32,6 +41,8 @@ python tools/profile.py render profiles/local/me.json --out build/me
 ```
 
 `profiles/local/*.json` and `*.jsonc` are ignored by Git. The directory README stays tracked so the privacy-first workflow is discoverable.
+
+A local profile may be more private or experimental than an operational profile, but gitignore is not encryption. Do not put credentials or unnecessary sensitive information there.
 
 ## Scope rules
 
