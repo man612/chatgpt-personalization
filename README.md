@@ -31,7 +31,7 @@
 
 ChatGPT Personalization is an open-source toolkit for treating personalization as **maintainable configuration** instead of an unversioned block of prompt text. Start from an anonymous preset, customize product settings and durable user context, lint the result, render copy-ready fields, and evaluate whether the behavior actually improves.
 
-The repository also includes a public maintainer profile as a real-world reference implementation. It is not a default, and no core code branches on a person's identity.
+The repository separates public reference examples from operational account targets. A reference can stay useful to other people while an operational profile evolves as a real user's desired setup for self-audit or AI-assisted setup.
 
 > [!NOTE]
 > This project does not make a model more capable, bypass ChatGPT product rules, or guarantee better answers. Structural validation proves that a profile is well-formed; behavioral improvement still needs representative evaluation.
@@ -80,8 +80,9 @@ The project also treats prompt changes like software changes: keep instructions 
 The boundary is deliberate:
 
 - **Presets** are anonymous, reusable starting points.
-- **Local profiles** are personal configurations and are ignored by Git by default.
-- **Maintainer profiles** are intentionally public examples, not universal defaults.
+- **Maintainer profiles** are intentionally public reference examples, not live account truth or universal defaults.
+- **Operational profiles** are version-controlled, public-safe account targets for self-audit and AI-assisted setup.
+- **Local profiles** are private or experimental configurations and are ignored by Git by default.
 - **Core tooling** stays identity-agnostic: schema, renderer, linter, browser builder, and tests use the same rules for everyone.
 
 <details>
@@ -125,11 +126,11 @@ Formatting rules are based on the shape of the information rather than answer le
 - [`product-designer.json`](profiles/presets/product-designer.json) — product thinking, interface critique, flows, and design systems.
 - [`writer-editor.json`](profiles/presets/writer-editor.json) — drafting, rewriting, editing, tone, and language-sensitive work.
 
-The maintainer's public reference profile lives separately at [`profiles/maintainers/yasman.json`](profiles/maintainers/yasman.json).
+The maintainer's public reference example lives at [`profiles/maintainers/yasman.json`](profiles/maintainers/yasman.json). The current public-safe account target used for self-audit and AI-assisted setup lives separately at [`profiles/operational/yasman.json`](profiles/operational/yasman.json).
 
 ## Browser builder
 
-The GitHub Pages builder starts from **Blank**, not from a maintainer profile. Public presets and reference examples are shown as separate groups.
+The GitHub Pages builder starts from **Blank**, not from a maintainer or operational profile. Public presets and reference examples remain separate from account-specific operational targets.
 
 The browser validates profile structure and the selected Custom Instructions target. The Python CLI adds additional checks for secret-like patterns, repeated text, prompt bloat, over-constraint, and outline bias.
 
@@ -174,7 +175,7 @@ Use [`tests/scenarios.md`](tests/scenarios.md) for human-readable cases or [`tes
 .github/    Contribution templates, dependency automation, and CI
 assets/     Theme-aware repository visuals
 docs/       Browser builder, mapping, guidance, privacy, and references
-profiles/   Public presets, maintainer examples, and private-local workflow
+profiles/   Presets, reference examples, operational targets, and private-local profiles
 spec/       JSON Schema for profile files
 tests/      Unit tests, renderer parity, and behavioral scenarios
 tools/      Dependency-free renderer and linter
