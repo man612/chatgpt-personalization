@@ -4,9 +4,9 @@ A personalization profile should contain a small amount of durable context and o
 
 ## Start with the right profile type
 
-Use `profiles/presets/` when publishing a reusable starting point. Use `profiles/local/` for a private personal profile. `profiles/maintainers/` exists only for maintainers who intentionally publish a real profile as a reference implementation.
+Use `profiles/presets/` when publishing a reusable starting point. Use `profiles/maintainers/` for intentionally public reference implementations. Use `profiles/operational/` for a version-controlled, public-safe account target that a human or AI assistant can use for self-audit and setup. Use `profiles/local/` for private or experimental personal profiles that should not be committed.
 
-The distinction is architectural, not cosmetic: a preset should work without knowing who the user is, while a personal profile can contain durable user-specific context. The renderer and linter must treat both through the same schema.
+The distinction is architectural, not cosmetic: a preset should work without knowing who the user is; a maintainer reference should demonstrate the generic schema without becoming live account truth; an operational profile may evolve with a real account's intended configuration; and a local profile may contain private working context. The renderer and linter should still treat all profile JSON through the same schema.
 
 ## Separate information by scope
 
@@ -68,7 +68,9 @@ ChatGPT plan limits and UI controls change. Do not write a plan name into a gene
 
 ## Privacy
 
-A public preset should never contain secrets or real personal history. A local profile can still be sensitive, so Git ignore is only a convenience—not a security boundary. Review diffs before commits and keep credentials out of profile JSON entirely.
+A public preset should never contain secrets or real personal history. A public maintainer or operational profile should contain only information that is deliberately safe to publish. Operational does not mean private: if the repository is public, the profile is public too.
+
+Use `profiles/local/` for private or experimental variants, but remember that Git ignore is only a convenience—not encryption or a security boundary. Review diffs before commits and keep credentials out of profile JSON entirely.
 
 ## Iterate with evals
 
