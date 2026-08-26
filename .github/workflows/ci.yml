@@ -24,12 +24,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py" -v
-      - name: Lint public presets and maintainer references
-        run: python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json
+      - name: Lint tracked profiles
+        run: python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json profiles/operational/*.json
       - name: Render generic preset smoke test
         run: python tools/profile.py render profiles/presets/blank.json --out build/blank --limit 1500
       - name: Render maintainer reference smoke test
-        run: python tools/profile.py render profiles/maintainers/yasman.json --out build/yasman --limit 5000
+        run: python tools/profile.py render profiles/maintainers/yasman.json --out build/yasman-reference --limit 5000
+      - name: Render operational profile smoke test
+        run: python tools/profile.py render profiles/operational/yasman.json --out build/yasman-operational --limit 5000
 
   browser:
     name: Browser renderer parity
