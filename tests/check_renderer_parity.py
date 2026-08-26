@@ -81,7 +81,11 @@ def fixture() -> dict[str, Any]:
 
 def main() -> int:
     profiles = [fixture()]
-    for directory in (REPO_ROOT / "profiles" / "presets", REPO_ROOT / "profiles" / "maintainers"):
+    for directory in (
+        REPO_ROOT / "profiles" / "presets",
+        REPO_ROOT / "profiles" / "maintainers",
+        REPO_ROOT / "profiles" / "operational",
+    ):
         for path in sorted(directory.glob("*.json")):
             profiles.append(json.loads(path.read_text(encoding="utf-8")))
 
