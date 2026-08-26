@@ -8,6 +8,16 @@ The repository stores personalization intent in a stable schema while the ChatGP
 
 These values are rendered into `settings.md` as a checklist because they are product controls, not text that should be pasted into Custom Instructions.
 
+## Operational target versus observed state
+
+An operational profile records the **desired account target**, not a guarantee about the account's live state.
+
+When auditing an account, compare the operational profile only with settings that the current ChatGPT surface or an authorized tool can actually expose. A confirmed difference is a mismatch. A setting that cannot be read should be reported as **unverified**, not assumed to match and not treated as a failure.
+
+Current explicit user intent takes precedence over an older operational target. If the user deliberately changes a preference, treat that as a candidate profile update rather than automatically restoring the old value.
+
+This distinction also keeps the repository honest about product controls. The renderer can say what should be configured, but it cannot prove that a particular ChatGPT client has applied every control.
+
 ## User context and instructions
 
 `identity.occupation` renders to `occupation.txt`. The rest of stable identity/context renders to `more-about-you.txt`. Global response behavior renders to `custom-instructions.txt`. Paste them into the closest matching fields available on your current ChatGPT surface. If the UI exposes fewer fields, preserve the separation conceptually and remove duplicated text before combining fields.
