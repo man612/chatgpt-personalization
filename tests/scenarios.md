@@ -68,6 +68,18 @@ Check concrete elements, user impact, priority, and whether the answer avoids a 
 
 The artifact should match its audience rather than inherit conversational tone.
 
+## Voice-preserving rewrite
+
+> Rapikan pesan ini biar tetap typingku dan bisa langsung kukirim: “aku sebenernya ga masalah tpi klo emng jadwalnya berubah kasih tau aja dari awal, biar aku ga nunggu”
+
+The rewrite must preserve the facts, shorthand, and semantic compression already present. It should not add fake slang, deliberate mistakes, extra explanation, or a meta preamble before the finished message.
+
+## De-AI without overcorrection
+
+> Rewrite this short project update so it sounds like the original author rather than generic AI prose. Keep every fact and do not make it more casual than the source.
+
+Check that the result removes chatbot residue or low-information padding only when present, preserves the source register and stance, does not invent anecdotes or specificity, and prefers the smallest useful rewrite over performative humanization.
+
 ## Relevance boundary
 
 > Explain why sourdough starter rises.

@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+### Sepia writing layer
+
+- Added a lightweight Sepia-derived writing pass to the maintainer operational profile while keeping the rendered Custom Instructions within the repository's 4,500-character headroom target.
+- Added `docs/writing/sepia-yasman.md` for maintainer-specific routing, voice preservation, revision order, failure modes, and public/private sample boundaries.
+- Added `docs/writing/indonesian-ai-tells.md` as explicitly heuristic Indonesian guidance for structural AI-writing patterns without pretending it is a scientific detector.
+- Added voice-preserving and de-AI-without-overcorrection behavioral regression scenarios.
+- Added Sepia research provenance, retained the upstream MIT notice in `THIRD_PARTY_NOTICES.md`, and documented that the adaptation does not imply upstream endorsement.
+
 ### Operational profiles
 
 - Added `profiles/operational/` for version-controlled, public-safe account targets used for self-audit and AI-assisted setup.

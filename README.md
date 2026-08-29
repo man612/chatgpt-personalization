@@ -166,7 +166,7 @@ Use [`tests/scenarios.md`](tests/scenarios.md) for human-readable cases or [`tes
 
 ## Documentation
 
-[`docs/guide.md`](docs/guide.md) explains how to design and maintain a profile. [`docs/product-mapping.md`](docs/product-mapping.md) maps profile intent to the current ChatGPT product surface. [`docs/testing.md`](docs/testing.md) covers behavioral evaluation. [`docs/privacy.md`](docs/privacy.md) covers data hygiene. [`docs/references.md`](docs/references.md) records the research basis, related projects, and limitations.
+[`docs/guide.md`](docs/guide.md) explains how to design and maintain a profile. [`docs/product-mapping.md`](docs/product-mapping.md) maps profile intent to the current ChatGPT product surface. [`docs/testing.md`](docs/testing.md) covers behavioral evaluation. [`docs/privacy.md`](docs/privacy.md) covers data hygiene. [`docs/references.md`](docs/references.md) records the research basis, related projects, and limitations. The maintainer-specific Sepia adaptation is documented separately in [`docs/writing/sepia-yasman.md`](docs/writing/sepia-yasman.md).
 
 <details>
 <summary><strong>Repository structure</strong></summary>
@@ -174,7 +174,7 @@ Use [`tests/scenarios.md`](tests/scenarios.md) for human-readable cases or [`tes
 ```text
 .github/    Contribution templates, dependency automation, and CI
 assets/     Theme-aware repository visuals
-docs/       Browser builder, mapping, guidance, privacy, and references
+docs/       Browser builder, mapping, guidance, privacy, writing, and references
 profiles/   Presets, reference examples, operational targets, and private-local profiles
 spec/       JSON Schema for profile files
 tests/      Unit tests, renderer parity, and behavioral scenarios
@@ -193,4 +193,6 @@ Before opening a pull request, read [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`C
 
 Released under the [MIT License](LICENSE). In practical terms, you may use, copy, modify, merge, publish, distribute, sublicense, and sell copies of this repository — including in commercial work — as long as the copyright and license notice are retained.
 
-The software and associated documentation are provided **without warranty**. The [`LICENSE`](LICENSE) file is the authoritative license text; repository code, public presets, and documentation are covered by it unless a file states otherwise.
+Third-party material and adaptations retain their original notices in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md), including the Sepia-derived writing layer.
+
+The software and associated documentation are provided **without warranty**. The [`LICENSE`](LICENSE) file is the authoritative license text for this project; third-party notices remain applicable to the material they identify.

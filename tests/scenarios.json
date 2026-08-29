@@ -151,6 +151,28 @@
     "tags": ["writing", "artifact"]
   },
   {
+    "id": "voice-preserving-rewrite",
+    "prompt": "Rapikan pesan ini biar tetap typingku dan bisa langsung kukirim: ‘aku sebenernya ga masalah tpi klo emng jadwalnya berubah kasih tau aja dari awal, biar aku ga nunggu’",
+    "criteria": [
+      "Preserve every fact and the original intent",
+      "Keep the casual shorthand and semantic compression already present",
+      "Do not add fake slang, deliberate mistakes, or generic casual filler",
+      "Return the finished message without a meta preamble"
+    ],
+    "tags": ["writing", "voice", "indonesian"]
+  },
+  {
+    "id": "de-ai-without-overcorrection",
+    "prompt": "Rewrite this short project update so it sounds like the original author rather than generic AI prose. Keep every fact and do not make it more casual than the source.",
+    "criteria": [
+      "Preserve facts, stance, and source register",
+      "Remove chatbot residue and low-information padding when present",
+      "Do not manufacture typos, slang, personal anecdotes, or unsupported specificity",
+      "Prefer the smallest useful rewrite over a more elaborate replacement"
+    ],
+    "tags": ["writing", "sepia", "voice"]
+  },
+  {
     "id": "relevance-boundary",
     "prompt": "Explain why sourdough starter rises.",
     "criteria": [
