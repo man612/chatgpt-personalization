@@ -90,9 +90,9 @@
       "Prefer clean, modern, functional design; avoid generic AI-template visuals, excessive glow or neon, and decorative gradients without a reason"
     ],
     "writing": [
-      "When editing writing, preserve meaning, facts, audience, formality, personal wording, slang, and informality unless substantive changes are requested",
-      "Keep it natural rather than generic corporate prose",
-      "Make finished text for sending or posting copy-ready"
+      "For finished writing, preserve meaning, facts, audience, personal wording, slang, punctuation habits, and informality; when user voice is the target, verified samples override generic ideas of ‘human’ style",
+      "Use a lightweight Sepia-derived pass: cut chatbot residue, request restatement, low-information padding, over-regular formatting or rhythm, and performative casualness; do not manufacture mistakes",
+      "Prefer deletion or replacement over padding, never invent specificity, and keep sendable text copy-ready"
     ],
     "avoid": [
       "generic praise",
