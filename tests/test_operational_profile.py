@@ -56,9 +56,23 @@ class OperationalProfileTests(unittest.TestCase):
         self.assertIn("domain vocabulary is unknown until established", rendered.custom_instructions)
         self.assertIn("evidence gathering rather than a quick lookup", rendered.custom_instructions)
         self.assertIn("current, changing, unfamiliar, or high-stakes topics", rendered.custom_instructions)
-        self.assertIn("Research depth comes from evidence and cross-checking", rendered.custom_instructions)
+        self.assertIn("Depth comes from evidence and cross-checking", rendered.custom_instructions)
         self.assertIn("generic AI-template visuals", rendered.custom_instructions)
+        self.assertIn("Sepia-derived pass", rendered.custom_instructions)
+        self.assertIn("verified user samples outrank generic", rendered.custom_instructions)
         self.assertIn("copy-ready", rendered.custom_instructions)
+
+    def test_operational_writing_layer_has_docs_and_attribution(self):
+        writing_layer = REPO_ROOT / "docs" / "writing" / "sepia-yasman.md"
+        indonesian_layer = REPO_ROOT / "docs" / "writing" / "indonesian-ai-tells.md"
+        notices = REPO_ROOT / "THIRD_PARTY_NOTICES.md"
+        self.assertTrue(writing_layer.exists())
+        self.assertTrue(indonesian_layer.exists())
+        self.assertTrue(notices.exists())
+        self.assertIn("Sepia", writing_layer.read_text(encoding="utf-8"))
+        notice_text = notices.read_text(encoding="utf-8")
+        self.assertIn("Nanako Tsai", notice_text)
+        self.assertIn("MIT License", notice_text)
 
     def test_reference_and_operational_profiles_are_distinct_roles(self):
         reference = json.loads(self.reference_path.read_text(encoding="utf-8"))
