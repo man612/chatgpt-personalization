@@ -1,10 +1,10 @@
 # Sepia-Yasman writing layer
 
-> Adapted from [Sepia](https://github.com/Nanako0129/sepia) by Nanako Tsai (MIT). See [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md).
+> Adapted from [Sepia](https://github.com/Nanako0129/sepia) by Nanako Tsai (MIT), with a small set of supplemental audit ideas selectively adapted from [Humanizer](https://github.com/blader/humanizer) by Siqi Chen (MIT). See [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md).
 
 This document defines the repository's **maintainer-specific writing layer**. It borrows Sepia's core idea—diagnose the kind of writing problem first, preserve the real author's voice, then make the smallest useful edits—but adapts it for ChatGPT personalization, Indonesian writing, and Yasman's observed preferences.
 
-It is intentionally **not** a full copy of upstream Sepia. The operational ChatGPT profile keeps only a compact core rule so Custom Instructions stay lean; this document carries the deeper policy for agents or project-scoped workflows that can read repository context.
+It is intentionally **not** a full copy of either upstream project. Sepia remains the main writing architecture. Humanizer is used only as supplemental prior art for a few editorial-residue checks and its useful second-pass audit pattern. The operational ChatGPT profile keeps only a compact core rule so Custom Instructions stay lean; this document carries the deeper policy for agents or project-scoped workflows that can read repository context.
 
 ## Scope and routing
 
@@ -21,8 +21,8 @@ Do not run a humanization ritual over code, configuration, commands, calculation
 3. **Choose the actual voice target.** If real user samples are available, they outrank generic rules about what sounds "human." Preserve verified habits instead of normalizing them away.
 4. **Diagnose before decorating.** Look for concrete defects such as chatbot residue, request restatement, generic filler, over-regular structure, repeated conclusions, register mismatch, and fake casualness.
 5. **Fix the deepest defect first.** Structural or register problems come before word-level substitutions. Prefer deletion or replacement over adding more explanatory prose.
-6. **Run the surface pass last.** Remove awkward wording, repeated sentence frames, canned transitions, unnecessary abstraction, and overly even rhythm only when they are actually present.
-7. **Verify.** Confirm that no facts were invented, the intended voice survived, and the result is ready for its destination without explanatory wrapper text.
+6. **Run one surface audit last.** After the first rewrite, check what still sounds synthetic and fix only defects that materially remain. Do not recursively polish a good draft into a new house style.
+7. **Verify preservation.** Confirm that no facts were invented or lost, the intended voice survived, and the result is ready for its destination without explanatory wrapper text.
 
 ## Yasman voice target
 
@@ -51,9 +51,21 @@ The adaptation keeps these upstream principles because they fit the repository's
 - Do not manufacture imperfection as camouflage.
 - Conventional structure is allowed when the genre genuinely expects it.
 
+## Supplemental Humanizer-informed audit
+
+Humanizer is useful here as a **gap-finding checklist**, not as a second style authority. Its English-oriented 35-pattern catalog overlaps heavily with Sepia and with this repository's Indonesian heuristics, so the project does not import it wholesale. The following additions are retained because they catch editorial residue that can survive a normal de-AI pass:
+
+- **Drafting residue.** Remove a defense against an objection the published text never raised, or an abandoned alternative that appears only to be rejected. Keep real objections, named counterarguments, and genuine options that affect a decision.
+- **Staged profundity or candor.** Phrases that announce a deeper truth or perform honesty should earn their place by adding information or revealing a real stance. Otherwise state the claim directly.
+- **Formulaic aphorisms and punchlines.** Replace slogan-like abstractions or repeated dramatic fragments when they add mood but no useful meaning. Preserve them when they are deliberate and supported by the writer's actual voice.
+- **Present-state documentation.** Documentation and code comments should normally describe current behavior. Historical framing belongs when the venue is specifically about change, such as a changelog, migration guide, incident report, or comparison.
+- **One audit pass, then stop.** A second look is useful for catching leftover residue and lost facts. Repeated full rewrites are not; they can flatten voice, increase rhythmic uniformity, and create a new synthetic house style.
+
+Do not carry English-specific surface bans into Indonesian by default. Punctuation, quotation marks, passive constructions, hyphenation, and other language-specific conventions must follow the writer and venue rather than a generic Humanizer rule.
+
 ## Indonesian adaptation
 
-Upstream Sepia is primarily English-oriented. The project therefore keeps Indonesian-specific heuristics separately in [`indonesian-ai-tells.md`](indonesian-ai-tells.md). Those heuristics are **project observations**, not a scientific Indonesian AI detector. They should guide revision only when several patterns cluster and conflict with the target voice.
+Upstream Sepia and most of Humanizer's source material are English-oriented. The project therefore keeps Indonesian-specific heuristics separately in [`indonesian-ai-tells.md`](indonesian-ai-tells.md). Those heuristics are **project observations**, not a scientific Indonesian AI detector. They should guide revision only when several patterns cluster and conflict with the target voice.
 
 ## Private voice samples
 
@@ -70,6 +82,6 @@ Negative examples are especially useful because they reveal which seemingly reas
 
 ## Failure modes
 
-This layer is failing if it makes answers less accurate, injects slang not present in the source, adds deliberate grammatical errors, repeats the same anti-AI tricks in every artifact, turns every response into casual chat, or makes technical prose vague in the name of sounding natural.
+This layer is failing if it makes answers less accurate, injects slang not present in the source, adds deliberate grammatical errors, repeats the same anti-AI tricks in every artifact, turns every response into casual chat, deletes real objections or alternatives merely because they resemble a pattern, or makes technical prose vague in the name of sounding natural.
 
 The goal is not detector evasion. The goal is writing that carries the right information, fits its destination, and plausibly belongs to the person whose voice it is supposed to represent.
