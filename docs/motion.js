@@ -2,7 +2,6 @@
   "use strict";
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const mobileExperience = window.matchMedia("(max-width: 680px)").matches;
   const supportsScrollTimeline = CSS.supports?.("animation-timeline: scroll()") || false;
   document.documentElement.classList.add("motion-ready");
@@ -47,15 +46,6 @@
     document.querySelectorAll("[data-reveal], [data-stagger]").forEach((element) => revealObserver.observe(element));
   } else {
     revealNow();
-  }
-
-  if (!reduceMotion && "IntersectionObserver" in window) {
-    const pauseObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => entry.target.classList.toggle("motion-paused", !entry.isIntersecting));
-    }, { rootMargin: "120px 0px 120px" });
-    [document.querySelector(".hero-stage"), document.querySelector(".explanation")]
-      .filter(Boolean)
-      .forEach((element) => pauseObserver.observe(element));
   }
 
   /* Desktop keeps the animated hide/reveal header. Mobile already has a sticky step navigator,
@@ -104,65 +94,9 @@
   }
 
   function enhanceButtons(root = document) {
-    root.querySelectorAll?.(".button, .copy-button, .text-button").forEach((button) => {
-      addRipple(button);
-      if (finePointer) button.setAttribute("data-magnetic", "");
-    });
+    root.querySelectorAll?.(".button, .copy-button, .text-button").forEach(addRipple);
   }
   enhanceButtons();
-
-  if (!reduceMotion && finePointer) {
-    document.addEventListener("pointermove", (event) => {
-      const magnetic = event.target.closest?.("[data-magnetic]");
-      if (!magnetic) return;
-      const rect = magnetic.getBoundingClientRect();
-      const x = (event.clientX - rect.left - rect.width / 2) * .08;
-      const y = (event.clientY - rect.top - rect.height / 2) * .12;
-      magnetic.style.transform = `translate(${x}px, ${y}px)`;
-    }, { passive: true });
-
-    document.addEventListener("pointerout", (event) => {
-      const magnetic = event.target.closest?.("[data-magnetic]");
-      if (!magnetic || magnetic.contains(event.relatedTarget)) return;
-      magnetic.style.transform = "";
-    });
-
-    const stage = document.querySelector(".hero-stage");
-    const frontSheet = stage?.querySelector(".profile-sheet.front");
-    if (stage && frontSheet) {
-      stage.addEventListener("pointerenter", () => frontSheet.classList.add("motion-promoted"));
-      stage.addEventListener("pointermove", (event) => {
-        const rect = stage.getBoundingClientRect();
-        const nx = (event.clientX - rect.left) / rect.width - .5;
-        const ny = (event.clientY - rect.top) / rect.height - .5;
-        frontSheet.style.setProperty("--stage-ry", `${nx * 8}deg`);
-        frontSheet.style.setProperty("--stage-rx", `${ny * -6}deg`);
-        frontSheet.style.setProperty("--stage-y", `${ny * -7}px`);
-      }, { passive: true });
-      stage.addEventListener("pointerleave", () => {
-        frontSheet.style.setProperty("--stage-ry", "0deg");
-        frontSheet.style.setProperty("--stage-rx", "0deg");
-        frontSheet.style.setProperty("--stage-y", "0px");
-        window.setTimeout(() => frontSheet.classList.remove("motion-promoted"), 220);
-      });
-    }
-  }
-
-  function addSpotlight(card) {
-    if (!finePointer || !card || card.dataset.motionSpotlight === "true") return;
-    card.dataset.motionSpotlight = "true";
-    card.addEventListener("pointermove", (event) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty("--card-x", `${event.clientX - rect.left}px`);
-      card.style.setProperty("--card-y", `${event.clientY - rect.top}px`);
-    }, { passive: true });
-  }
-
-  function enhanceCards(root = document) {
-    if (!finePointer) return;
-    root.querySelectorAll?.(".root-section, .output-card").forEach(addSpotlight);
-  }
-  enhanceCards();
 
   let sectionObserver = null;
   function observeRootSections() {
@@ -181,41 +115,12 @@
   }
   observeRootSections();
 
-  function burstFrom(element) {
-    if (reduceMotion || !element) return;
-    const rect = element.getBoundingClientRect();
-    const palette = ["#6fcd83", "#72aee8", "#b59be8", "#e3b45f", "#e88970"];
-    const count = mobileExperience ? 8 : 10;
-    for (let index = 0; index < count; index += 1) {
-      const particle = document.createElement("i");
-      particle.className = "motion-particle";
-      particle.style.left = `${rect.left + rect.width / 2}px`;
-      particle.style.top = `${rect.top + rect.height / 2}px`;
-      const angle = (Math.PI * 2 * index) / count + Math.random() * .22;
-      const distance = 34 + Math.random() * 48;
-      particle.style.setProperty("--particle-x", `${Math.cos(angle) * distance}px`);
-      particle.style.setProperty("--particle-y", `${Math.sin(angle) * distance}px`);
-      particle.style.setProperty("--particle-r", `${Math.random() * 260 - 130}deg`);
-      particle.style.setProperty("--particle-color", palette[index % palette.length]);
-      document.body.appendChild(particle);
-      setTimeout(() => particle.remove(), 820);
-    }
-  }
-
-  document.addEventListener("click", (event) => {
-    const copyButton = event.target.closest?.(".copy-button");
-    if (copyButton) burstFrom(copyButton);
-    const downloadButton = event.target.closest?.("#download-button");
-    if (downloadButton) burstFrom(downloadButton);
-  });
-
   const profileForm = document.querySelector("#profile-form");
   if (profileForm && !mobileExperience) {
     const dynamicObserver = new MutationObserver((mutations) => {
       let rootsChanged = false;
       mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
         if (!(node instanceof Element)) return;
-        enhanceCards(node.parentElement || node);
         if (node.matches?.(".root-section") || node.querySelector?.(".root-section")) rootsChanged = true;
       }));
       if (rootsChanged) requestAnimationFrame(observeRootSections);
