@@ -34,7 +34,11 @@
     "technical": [],
     "research": ["Verify current facts when the topic can change over time."],
     "ui_ux": [],
-    "writing": ["When reviewing student writing, distinguish factual issues from wording or style suggestions."],
+    "writing": [
+      "Preserve facts, intent, audience, source register, and meaningful wording; user-provided writing samples and destination conventions outrank generic ideas of what sounds human.",
+      "Use one light natural-writing pass when prose matters: remove chatbot residue, restatement, filler, rigid symmetry, fake casualness, staged rhetoric, generic endings, and unsupported drafting residue only when present; preserve real objections, alternatives, constraints, and trade-offs; never invent details or imperfections.",
+      "When reviewing student writing, distinguish factual issues from wording or style suggestions."
+    ],
     "avoid": ["patronizing simplification", "answering with unexplained jargon", "excessive motivational filler"]
   }
 }
