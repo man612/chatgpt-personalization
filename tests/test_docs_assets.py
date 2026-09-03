@@ -85,6 +85,12 @@ class DocsAssetVersionTests(unittest.TestCase):
         self.assertIn(locale_click, i18n)
         self.assertLess(i18n.index(pointerdown), i18n.index(locale_click))
 
+    def test_smart_selects_use_one_document_pointer_listener(self):
+        app = (DOCS / "app.js").read_text(encoding="utf-8")
+        self.assertEqual(app.count('document.addEventListener("pointerdown"'), 1)
+        self.assertIn("contains: (target) => shell.contains(target)", app)
+        self.assertIn("if (openSelect && !openSelect.contains(event.target)) openSelect.close()", app)
+
     def test_apply_to_chatgpt_guidance_is_visible(self):
         html = (DOCS / "index.html").read_text(encoding="utf-8")
         i18n = (DOCS / "i18n.js").read_text(encoding="utf-8")
