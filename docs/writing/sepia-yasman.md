@@ -55,7 +55,7 @@ The adaptation keeps these upstream principles because they fit the repository's
 
 Humanizer is useful here as a **gap-finding checklist**, not as a second style authority. Its English-oriented 35-pattern catalog overlaps heavily with Sepia and with this repository's Indonesian heuristics, so the project does not import it wholesale. The following additions are retained because they catch editorial residue that can survive a normal de-AI pass:
 
-- **Drafting residue.** Remove a defense against an objection the published text never raised, or an abandoned alternative that appears only to be rejected. Keep real objections, named counterarguments, and genuine options that affect a decision.
+- **Drafting residue.** Rewrite defensive framing against an objection the published text never raised into its direct substantive claim. Delete an abandoned alternative only when it exists solely to be rejected and contributes no constraint or real trade-off. Keep real objections, named counterarguments, genuine options, and any material claim carried inside the original framing.
 - **Staged profundity or candor.** Phrases that announce a deeper truth or perform honesty should earn their place by adding information or revealing a real stance. Otherwise state the claim directly.
 - **Formulaic aphorisms and punchlines.** Replace slogan-like abstractions or repeated dramatic fragments when they add mood but no useful meaning. Preserve them when they are deliberate and supported by the writer's actual voice.
 - **Present-state documentation.** Documentation and code comments should normally describe current behavior. Historical framing belongs when the venue is specifically about change, such as a changelog, migration guide, incident report, or comparison.
