@@ -4,6 +4,8 @@
   const mobileQuery = window.matchMedia("(max-width: 680px)");
   if (!mobileQuery.matches) return;
 
+  const i18n = window.BuilderI18n;
+  const tr = (key, vars, fallback) => i18n?.t?.(key, vars, fallback) || fallback || key;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const body = document.body;
   const controlDeck = document.querySelector(".control-deck");
@@ -18,13 +20,15 @@
 
   body.classList.add("mobile-flow");
 
-  const steps = [
-    { id: "setup", label: "Setup", title: "Choose a starting point", caption: "Pick a reusable preset and the Custom Instructions character target." },
-    { id: "product", label: "Product", title: "Product settings", caption: "Match ChatGPT controls such as Personality, Characteristics, and Memory." },
-    { id: "identity", label: "About you", title: "About you", caption: "Add durable context that helps ChatGPT understand your work, background, and recurring use." },
-    { id: "instructions", label: "Response", title: "Response behavior", caption: "Define how explanations, research, technical work, UI/UX reviews, and writing should behave." },
-    { id: "output", label: "Use", title: "Use in ChatGPT", caption: "Apply product controls, then paste each rendered text field into the matching Personalization field." },
-  ];
+  const steps = ["setup", "product", "identity", "instructions", "output"];
+  function stepData(id) {
+    return {
+      id,
+      label: tr(`step_${id}_label`, {}, id),
+      title: tr(`step_${id}_title`, {}, id),
+      caption: tr(`step_${id}_caption`, {}, ""),
+    };
+  }
 
   const replayedInputs = new WeakSet();
   const pendingInputs = new Map();
@@ -45,22 +49,22 @@
 
   const flowNav = document.createElement("nav");
   flowNav.className = "mobile-flow-nav";
-  flowNav.setAttribute("aria-label", "Personalization builder steps");
+  flowNav.setAttribute("aria-label", tr("mobile_steps", {}, "Personalization builder steps"));
   flowNav.innerHTML = `
     <div class="mobile-flow-top">
-      <button type="button" class="mobile-back" aria-label="Previous step">←</button>
+      <button type="button" class="mobile-back" aria-label="${tr("previous_step", {}, "Previous step")}">←</button>
       <div class="mobile-step-copy" aria-live="polite">
         <small></small>
         <strong></strong>
       </div>
-      <button type="button" class="mobile-next">Next</button>
+      <button type="button" class="mobile-next">${tr("next", {}, "Next")}</button>
     </div>
-    <div class="mobile-step-tabs" aria-label="Jump to a builder step">
+    <div class="mobile-step-tabs" aria-label="${tr("jump_steps", {}, "Jump to a builder step")}">
       <span class="mobile-step-indicator" aria-hidden="true"></span>
-      ${steps.map((step, index) => `
-        <button type="button" class="mobile-step-tab" data-step-index="${index}" aria-label="Go to step ${index + 1}: ${step.label}">
-          <span>${index + 1}</span><small>${step.label}</small>
-        </button>`).join("")}
+      ${steps.map((id, index) => {
+        const step = stepData(id);
+        return `<button type="button" class="mobile-step-tab" data-step-index="${index}" aria-label="${tr("go_step", { number: index + 1, label: step.label }, `Go to step ${index + 1}: ${step.label}`)}"><span>${index + 1}</span><small>${step.label}</small></button>`;
+      }).join("")}
     </div>
   `;
   controlDeck?.before(flowNav);
@@ -104,15 +108,21 @@
   }
 
   function updateStepChrome() {
-    const step = steps[currentStep];
+    const step = stepData(steps[currentStep]);
     body.dataset.mobileStep = step.id;
-    stepMeta.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+    flowNav.setAttribute("aria-label", tr("mobile_steps", {}, "Personalization builder steps"));
+    flowNav.querySelector(".mobile-step-tabs").setAttribute("aria-label", tr("jump_steps", {}, "Jump to a builder step"));
+    stepMeta.textContent = tr("step_meta", { current: currentStep + 1, total: steps.length }, `Step ${currentStep + 1} of ${steps.length}`);
     stepLabel.textContent = step.title;
     backButton.disabled = currentStep === 0;
+    backButton.setAttribute("aria-label", tr("previous_step", {}, "Previous step"));
     nextButton.disabled = currentStep === steps.length - 1;
-    nextButton.textContent = currentStep === steps.length - 1 ? "Done" : "Next";
+    nextButton.textContent = currentStep === steps.length - 1 ? tr("done", {}, "Done") : tr("next", {}, "Next");
 
     stepTabs.forEach((button, index) => {
+      const data = stepData(steps[index]);
+      button.querySelector("small").textContent = data.label;
+      button.setAttribute("aria-label", tr("go_step", { number: index + 1, label: data.label }, `Go to step ${index + 1}: ${data.label}`));
       const active = index === currentStep;
       if (active) button.setAttribute("aria-current", "step");
       else button.removeAttribute("aria-current");
@@ -149,14 +159,12 @@
       if (shouldScroll) scrollToFlow();
       return;
     }
-
     const direction = target > currentStep ? 1 : -1;
     currentStep = target;
     updateStepChrome();
     positionStepIndicator(animate && !reduceMotion);
-
     requestAnimationFrame(() => {
-      animateStepSurface(getStepSurface(steps[currentStep].id), direction);
+      animateStepSurface(getStepSurface(steps[currentStep]), direction);
       if (shouldScroll) scrollToFlow();
     });
   }
@@ -180,19 +188,27 @@
   dialog.className = "mobile-choice-dialog";
   dialog.innerHTML = `
     <div class="mobile-dialog-head">
-      <div><small>Choose one</small><strong>Options</strong></div>
-      <button type="button" class="mobile-dialog-close" aria-label="Close">×</button>
+      <div><small></small><strong></strong></div>
+      <button type="button" class="mobile-dialog-close">×</button>
     </div>
     <div class="mobile-dialog-options"></div>
   `;
   body.appendChild(dialog);
 
+  const dialogKicker = dialog.querySelector(".mobile-dialog-head small");
   const dialogTitle = dialog.querySelector(".mobile-dialog-head strong");
   const dialogOptions = dialog.querySelector(".mobile-dialog-options");
   const dialogClose = dialog.querySelector(".mobile-dialog-close");
   let dialogSelect = null;
   let dialogTrigger = null;
   let dialogClosing = false;
+
+  function updateDialogStatic() {
+    dialogKicker.textContent = tr("choose_one", {}, "Choose one");
+    dialogClose.setAttribute("aria-label", tr("close", {}, "Close"));
+    if (dialogSelect) dialogTitle.textContent = selectLabel(dialogSelect);
+  }
+  updateDialogStatic();
 
   function selectLabel(select) {
     const explicit = select.getAttribute("aria-labelledby");
@@ -201,7 +217,7 @@
       if (label) return label.textContent.trim();
     }
     const fieldLabel = select.closest(".field")?.querySelector("label");
-    return fieldLabel?.textContent.trim() || "Choose an option";
+    return fieldLabel?.textContent.trim() || tr("choose_option", {}, "Choose an option");
   }
 
   function finishDialogClose() {
@@ -280,7 +296,7 @@
     if (!shell || !trigger) return;
     dialogSelect = select;
     dialogTrigger = trigger;
-    dialogTitle.textContent = selectLabel(select);
+    updateDialogStatic();
     renderDialogOptions(select);
     trigger.setAttribute("aria-expanded", "true");
     dialog.showModal();
@@ -312,13 +328,11 @@
     const trigger = shell?.querySelector(".select-trigger");
     if (!select || !shell || !trigger || shell.dataset.mobileChoice === "dialog") return;
     shell.dataset.mobileChoice = "dialog";
-
     trigger.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopImmediatePropagation();
       openDialogFor(select);
     }, true);
-
     trigger.addEventListener("keydown", (event) => {
       if (!["Enter", " ", "ArrowDown", "ArrowUp"].includes(event.key)) return;
       event.preventDefault();
@@ -327,30 +341,24 @@
     }, true);
   }
 
+  const choiceGroups = new Set();
   function enhanceChoiceCards(select) {
     const shell = select?.closest(".smart-select");
     if (!select || !shell || shell.dataset.mobileChoice === "cards") return;
     shell.dataset.mobileChoice = "cards";
     shell.classList.add("mobile-control-replaced");
-
     const group = document.createElement("div");
     group.className = "mobile-direct-choices";
     group.setAttribute("role", "radiogroup");
     group.setAttribute("aria-label", selectLabel(select));
-
     const buttons = Array.from(select.options).map((option) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "mobile-choice-card";
       button.setAttribute("role", "radio");
       const strong = document.createElement("strong");
-      strong.textContent = option.textContent;
-      button.appendChild(strong);
-      if (option.dataset.description) {
-        const small = document.createElement("small");
-        small.textContent = option.dataset.description;
-        button.appendChild(small);
-      }
+      const small = document.createElement("small");
+      button.append(strong, small);
       button.addEventListener("click", () => {
         if (select.value === option.value) return;
         select.value = option.value;
@@ -358,10 +366,20 @@
         animateSelected(button);
       });
       group.appendChild(button);
-      return { button, option };
+      return { button, option, strong, small };
     });
-
-    const sync = () => buttons.forEach(({ button, option }) => button.setAttribute("aria-checked", String(option.value === select.value)));
+    const record = { group, buttons, select };
+    const sync = () => {
+      group.setAttribute("aria-label", selectLabel(select));
+      buttons.forEach(({ button, option, strong, small }) => {
+        button.setAttribute("aria-checked", String(option.value === select.value));
+        strong.textContent = option.textContent;
+        small.textContent = option.dataset.description || "";
+        small.hidden = !option.dataset.description;
+      });
+    };
+    record.sync = sync;
+    choiceGroups.add(record);
     select.addEventListener("change", sync);
     shell.appendChild(group);
     sync();
@@ -372,7 +390,6 @@
     if (!select || !shell || shell.dataset.mobileChoice === "switch") return;
     shell.dataset.mobileChoice = "switch";
     shell.classList.add("mobile-control-replaced");
-
     const button = document.createElement("button");
     button.type = "button";
     button.className = "mobile-switch-control";
@@ -380,12 +397,11 @@
     button.innerHTML = `<span class="mobile-switch-copy"><strong></strong><small></small></span><span class="mobile-switch-track" aria-hidden="true"></span>`;
     const state = button.querySelector("strong");
     const hint = button.querySelector("small");
-
     const sync = () => {
       const on = select.value === "true";
       button.setAttribute("aria-checked", String(on));
-      state.textContent = on ? "On" : "Off";
-      hint.textContent = on ? "Enabled for this profile" : "Disabled for this profile";
+      state.textContent = on ? tr("option_on", {}, "On") : tr("option_off", {}, "Off");
+      hint.textContent = on ? tr("option_enabled", {}, "Enabled for this profile") : tr("option_disabled", {}, "Disabled for this profile");
     };
     button.addEventListener("click", () => {
       select.value = select.value === "true" ? "false" : "true";
@@ -398,7 +414,6 @@
   }
 
   const segmentedGroups = new Set();
-
   function positionSegmentIndicator(record, animate = true) {
     const { group, buttons, select, indicator } = record;
     const selected = buttons.find(({ option }) => option.value === select.value)?.button;
@@ -414,14 +429,6 @@
     if (!select || !shell || shell.dataset.mobileChoice === "segments") return;
     shell.dataset.mobileChoice = "segments";
     shell.classList.add("mobile-control-replaced");
-
-    const labels = {
-      less: "Less",
-      slightly_less: "Slight −",
-      neutral: "Neutral",
-      slightly_more: "Slight +",
-      more: "More",
-    };
     const group = document.createElement("div");
     group.className = "mobile-segmented";
     group.setAttribute("role", "radiogroup");
@@ -430,13 +437,12 @@
     indicator.className = "mobile-segment-indicator";
     indicator.setAttribute("aria-hidden", "true");
     group.appendChild(indicator);
-
     const buttons = Array.from(select.options).map((option) => {
       const button = document.createElement("button");
       button.type = "button";
       button.setAttribute("role", "radio");
       button.setAttribute("aria-label", option.textContent);
-      button.textContent = labels[option.value] || option.textContent;
+      button.textContent = option.textContent;
       button.addEventListener("click", () => {
         if (select.value === option.value) return;
         select.value = option.value;
@@ -445,13 +451,18 @@
       group.appendChild(button);
       return { button, option };
     });
-
     const record = { group, buttons, select, indicator };
     segmentedGroups.add(record);
     const sync = () => {
-      buttons.forEach(({ button, option }) => button.setAttribute("aria-checked", String(option.value === select.value)));
+      group.setAttribute("aria-label", selectLabel(select));
+      buttons.forEach(({ button, option }) => {
+        button.setAttribute("aria-checked", String(option.value === select.value));
+        button.setAttribute("aria-label", option.textContent);
+        button.textContent = option.textContent;
+      });
       requestAnimationFrame(() => positionSegmentIndicator(record, !reduceMotion));
     };
+    record.sync = sync;
     select.addEventListener("change", sync);
     shell.appendChild(group);
     sync();
@@ -468,13 +479,16 @@
   enhanceSelect(templateSelect);
   enhanceSelect(limitSelect);
 
-  const placeholders = {
-    "field-identity-occupation": "Example: Office operations staff and freelance UI/UX designer",
-    "field-identity-background": "One relevant background detail per line",
-    "field-identity-experience": "What you already know, how you learned, or where you are still a beginner",
-    "field-identity-recurring_uses": "One recurring ChatGPT use per line",
-    "field-identity-stable_preferences": "One long-term preference per line",
-  };
+  function placeholderFor(id) {
+    const keys = {
+      "field-identity-occupation": "placeholder_occupation",
+      "field-identity-background": "placeholder_background",
+      "field-identity-experience": "placeholder_experience",
+      "field-identity-recurring_uses": "placeholder_uses",
+      "field-identity-stable_preferences": "placeholder_preferences",
+    };
+    return keys[id] ? tr(keys[id], {}, "") : "";
+  }
 
   const supportsFieldSizing = CSS.supports?.("field-sizing: content") || false;
   const autosizeQueue = new Set();
@@ -501,12 +515,14 @@
     if (!root) return;
     root.querySelectorAll("select").forEach(enhanceSelect);
     root.querySelectorAll("textarea").forEach((textarea) => {
-      if (placeholders[textarea.id]) textarea.placeholder = placeholders[textarea.id];
+      const placeholder = placeholderFor(textarea.id);
+      if (placeholder) textarea.placeholder = placeholder;
       scheduleAutosize(textarea);
     });
     requestAnimationFrame(() => {
       segmentedGroups.forEach((record) => {
         if (!record.group.isConnected) { segmentedGroups.delete(record); return; }
+        record.sync?.();
         positionSegmentIndicator(record, false);
       });
     });
@@ -518,7 +534,6 @@
       const target = event.target;
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
       if (target instanceof HTMLTextAreaElement) scheduleAutosize(target);
-
       event.stopImmediatePropagation();
       const existing = pendingInputs.get(target);
       if (existing) clearTimeout(existing);
@@ -546,6 +561,17 @@
       });
     });
   }, { passive: true });
+
+  document.addEventListener("builder:localechange", () => {
+    updateStepChrome();
+    updateDialogStatic();
+    choiceGroups.forEach((record) => {
+      if (!record.group.isConnected) { choiceGroups.delete(record); return; }
+      record.sync?.();
+    });
+    enhanceFormUI(profileForm);
+    positionStepIndicator(false);
+  });
 
   enhanceFormUI();
 })();

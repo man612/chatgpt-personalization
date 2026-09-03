@@ -1,27 +1,32 @@
 # Operational profiles
 
-Operational profiles are version-controlled, account-specific targets intended for **self-audit and AI-assisted setup**, not reusable recommendations.
+Operational profiles are version-controlled, public-safe targets for a specific account or maintainer workflow. They support dogfooding, self-audit, and AI-assisted setup while using the same schema and renderer as every other profile.
 
-They use the same v2 profile schema and renderer as presets and maintainer examples, so the desired ChatGPT settings can be linted and rendered without creating a second personalization format.
+They are **not public presets** and must not appear as normal builder starting points.
 
-## How an AI assistant should use this directory
+## Boundary
 
-When the user asks to check, restore, compare, or update their ChatGPT personalization setup:
+- An operational profile belongs to a named account or maintainer context.
+- Keep only information that is intentionally safe to publish in this repository.
+- Reusable behavior belongs in `profiles/presets/` or generic documentation, not only in one operational profile.
+- Private or experimental variants belong in `profiles/local/`, which is gitignored by default.
+- Product state can change independently of this file. Treat an operational profile as the desired setup target, not proof of the account's live state.
+- Never store credentials, private chat logs, client data, secrets, or sensitive personal history here.
 
-1. Treat the user's explicit current request as highest priority.
+## AI-assisted audit
+
+When the user explicitly asks an assistant to check, restore, compare, or update their setup:
+
+1. Treat the user's current request as highest priority.
 2. Read the matching operational profile as the desired account target.
-3. Compare it with product settings that are actually observable in the current session when tools expose them.
+3. Compare it only with product settings that are actually observable.
 4. Mark settings that cannot be read as **unverified**, not mismatched.
-5. Use `profiles/maintainers/` only as public reference examples; do not treat a maintainer example as the user's live source of truth.
-6. Do not infer temporary project state, conversation history, private relationships, finances, credentials, or other transient context into the operational profile.
-7. Recommend the smallest change that restores the intended setup and call out deliberate deviations separately.
+5. Recommend the smallest change needed to restore the intended setup.
 
-An operational profile is **not automatically loaded by ChatGPT** merely because it exists in this repository. It is a reviewable source of truth for humans and tools that explicitly read it.
+An operational profile is not automatically loaded by ChatGPT merely because it exists in this repository. A human or tool must explicitly read and apply it.
 
-## Public-safe versus private context
+## Current maintainer target
 
-Files committed here are public. Keep only durable information that is safe to publish.
+`yasman.json` is intentionally retained as the maintainer's public-safe operational target. It is useful for dogfooding this project and auditing the maintainer's own ChatGPT setup, but it is **not** a profile other users are expected to copy.
 
-If a more private or experimental variant is needed, put it in `profiles/local/`. JSON and JSONC files there are gitignored by default. A local file may refine the operational target when it is explicitly available to the assistant, but remote GitHub readers cannot see uncommitted local files.
-
-Never store passwords, API keys, tokens, client secrets, confidential customer data, or sensitive personal history in either an operational or local personalization profile.
+A stable public reference example is kept separately at `profiles/maintainers/yasman.json`.

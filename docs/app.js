@@ -2,6 +2,9 @@
   "use strict";
 
   const renderer = window.PersonalizationRenderer;
+  const i18n = window.BuilderI18n;
+  i18n?.applyStatic?.();
+
   const profileForm = document.querySelector("#profile-form");
   const templateSelect = document.querySelector("#template-select");
   const limitSelect = document.querySelector("#limit-select");
@@ -21,7 +24,9 @@
     custom_instructions: document.querySelector("#instructions-output"),
   };
 
-  const titleCase = (value) => String(value).replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase());
+  const fallbackTitle = (value) => String(value).replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase());
+  const displayLabel = (key) => i18n?.label?.(key) || fallbackTitle(key);
+  const tr = (key, vars, fallback) => i18n?.t?.(key, vars, fallback) || fallback || key;
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
   function setStatus(kind, message) {
@@ -29,30 +34,8 @@
     statusText.textContent = message;
   }
 
-  function fieldHelp(path) {
-    const help = {
-      "product.personality": "Base style and tone. Keep response rules in instructions rather than duplicating them here.",
-      "product.characteristics.headers_and_lists": "Lower this for paragraph-first answers while still allowing lists when they genuinely help.",
-      "instructions.explanation.principle": "The main teaching rule for unfamiliar concepts.",
-      "instructions.explanation.sequence": "One step per line. This is dependency order, not a rigid answer template.",
-      "instructions.explanation.depth": "What must remain intact when language becomes simpler.",
-      "instructions.structure.headings": "Describe when headings help; avoid rules triggered only by answer length.",
-    };
-    return help[path] || "";
-  }
-
-  function sectionHelp(path) {
-    const help = {
-      product: "ChatGPT product controls that should not be duplicated into prompt text.",
-      identity: "Durable context that changes how answers should be shaped.",
-      instructions: "Global response behavior rendered into Custom Instructions.",
-      "product.characteristics": "Directional preferences for presentation and tone.",
-      "product.memory": "Intended Memory state; product availability can vary.",
-      "instructions.explanation": "How unfamiliar material should become understandable without losing depth.",
-      "instructions.structure": "Formatting defaults that follow information shape rather than answer length.",
-    };
-    return help[path] || "";
-  }
+  function fieldHelp(path) { return i18n?.help?.(path) || ""; }
+  function sectionHelp(path) { return i18n?.section?.(path) || ""; }
 
   function enhanceSelect(select) {
     if (!select || select.dataset.enhanced === "true") return;
@@ -96,11 +79,12 @@
       trigger.setAttribute("aria-labelledby", labelledBy);
       menu.setAttribute("aria-labelledby", labelledBy);
     } else {
-      trigger.setAttribute("aria-label", select.name || select.id || "Select option");
-      menu.setAttribute("aria-label", select.name || select.id || "Options");
+      trigger.setAttribute("aria-label", select.name || select.id || tr("choose_option", {}, "Choose an option"));
+      menu.setAttribute("aria-label", select.name || select.id || tr("options", {}, "Options"));
     }
 
     const optionItems = [];
+    const groupItems = [];
     let optionIndex = 0;
 
     function appendOption(option) {
@@ -110,23 +94,15 @@
       item.setAttribute("role", "option");
       item.dataset.value = option.value;
       item.dataset.index = String(optionIndex);
-
       const title = document.createElement("span");
       title.className = "select-option-title";
-      title.textContent = option.textContent;
-      item.appendChild(title);
-
-      if (option.dataset.description) {
-        const detail = document.createElement("span");
-        detail.className = "select-option-detail";
-        detail.textContent = option.dataset.description;
-        item.appendChild(detail);
-      }
-
+      const detail = document.createElement("span");
+      detail.className = "select-option-detail";
+      item.append(title, detail);
       item.addEventListener("pointerdown", (event) => event.preventDefault());
       item.addEventListener("click", () => commit(optionItems.indexOf(item)));
       menu.appendChild(item);
-      optionItems.push(item);
+      optionItems.push({ item, option, title, detail });
       optionIndex += 1;
     }
 
@@ -134,8 +110,8 @@
       if (child.tagName === "OPTGROUP") {
         const groupLabel = document.createElement("div");
         groupLabel.className = "select-group-label";
-        groupLabel.textContent = child.label;
         menu.appendChild(groupLabel);
+        groupItems.push({ node: groupLabel, source: child });
         Array.from(child.children).forEach(appendOption);
       } else if (child.tagName === "OPTION") {
         appendOption(child);
@@ -153,20 +129,30 @@
       return Array.from(select.options).find((option) => option.value === select.value) || select.options[0];
     }
 
+    function refreshCopy() {
+      groupItems.forEach(({ node, source }) => { node.textContent = source.label; });
+      optionItems.forEach(({ item, option, title, detail }, index) => {
+        title.textContent = option.textContent;
+        detail.textContent = option.dataset.description || "";
+        detail.hidden = !option.dataset.description;
+        item.setAttribute("aria-selected", String(index === Array.from(select.options).indexOf(selectedOption())));
+      });
+    }
+
     function updateVisualState() {
+      refreshCopy();
       const selected = selectedOption();
       if (!selected) return;
       valueLabel.textContent = selected.textContent;
       detailLabel.textContent = selected.dataset.description || "";
       const selectedIndex = Array.from(select.options).indexOf(selected);
-      optionItems.forEach((item, index) => item.setAttribute("aria-selected", String(index === selectedIndex)));
       activeIndex = selectedIndex >= 0 ? selectedIndex : 0;
       syncActiveOption();
     }
 
     function syncActiveOption() {
-      optionItems.forEach((item, index) => item.classList.toggle("active", index === activeIndex && shell.classList.contains("open")));
-      const active = optionItems[activeIndex];
+      optionItems.forEach(({ item }, index) => item.classList.toggle("active", index === activeIndex && shell.classList.contains("open")));
+      const active = optionItems[activeIndex]?.item;
       if (shell.classList.contains("open") && active) {
         trigger.setAttribute("aria-activedescendant", active.id);
         active.scrollIntoView({ block: "nearest" });
@@ -193,7 +179,7 @@
       trigger.removeAttribute("aria-activedescendant");
       shell.classList.remove("open-up");
       if (openSelect === api) openSelect = null;
-      optionItems.forEach((item) => item.classList.remove("active"));
+      optionItems.forEach(({ item }) => item.classList.remove("active"));
     }
 
     function moveActive(delta) {
@@ -203,9 +189,9 @@
     }
 
     function commit(index) {
-      const item = optionItems[index];
-      if (!item) return;
-      select.value = item.dataset.value;
+      const record = optionItems[index];
+      if (!record) return;
+      select.value = record.option.value;
       updateVisualState();
       select.dispatchEvent(new Event("change", { bubbles: true }));
       closeMenu();
@@ -264,7 +250,7 @@
     wrapper.className = "field";
 
     const label = document.createElement("label");
-    label.textContent = titleCase(key);
+    label.textContent = displayLabel(key);
     wrapper.appendChild(label);
 
     const helpText = fieldHelp(path);
@@ -284,7 +270,7 @@
       [true, false].forEach((optionValue) => {
         const option = document.createElement("option");
         option.value = String(optionValue);
-        option.textContent = optionValue ? "On" : "Off";
+        option.textContent = optionValue ? tr("option_on", {}, "On") : tr("option_off", {}, "Off");
         if (value === optionValue) option.selected = true;
         input.appendChild(option);
       });
@@ -304,7 +290,7 @@
         ["Default", "Professional", "Friendly", "Candid", "Quirky", "Efficient", "Cynical"].forEach((item) => {
           const option = document.createElement("option");
           option.value = item;
-          option.textContent = item;
+          option.textContent = i18n?.personality?.(item) || item;
           if (item === value) option.selected = true;
           input.appendChild(option);
         });
@@ -314,7 +300,7 @@
         ["less", "slightly_less", "neutral", "slightly_more", "more"].forEach((item) => {
           const option = document.createElement("option");
           option.value = item;
-          option.textContent = titleCase(item);
+          option.textContent = i18n?.relative?.(item) || fallbackTitle(item);
           if (item === value) option.selected = true;
           input.appendChild(option);
         });
@@ -345,7 +331,7 @@
         const section = document.createElement("fieldset");
         section.className = `${prefix ? "nested-section" : "root-section"} section-${key}`;
         const legend = document.createElement("legend");
-        legend.textContent = titleCase(key);
+        legend.textContent = displayLabel(key);
         section.appendChild(legend);
         const noteText = sectionHelp(path);
         if (noteText) {
@@ -363,6 +349,7 @@
   }
 
   function renderForm() {
+    if (!profile) return;
     profileForm.innerHTML = "";
     buildObject(profile, profileForm);
   }
@@ -370,7 +357,7 @@
   function renderValidation(findings) {
     if (!findings.length) {
       validationSummary.className = "validation-summary valid";
-      validationSummary.textContent = "Profile shape looks valid in the browser renderer.";
+      validationSummary.textContent = tr("profile_valid", {}, "Profile structure is valid in the browser renderer.");
       return;
     }
     validationSummary.className = "validation-summary invalid";
@@ -388,6 +375,7 @@
   }
 
   function sync(updateEditor = true) {
+    if (!profile) return;
     const findings = renderer.validateProfile(profile);
     if (updateEditor) jsonEditor.value = JSON.stringify(profile, null, 2);
 
@@ -397,16 +385,16 @@
       const instructionLength = rendered.custom_instructions.length;
       if (Number.isFinite(limit) && limit > 0) {
         if (instructionLength > limit) {
-          findings.push({ level: "error", code: "FIELD_LIMIT", message: `Custom Instructions are ${instructionLength} characters; selected target is ${limit}.` });
+          findings.push({ level: "error", code: "FIELD_LIMIT", message: tr("field_limit", { length: instructionLength, limit }, `Custom Instructions are ${instructionLength} characters; selected target is ${limit}.`) });
         } else if (instructionLength > Math.floor(limit * 0.9)) {
-          findings.push({ level: "warning", code: "FIELD_NEAR_LIMIT", message: `Custom Instructions are ${instructionLength} characters; selected target is ${limit}.` });
+          findings.push({ level: "warning", code: "FIELD_NEAR_LIMIT", message: tr("field_near_limit", { length: instructionLength, limit }, `Custom Instructions are ${instructionLength} characters; selected target is ${limit}.`) });
         }
       }
       Object.entries(outputs).forEach(([key, element]) => setOutput(element, rendered[key]));
-      characterSummary.textContent = `About ${rendered.more_about_you.length} · Instructions ${instructionLength}/${limit}`;
-      setStatus("ready", "Ready · profile and preview are in sync");
+      characterSummary.textContent = tr("char_summary", { about: rendered.more_about_you.length, instructions: instructionLength, limit }, `About ${rendered.more_about_you.length} · Instructions ${instructionLength}/${limit}`);
+      setStatus("ready", tr("ready_sync", {}, "Ready · profile and preview are in sync"));
     } catch (error) {
-      Object.values(outputs).forEach((element) => setOutput(element, "Fix validation errors to preview this output."));
+      Object.values(outputs).forEach((element) => setOutput(element, tr("fix_errors", {}, "Fix validation errors to preview this output.")));
       characterSummary.textContent = "";
       setStatus("error", error.message);
     }
@@ -414,9 +402,10 @@
   }
 
   async function loadTemplate(filename) {
-    setStatus("loading", `Loading ${filename.split("/").pop()}…`);
+    const file = filename.split("/").pop();
+    setStatus("loading", tr("loading_file", { file }, `Loading ${file}…`));
     const response = await fetch(`https://raw.githubusercontent.com/man612/chatgpt-personalization/main/profiles/${filename}`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Could not load ${filename}`);
+    if (!response.ok) throw new Error(tr("load_failed", { file: filename }, `Could not load ${filename}`));
     profile = await response.json();
     loadedProfile = clone(profile);
     renderForm();
@@ -461,12 +450,19 @@
       const target = document.querySelector(`#${button.dataset.copy}`);
       await navigator.clipboard.writeText(target.textContent);
       button.classList.add("copied");
-      button.textContent = "Copied ✓";
+      button.textContent = tr("copied", {}, "Copied ✓");
       setTimeout(() => {
         button.classList.remove("copied");
-        button.textContent = "Copy";
+        button.textContent = tr("copy", {}, "Copy");
       }, 1100);
     });
+  });
+
+  document.addEventListener("builder:localechange", () => {
+    templateSelect._smartSelect?.update?.();
+    limitSelect._smartSelect?.update?.();
+    renderForm();
+    sync(false);
   });
 
   function showError(error) {
