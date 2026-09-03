@@ -60,6 +60,8 @@ class OperationalProfileTests(unittest.TestCase):
         self.assertIn("generic AI-template visuals", rendered.custom_instructions)
         self.assertIn("Sepia-derived pass", rendered.custom_instructions)
         self.assertIn("verified user samples outrank generic", rendered.custom_instructions)
+        self.assertIn("staged profundity/candor", rendered.custom_instructions)
+        self.assertIn("drafting residue", rendered.custom_instructions)
         self.assertIn("copy-ready", rendered.custom_instructions)
 
     def test_operational_writing_layer_has_docs_and_attribution(self):
@@ -69,9 +71,12 @@ class OperationalProfileTests(unittest.TestCase):
         self.assertTrue(writing_layer.exists())
         self.assertTrue(indonesian_layer.exists())
         self.assertTrue(notices.exists())
-        self.assertIn("Sepia", writing_layer.read_text(encoding="utf-8"))
+        writing_text = writing_layer.read_text(encoding="utf-8")
+        self.assertIn("Sepia", writing_text)
+        self.assertIn("Humanizer", writing_text)
         notice_text = notices.read_text(encoding="utf-8")
         self.assertIn("Nanako Tsai", notice_text)
+        self.assertIn("Siqi Chen", notice_text)
         self.assertIn("MIT License", notice_text)
 
     def test_reference_and_operational_profiles_are_distinct_roles(self):
