@@ -82,7 +82,7 @@ Do not ban these phrases. Keep them when the writer is actually changing stance,
 
 Iterative drafting can leave sentences that answer context the final reader never saw. Indonesian examples include `ini bukan berarti...`, `bukan berarti saya mengatakan...`, or an option introduced only as `mungkin kelihatannya masuk akal untuk... tapi...` and then never used again.
 
-Remove the residue when it adds no information beyond the final claim. Preserve a real objection when the text names who raised it, when a reader would reasonably consider it, or when answering it changes the argument. Preserve real alternatives when they affect a design or decision trade-off.
+Rewrite unsupported defensive framing into direct prose, but preserve every substantive claim carried inside it. Remove an abandoned alternative only when it contributes no real constraint, evidence, or decision trade-off. Preserve real objections when the text names who raised them, when a reader would reasonably consider them, or when answering them changes the argument. Preserve real alternatives when they affect a design or decision.
 
 ### Formulaic sayings and dramatic fragments
 
