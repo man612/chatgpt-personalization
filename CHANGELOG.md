@@ -4,22 +4,17 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
-### Sepia writing layer
+### Natural writing architecture
 
-- Added a lightweight Sepia-derived writing pass to the maintainer operational profile while keeping the rendered Custom Instructions within the repository's 4,500-character headroom target.
-- Added `docs/writing/sepia-yasman.md` for maintainer-specific routing, voice preservation, revision order, failure modes, and public/private sample boundaries.
-- Added `docs/writing/indonesian-ai-tells.md` as explicitly heuristic Indonesian guidance for structural AI-writing patterns without pretending it is a scientific detector.
-- Added voice-preserving and de-AI-without-overcorrection behavioral regression scenarios.
-- Added Sepia research provenance, retained the upstream MIT notice in `THIRD_PARTY_NOTICES.md`, and documented that the adaptation does not imply upstream endorsement.
-
-### Humanizer-informed writing audit
-
-- Reviewed `blader/humanizer` as supplemental prior art instead of installing its full 35-pattern skill into global ChatGPT instructions.
-- Added bounded second-pass auditing plus selective checks for drafting residue, staged profundity/candor, formulaic punchlines, and present-state documentation while preserving Sepia as the main writing architecture.
-- Added Indonesian-specific versions of the new residue checks instead of importing English punctuation, grammar, or vocabulary bans wholesale.
-- Expanded writing regression cases to test both removal of unsupported drafting residue and preservation of legitimate objections, alternatives, and technical trade-offs.
-- Refined the operational writing rule without exceeding the repository's 4,500-character Custom Instructions headroom target.
-- Added Humanizer research provenance and MIT attribution, with explicit caveats that community benchmarks are directional and detector evasion is not a project goal.
+- Added `docs/writing/core.md` as the generic English/Indonesian writing policy for opinionated public presets.
+- Kept high-value Sepia principles—voice and venue matching, preservation, minimal editing, and structure-aware revision—as the main writing framework.
+- Reviewed `blader/humanizer` as supplemental prior art and selectively added bounded second-pass auditing, false-positive handling, staged rhetoric, drafting residue, formulaic punchlines, and present-state documentation checks instead of importing its full English-oriented pattern catalog.
+- Reworked `docs/writing/indonesian-ai-tells.md` into a generic Indonesian heuristic layer rather than a maintainer-specific rule set.
+- Reworked `docs/writing/sepia-yasman.md` into an explicit maintainer-only extension of the generic core.
+- Added the public `General` preset as a compact bilingual starting point that remains below the 1,500-character Custom Instructions target.
+- Applied the compact natural-writing contract to every opinionated public preset while keeping `Blank` intentionally free of behavioral defaults.
+- Added regression coverage for generic preset behavior, separation from maintainer identity, drafting-residue cleanup, and preservation of legitimate objections, alternatives, constraints, and technical trade-offs.
+- Retained Sepia and Humanizer MIT attribution in `THIRD_PARTY_NOTICES.md` and documented benchmark limitations and the non-detector-evasion goal.
 
 ### Operational profiles
 
@@ -34,7 +29,7 @@ All notable changes to this project are documented here.
 - Strengthened the maintainer reference profile so beginner-oriented explanations assume unknown domain vocabulary without reducing reasoning depth.
 - Added explicit first-principles explanation behavior: actors/components, who communicates with whom, end-to-end flows, jargon-at-first-use, failure modes, risks, and verification.
 - Reworked deep-research behavior from generic source-quality advice into an operational evidence-gathering protocol with targeted search angles, primary-source hierarchy, independent cross-checking, date/version/tier checks, contradiction handling, counter-evidence, quantitative normalization, and an evidence-based stopping rule.
-- Expanded behavioral regression scenarios to distinguish quick current lookups from deep multi-source research, conflicting-source analysis, quantitative research, and repository triangulation.
+- Expanded behavioral regression scenarios to distinguish quick current lookups from deep multi-source research, conflicting-source analysis, quantitative research, repository triangulation, writing cleanup, and false-positive preservation.
 - Added regression tests for the Yasman explanation/research contract and field-limit headroom.
 - Fixed profile `$schema` references after the preset/maintainer directory reorganization and added a regression test that resolves every profile schema path.
 - Documented that Project Instructions override global Custom Instructions and that standard Search and dedicated Deep Research are different product behaviors.
@@ -64,15 +59,11 @@ All notable changes to this project are documented here.
 - Removed `long_answers` as a formatting trigger and added `OUTLINE_BIAS` linting for rules that may force numbered or outline-style responses.
 - Added UI/UX and writing sections as first-class instruction groups.
 - Expanded research guidance around primary sources, repositories, source code, releases, issues, evidence separation, and testing.
-- Reorganized reusable starting points into `profiles/presets/`, public real-world examples into `profiles/maintainers/`, and private user profiles into gitignored `profiles/local/`.
-- Added the public maintainer reference profile at `profiles/maintainers/yasman.json`.
+- Reorganized reusable starting points into `profiles/presets/`, public real-world examples into `profiles/maintainers/`, operational account targets into `profiles/operational/`, and private user profiles into gitignored `profiles/local/`.
 - Changed renderer output to `settings.md`, `occupation.txt`, `more-about-you.txt`, and `custom-instructions.txt`.
-- Rebuilt the browser builder for the v2 profile model and four-output preview.
-- Made the browser start from the anonymous Blank preset and separated maintainer examples from public presets.
 - Added selectable 1,500- and 5,000-character validation targets without storing plan data inside profiles.
 - Added v1-to-v2 migration documentation.
 - Added machine-readable behavioral regression cases alongside the human-readable scenario suite.
-- Expanded behavioral scenarios for paragraph flow, beginner depth, repository analysis, deep research, UI/UX critique, format exceptions, and concise factual answers.
 
 ## 0.1.0 - 2026-07-13
 
