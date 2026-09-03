@@ -14,10 +14,11 @@ Do not run a humanization pass over code, commands, configuration, calculations,
 
 1. **Lock meaning first.** Preserve claims, names, numbers, dates, citations, stance, audience, and requested purpose.
 2. **Choose the real target voice.** User-provided samples and the destination's conventions outrank generic ideas of what sounds human.
-3. **Fix the deepest problem first.** Register, structure, and meaning problems matter more than word substitution.
-4. **Prefer the smallest useful edit.** Delete or replace weak prose instead of adding more explanation around it.
-5. **Run one final audit.** Check for residue that materially remains, then stop. Repeated full rewrites can flatten voice and create a new synthetic rhythm.
-6. **Verify preservation.** Do not invent facts, anecdotes, quotations, mistakes, slang, or stylistic quirks.
+3. **Preserve register.** A rewrite should not become more casual, formal, dramatic, promotional, or polished than its source unless the task or destination calls for that change.
+4. **Fix the deepest problem first.** Register, structure, and meaning problems matter more than word substitution.
+5. **Prefer the smallest useful edit.** Delete or replace weak prose instead of adding more explanation around it.
+6. **Run one final audit.** Check for residue that materially remains, then stop. Repeated full rewrites can flatten voice and create a new synthetic rhythm.
+7. **Verify preservation.** Do not invent facts, anecdotes, quotations, mistakes, slang, or stylistic quirks.
 
 ## Generic audit
 
@@ -32,11 +33,13 @@ Treat these as contextual checks, not banned tokens:
 
 Preserve real objections, alternatives, constraints, trade-offs, and substantive claims even when their phrasing resembles one of these patterns. Rewrite unsupported framing into direct prose; do not delete useful information merely because it looks like drafting residue.
 
-## Language and locale
+## Language, locale, and model-specific fingerprints
 
 The core policy is language-neutral. Do not transfer English-specific punctuation, grammar, vocabulary, or typography bans into another language. Match the language, register, punctuation, and conventions of the user and destination.
 
 For Indonesian, use [`indonesian-ai-tells.md`](indonesian-ai-tells.md) as a supplemental heuristic guide. Its patterns are project observations, not a scientific detector. For English, follow normal English editorial conventions and use the same preservation-first workflow rather than a fixed blacklist.
+
+Sepia v0.5.0 adds model-specific prose fingerprints and explicitly routes them only when the source or executor model identity is known from the user, metadata, or runtime context—not guessed from the prose itself. This repository therefore does **not** embed volatile GPT/Claude/Gemini fingerprint tables into global public presets. The profile schema describes durable user intent, not the identity of whichever model happens to execute a future chat. Model-specific analysis belongs in a task- or agent-scoped workflow that actually has reliable model identity and can keep its fingerprints current.
 
 ## Voice hierarchy
 
@@ -52,4 +55,4 @@ A generic anti-AI rule must never override clear evidence of how the author or v
 
 ## Failure modes
 
-The policy is failing if it makes text less accurate, turns every response into casual prose, removes legitimate structure, injects slang or imperfections, deletes real counterarguments, forces the same rhythm across authors, or makes technical writing vague in the name of sounding natural.
+The policy is failing if it makes text less accurate, makes a rewrite more promotional than its source without a reason, turns every response into casual prose, removes legitimate structure, injects slang or imperfections, deletes real counterarguments, forces the same rhythm across authors, or makes technical writing vague in the name of sounding natural.
