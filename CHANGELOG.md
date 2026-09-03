@@ -21,6 +21,10 @@ All notable changes to this project are documented here.
 - Fixed a smart-select event-listener leak that accumulated document-level `pointerdown` handlers after locale changes, resets, preset loads, or JSON apply.
 - Smart selects now share one document-level outside-click listener, preventing detached form DOM from being retained across rebuilds.
 - Added a regression guard for the single-listener invariant and bumped the builder asset version so browsers do not retain the affected runtime.
+- Removed idle decorative animations that kept the GPU compositor active continuously even when the builder was not being used.
+- Removed pointer-following magnetic buttons, hero tilt, card spotlight tracking, and particle bursts; short interaction feedback and one-shot entrance motion remain.
+- Replaced backdrop blur on sticky/interactive builder surfaces with opaque-enough backgrounds for more predictable GPU performance.
+- Added an idle-compositor regression guard and bumped the builder asset version again for the performance fix.
 
 ### Global onboarding and bilingual builder
 

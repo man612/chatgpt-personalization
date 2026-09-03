@@ -1,4 +1,5 @@
-/* Performance layer: preserve rich motion while avoiding hidden layout/paint work. */
+/* Performance layer: prioritize stable interaction over continuous decorative compositing.
+   Motion is reserved for short, user-triggered or one-shot feedback. */
 
 [data-reveal] {
   filter: none !important;
@@ -20,15 +21,31 @@
 }
 
 .profile-sheet.front { will-change: auto !important; }
-.profile-sheet.front.motion-promoted { will-change: transform !important; }
 
-.hero-stage.motion-paused .profile-sheet.back-product,
-.hero-stage.motion-paused .profile-sheet.back-identity,
-.hero-stage.motion-paused .stage-chip,
-.hero-stage.motion-paused .sheet-live::before,
-.explanation.motion-paused .explanation-rule {
-  animation-play-state: paused !important;
+/* Decorative motion must settle. Persistent animations keep the compositor active
+   even when the user is not interacting with the builder. */
+.brand-mark i,
+.profile-sheet.back-product,
+.profile-sheet.back-identity,
+.stage-chip,
+.sheet-live::before,
+.explanation-rule {
+  animation: none !important;
 }
+
+/* Backdrop blur plus always-running transforms can keep older Windows GPU compositors
+   continuously busy even while the builder is idle. Use opaque-enough surfaces instead. */
+.site-header,
+.control-deck,
+.stage-chip,
+.select-menu {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.site-header { background: color-mix(in srgb, var(--canvas-2) 97%, black) !important; }
+.control-deck { background: color-mix(in srgb, var(--panel) 98%, black) !important; }
+.stage-chip { background: var(--panel-2) !important; }
+.select-menu { background: var(--panel-3) !important; }
 
 @supports (animation-timeline: scroll()) {
   body::before {
@@ -65,17 +82,6 @@
 .preview-use-note strong { color: var(--ink); }
 
 @media (max-width: 680px) {
-  .site-header,
-  .control-deck,
-  .stage-chip {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
-
-  .site-header { background: color-mix(in srgb, var(--canvas-2) 97%, black) !important; }
-  .control-deck { background: color-mix(in srgb, var(--panel) 98%, black) !important; }
-  .stage-chip { background: var(--panel-2) !important; }
-
   /* The mobile selector lives in the top layer, so visible task surfaces can safely contain paint/layout again. */
   body.mobile-flow .control-deck,
   body.mobile-flow .root-section,

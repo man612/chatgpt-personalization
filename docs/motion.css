@@ -25,9 +25,6 @@ body::before {
 .site-header.is-scrolled { box-shadow: 0 20px 52px rgba(0,0,0,.18); }
 .site-header.is-hidden { transform: translateY(-130%); opacity: .15; }
 
-.brand-mark i { animation: brand-stack 2.7s var(--motion-ease) infinite alternate; }
-.brand-mark i:nth-child(2) { animation-delay: -.9s; }
-.brand-mark i:nth-child(3) { animation-delay: -1.7s; }
 @keyframes brand-stack {
   0%, 28% { transform: scaleX(.72); opacity: .72; }
   72%, 100% { transform: scaleX(1.04); opacity: 1; }
@@ -61,8 +58,6 @@ body::before {
   transition: transform 180ms ease-out, box-shadow 300ms ease;
   will-change: transform;
 }
-.profile-sheet.back-product { animation: sheet-product-float 6.2s ease-in-out infinite; }
-.profile-sheet.back-identity { animation: sheet-identity-float 6.8s ease-in-out infinite; }
 @keyframes sheet-product-float {
   0%,100% { transform: translate(-54px,20px) rotate(-6deg); }
   50% { transform: translate(-66px,6px) rotate(-8deg); }
@@ -71,10 +66,7 @@ body::before {
   0%,100% { transform: translate(50px,14px) rotate(5deg); }
   50% { transform: translate(64px,2px) rotate(7deg); }
 }
-.stage-chip { animation: stage-chip-float 4.4s ease-in-out infinite; }
-.stage-chip.eval { animation-delay: -2.1s; }
 @keyframes stage-chip-float { 50% { translate: 0 -10px; } }
-.sheet-live::before { animation: live-dot 1.6s ease-in-out infinite; }
 @keyframes live-dot { 50% { transform: scale(1.35); opacity: .45; } }
 
 [data-reveal] {
@@ -177,7 +169,6 @@ body::before {
 .json-details[open] { animation: details-open 360ms var(--motion-ease); }
 @keyframes details-open { from { opacity: .55; transform: translateY(-5px); } }
 
-.explanation-rule { transform-origin: left center; animation: rule-breathe 2.7s ease-in-out infinite; }
 @keyframes rule-breathe { 50% { transform: scaleX(1.35); opacity: .6; } }
 
 .motion-particle {
@@ -206,7 +197,6 @@ body::before {
 @keyframes page-enter { to { transform: translateY(-100%); } }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-magnetic] { transition: transform 160ms ease-out; will-change: transform; }
   .button:hover, .copy-button:hover { box-shadow: 0 10px 28px rgba(0,0,0,.13); }
   .output-card:hover { transform: translateY(-4px); }
   .root-section:hover { transform: translateY(-3px); }
@@ -219,7 +209,6 @@ body::before {
   .hero-copy-block > * { animation-duration: 620ms; }
   .hero-stage { perspective: none; }
   .profile-sheet.front { transform: translateY(var(--stage-y, 0px)); }
-  .profile-sheet.back-product, .profile-sheet.back-identity { animation-duration: 8s; }
   .root-section:hover, .output-card:hover { transform: none; }
 }
 
