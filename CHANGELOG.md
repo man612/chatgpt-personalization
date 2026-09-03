@@ -16,6 +16,12 @@ All notable changes to this project are documented here.
 - Added regression coverage for generic preset behavior, separation from maintainer identity, drafting-residue cleanup, and preservation of legitimate objections, alternatives, constraints, and technical trade-offs.
 - Retained Sepia and Humanizer MIT attribution in `THIRD_PARTY_NOTICES.md` and documented benchmark limitations and the non-detector-evasion goal.
 
+### Builder performance hotfix
+
+- Fixed a smart-select event-listener leak that accumulated document-level `pointerdown` handlers after locale changes, resets, preset loads, or JSON apply.
+- Smart selects now share one document-level outside-click listener, preventing detached form DOM from being retained across rebuilds.
+- Added a regression guard for the single-listener invariant and bumped the builder asset version so browsers do not retain the affected runtime.
+
 ### Global onboarding and bilingual builder
 
 - Made `General` the default browser-builder starting point while keeping `Blank` available for users who want no behavioral defaults.

@@ -226,16 +226,23 @@
       if (event.key.length === 1 && /\S/.test(event.key)) typeAhead(event.key);
     });
 
-    document.addEventListener("pointerdown", (event) => {
-      if (shell.classList.contains("open") && !shell.contains(event.target)) closeMenu();
-    });
-
     select.addEventListener("change", updateVisualState);
     updateVisualState();
 
-    const api = { close: closeMenu, update: updateVisualState };
+    const api = {
+      close: closeMenu,
+      update: updateVisualState,
+      contains: (target) => shell.contains(target),
+    };
     select._smartSelect = api;
   }
+
+  // One document-level listener is enough for every smart select. Keeping this
+  // inside enhanceSelect() leaks a listener (and its detached DOM) after every
+  // form rebuild caused by locale changes, resets, preset loads, or JSON apply.
+  document.addEventListener("pointerdown", (event) => {
+    if (openSelect && !openSelect.contains(event.target)) openSelect.close();
+  });
 
   function setAtPath(path, value) {
     const parts = path.split(".");
