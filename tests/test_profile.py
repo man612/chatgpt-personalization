@@ -161,6 +161,43 @@ class ExampleProfileTests(unittest.TestCase):
             self.assertNotIn("yasman", raw, path.name)
             self.assertNotIn("man612", raw, path.name)
 
+    def test_general_is_reusable_and_blank_remains_unopinionated(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        general = json.loads((repo_root / "profiles" / "presets" / "general.json").read_text(encoding="utf-8"))
+        blank = json.loads((repo_root / "profiles" / "presets" / "blank.json").read_text(encoding="utf-8"))
+        self.assertEqual(general["name"], "General")
+        self.assertIn("Match the user's language", general["instructions"]["language"])
+        self.assertTrue(general["instructions"]["writing"])
+        self.assertEqual(blank["instructions"]["writing"], [])
+        self.assertEqual(blank["instructions"]["language"], "")
+
+    def test_opinionated_presets_share_generic_natural_writing_contract(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        preset_dir = repo_root / "profiles" / "presets"
+        for path in sorted(preset_dir.glob("*.json")):
+            if path.name == "blank.json":
+                continue
+            data = json.loads(path.read_text(encoding="utf-8"))
+            rendered = profile_tool.render_profile(data)
+            with self.subTest(path=path.name):
+                self.assertIn("user-provided writing samples", rendered.custom_instructions)
+                self.assertIn("natural-writing pass", rendered.custom_instructions)
+                self.assertIn("unsupported drafting residue", rendered.custom_instructions)
+                self.assertIn("preserve real objections", rendered.custom_instructions.lower())
+                self.assertNotIn("Yasman", rendered.custom_instructions)
+
+    def test_generic_writing_docs_are_separate_from_maintainer_extension(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        core = (repo_root / "docs" / "writing" / "core.md").read_text(encoding="utf-8")
+        indonesian = (repo_root / "docs" / "writing" / "indonesian-ai-tells.md").read_text(encoding="utf-8")
+        maintainer = (repo_root / "docs" / "writing" / "sepia-yasman.md").read_text(encoding="utf-8")
+        self.assertIn("generic writing policy", core)
+        self.assertIn("English and Indonesian", core)
+        self.assertNotIn("kek`, `tpi`, `klo`", core)
+        self.assertNotIn("Yasman-specific guardrails", indonesian)
+        self.assertIn("not a preset", maintainer)
+        self.assertIn("kek`, `tpi`, `klo`", maintainer)
+
     def test_local_profiles_are_gitignored(self):
         repo_root = Path(__file__).resolve().parents[1]
         ignore = (repo_root / ".gitignore").read_text(encoding="utf-8")
