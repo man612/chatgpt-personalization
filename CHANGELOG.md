@@ -12,6 +12,15 @@ All notable changes to this project are documented here.
 - Added voice-preserving and de-AI-without-overcorrection behavioral regression scenarios.
 - Added Sepia research provenance, retained the upstream MIT notice in `THIRD_PARTY_NOTICES.md`, and documented that the adaptation does not imply upstream endorsement.
 
+### Humanizer-informed writing audit
+
+- Reviewed `blader/humanizer` as supplemental prior art instead of installing its full 35-pattern skill into global ChatGPT instructions.
+- Added bounded second-pass auditing plus selective checks for drafting residue, staged profundity/candor, formulaic punchlines, and present-state documentation while preserving Sepia as the main writing architecture.
+- Added Indonesian-specific versions of the new residue checks instead of importing English punctuation, grammar, or vocabulary bans wholesale.
+- Expanded writing regression cases to test both removal of unsupported drafting residue and preservation of legitimate objections, alternatives, and technical trade-offs.
+- Refined the operational writing rule without exceeding the repository's 4,500-character Custom Instructions headroom target.
+- Added Humanizer research provenance and MIT attribution, with explicit caveats that community benchmarks are directional and detector evasion is not a project goal.
+
 ### Operational profiles
 
 - Added `profiles/operational/` for version-controlled, public-safe account targets used for self-audit and AI-assisted setup.
