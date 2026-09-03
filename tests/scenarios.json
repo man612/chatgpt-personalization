@@ -173,6 +173,50 @@
     "tags": ["writing", "sepia", "voice"]
   },
   {
+    "id": "drafting-residue",
+    "prompt": "Rapikan paragraf ini supaya bisa berdiri sendiri untuk pembaca yang tidak melihat proses drafting: “Ini bukan berarti dokumentasi tidak penting. Saya juga tidak bilang prompt harus pendek. Pendekatan yang mungkin terlihat menarik adalah menambah aturan baru untuk setiap masalah, tapi itu juga bukan intinya. Yang menentukan adalah apakah instruksi yang relevan tersedia ketika model membutuhkannya.”",
+    "criteria": [
+      "Preserve the actual claim about relevant instructions being available when needed",
+      "Remove defenses against objections that the published text never establishes when they add no information",
+      "Remove a discarded alternative when it exists only to be rejected and adds no real trade-off",
+      "Do not invent a new rationale, stance, or example"
+    ],
+    "tags": ["writing", "humanizer", "drafting-residue", "indonesian"]
+  },
+  {
+    "id": "preserve-real-objections",
+    "prompt": "Edit this design note for clarity without deleting real trade-offs: “Tim frontend mengusulkan localStorage karena implementasinya paling sederhana. Tim security menolak penyimpanan credential di browser karena data itu persisten di perangkat. IndexedDB masih menjadi opsi untuk cache offline yang tidak sensitif. Untuk credential, keputusan akhirnya adalah penyimpanan server-side.”",
+    "criteria": [
+      "Preserve the frontend proposal because it is a real considered alternative",
+      "Preserve the security objection because it is named and materially changes the decision",
+      "Preserve IndexedDB as a bounded alternative for non-sensitive cache",
+      "Do not flatten the note into only the final decision in the name of removing AI patterns"
+    ],
+    "tags": ["writing", "humanizer", "false-positive", "decision"]
+  },
+  {
+    "id": "staged-profundity",
+    "prompt": "Rapikan tanpa mengubah klaimnya: “Jujur? Pada akhirnya, masalah sebenarnya bukan soal panjang prompt. Di level paling fundamental, yang benar-benar penting adalah apakah instruksi tersedia ketika dibutuhkan.”",
+    "criteria": [
+      "Remove theatrical candor or depth framing when it adds no distinct meaning",
+      "Keep the substantive claim about instruction availability",
+      "Do not add slang, a slogan, or a new contrast",
+      "Prefer a direct sentence over replacing one rhetorical template with another"
+    ],
+    "tags": ["writing", "humanizer", "indonesian", "rhetoric"]
+  },
+  {
+    "id": "current-state-documentation",
+    "prompt": "Rewrite this documentation sentence so it describes current behavior rather than narrating implementation history: “This helper was added to replace the old O(n²) scan. It now uses a map for O(1) lookups.”",
+    "criteria": [
+      "Lead with the current map-based O(1) lookup behavior",
+      "Keep the O(n²) comparison only if it materially helps explain the current design",
+      "Do not invent implementation details beyond the source",
+      "Use documentation prose rather than conversational humanization"
+    ],
+    "tags": ["writing", "documentation", "humanizer", "technical"]
+  },
+  {
     "id": "relevance-boundary",
     "prompt": "Explain why sourdough starter rises.",
     "criteria": [
