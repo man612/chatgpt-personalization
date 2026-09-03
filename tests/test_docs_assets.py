@@ -19,6 +19,8 @@ class DocsAssetVersionTests(unittest.TestCase):
             "motion.css",
             "mobile.css",
             "performance.css",
+            "i18n.css",
+            "i18n.js",
             "renderer.js",
             "app.js",
             "motion.js",
@@ -46,9 +48,50 @@ class DocsAssetVersionTests(unittest.TestCase):
 
     def test_performance_css_loads_before_runtime_scripts(self):
         html = (DOCS / "index.html").read_text(encoding="utf-8")
-        self.assertLess(html.index("performance.css"), html.index("renderer.js"))
+        self.assertLess(html.index("performance.css"), html.index("i18n.js"))
+        self.assertLess(html.index("i18n.js"), html.index("app.js"))
         motion = (DOCS / "motion.js").read_text(encoding="utf-8")
         self.assertNotIn('document.createElement("link")', motion)
+
+    def test_builder_defaults_to_general_and_excludes_personal_examples(self):
+        html = (DOCS / "index.html").read_text(encoding="utf-8")
+        self.assertIn('value="presets/general.json"', html)
+        self.assertRegex(html, r'value="presets/general\.json"[^>]*selected')
+        self.assertIn('value="presets/blank.json"', html)
+        self.assertNotIn('value="maintainers/yasman.json"', html)
+        self.assertNotIn('value="operational/yasman.json"', html)
+
+    def test_builder_has_first_class_english_and_indonesian_ui(self):
+        html = (DOCS / "index.html").read_text(encoding="utf-8")
+        i18n = (DOCS / "i18n.js").read_text(encoding="utf-8")
+        app = (DOCS / "app.js").read_text(encoding="utf-8")
+        mobile = (DOCS / "mobile.js").read_text(encoding="utf-8")
+        self.assertIn('data-locale="en"', html)
+        self.assertIn('data-locale="id"', html)
+        self.assertIn('en: {', i18n)
+        self.assertIn('id: {', i18n)
+        self.assertIn('chatgpt-personalization:locale', i18n)
+        self.assertIn('builder:localechange', i18n)
+        self.assertIn('document.addEventListener("builder:localechange"', app)
+        self.assertIn('document.addEventListener("builder:localechange"', mobile)
+        self.assertNotIn('window.location.reload()', i18n)
+
+    def test_locale_switch_flushes_focused_edit_before_rebuild(self):
+        i18n = (DOCS / "i18n.js").read_text(encoding="utf-8")
+        pointerdown = 'button.addEventListener("pointerdown"'
+        locale_click = 'button.addEventListener("click", () => setLocale(button.dataset.locale))'
+        self.assertIn(pointerdown, i18n)
+        self.assertIn('active.blur()', i18n)
+        self.assertIn(locale_click, i18n)
+        self.assertLess(i18n.index(pointerdown), i18n.index(locale_click))
+
+    def test_apply_to_chatgpt_guidance_is_visible(self):
+        html = (DOCS / "index.html").read_text(encoding="utf-8")
+        i18n = (DOCS / "i18n.js").read_text(encoding="utf-8")
+        self.assertIn('data-i18n="apply_steps_title"', html)
+        self.assertIn('ChatGPT → Settings → Personalization', i18n)
+        self.assertIn('ChatGPT → Pengaturan → Personalisasi', i18n)
+        self.assertIn('data-i18n="advanced_path"', html)
 
     def test_mobile_steps_are_direct_navigation_not_decorative_progress(self):
         mobile = (DOCS / "mobile.js").read_text(encoding="utf-8")

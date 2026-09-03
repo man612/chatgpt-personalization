@@ -1,79 +1,97 @@
 # Designing a profile
 
-A personalization profile should contain a small amount of durable context and observable response behavior. It should not become a biography, project notebook, prompt-trick collection, or dump of every preference a user has ever expressed.
+A personalization profile should contain durable context and observable response behavior. It should not become a biography, project notebook, prompt-trick collection, or dump of every preference a user has expressed.
 
-## Start with the right profile type
+## Choose a starting point
 
-Use `profiles/presets/` when publishing a reusable starting point. Use `profiles/maintainers/` for intentionally public reference implementations. Use `profiles/operational/` for a version-controlled, public-safe account target that a human or AI assistant can use for self-audit and setup. Use `profiles/local/` for private or experimental personal profiles that should not be committed.
+For most users, start with [`profiles/presets/general.json`](../profiles/presets/general.json). It is a compact bilingual starting point for everyday English or Indonesian use and is small enough for the current 1,500-character Custom Instructions target.
 
-The distinction is architectural, not cosmetic: a preset should work without knowing who the user is; a maintainer reference should demonstrate the generic schema without becoming live account truth; an operational profile may evolve with a real account's intended configuration; and a local profile may contain private working context. The renderer and linter should still treat all profile JSON through the same schema.
+Use [`profiles/presets/blank.json`](../profiles/presets/blank.json) when you want no inherited behavioral defaults. Other presets add role-specific behavior for technology, knowledge work, study, product design, or writing.
+
+The browser builder exposes only reusable public presets as starting points. Maintainer and operational profiles are not user templates.
+
+## Profile roles
+
+- `profiles/presets/` — anonymous, reusable public starting points.
+- `profiles/local/` — private or experimental profiles; ignored by Git by default.
+- `profiles/maintainers/` — intentionally public reference examples.
+- `profiles/operational/` — public-safe account targets for dogfooding, self-audit, and AI-assisted setup.
+
+A preset should work without knowing who the user is. A maintainer or operational profile may be person-specific because it is an explicit example or account target, but that context must never leak into generic tooling or presets.
 
 ## Separate information by scope
 
-`product` records intended product-level settings such as Personality, Characteristics, and Memory. `identity` contains durable context that affects how explanations should be shaped. `instructions` contains global response behavior.
+`product` records intended product-level settings such as Personality, Characteristics, and Memory. `identity` contains durable context that materially affects how answers should be shaped. `instructions` contains global response behavior.
 
-Temporary project rules belong in a ChatGPT Project or current workspace. One-off output requirements belong in the current request. Memory can carry useful evolving context, but it should not be treated as a precise configuration file.
+Temporary project rules belong in a ChatGPT Project or the current workspace. One-off output requirements belong in the current request. Memory can carry evolving context, but it is not a precise configuration file.
 
 ## Write observable behavior
 
-“Be helpful”, “be smart”, or “act like a world-class expert” are hard to test. Prefer visible behavior:
+Avoid instructions such as “be smart”, “be helpful”, or “act like a world-class expert”. Prefer rules that can be evaluated:
 
 > Define unfamiliar terminology at or before first meaningful use.
 
 > For troubleshooting, explain the likely cause, the smallest safe fix, why it works, how to verify it, and important side effects.
 
-> Use headings when the topic genuinely changes; do not create numbered sections merely because an answer is long.
+> Use headings for genuine topic changes; do not create an outline merely because an answer is long.
 
-Observable instructions can become regression criteria. Vague personality adjectives usually cannot.
+Observable instructions can become regression criteria. Prestige labels and vague quality adjectives usually cannot.
 
-## Treat vocabulary and reasoning ability separately
+## Keep language simple without reducing reasoning
 
-A reader can be capable of following complex reasoning while still being unfamiliar with a domain's vocabulary. Avoid profiles that collapse those two dimensions into a vague label such as “beginner” and then accidentally remove the mechanism.
+Vocabulary familiarity and reasoning ability are different. A capable reader can still be unfamiliar with one domain's jargon.
 
-For beginner-oriented or cross-domain profiles, make the assumption explicit: **do not assume specialist vocabulary until it has been established, but do not reduce reasoning depth merely because vocabulary needs explanation**.
+For cross-domain profiles, explain prerequisite concepts before relying on specialist terms, but preserve the mechanisms, trade-offs, failure modes, and verification needed to understand the answer.
 
-A robust explanation contract can use dependency order such as:
+A useful dependency order is:
 
-ordinary-language purpose → problem solved → important actors/components → who does what to whom → concrete end-to-end flow → technical terminology → mechanism/implementation → trade-offs, failure modes, verification, and edge cases.
+ordinary-language purpose → problem solved → actors/components → concrete flow → technical terminology → mechanism → trade-offs and failure modes.
 
-The exact sequence can vary by task. The important invariant is that a core concept should not be explained mainly through several other unexplained concepts. Plain language should reduce linguistic friction, not informational depth.
+Use that as a reasoning aid, not a rigid answer template.
+
+## Natural writing behavior
+
+All opinionated public presets use the compact policy documented in [`writing/core.md`](writing/core.md). It preserves facts and source register, treats user writing samples and destination conventions as stronger evidence than generic “human” style rules, and performs one light audit for recurring assistant residue.
+
+The core supports English and Indonesian. [`writing/indonesian-ai-tells.md`](writing/indonesian-ai-tells.md) adds language-specific structural heuristics for Indonesian. English-specific punctuation or grammar rules must not be transferred blindly into Indonesian.
+
+`Blank` intentionally contains no writing policy. The maintainer-specific [`writing/sepia-yasman.md`](writing/sepia-yasman.md) extends the generic core only for the maintainer's own voice and must not become a preset default.
 
 ## Distinguish lookup from research
 
-“Verify current claims” is useful but too weak to define deep research. One authoritative lookup may correctly answer a narrow current-fact question. A research request needs a different contract.
+One authoritative lookup may correctly answer a narrow current-fact question. Deep research needs a different contract.
 
-When a profile is intended for serious research, define observable research behavior such as:
+For research-oriented profiles, define behavior such as:
 
 - decompose the question into material claims and uncertainties;
-- search multiple targeted angles and refine queries as evidence appears;
 - establish current facts from primary sources first;
-- cross-check load-bearing claims independently;
+- cross-check important claims independently;
 - check dates, versions, product tiers, rollout scope, and stale sources;
 - investigate contradictions, limitations, failure cases, and counter-evidence;
 - normalize units and expose assumptions for quantitative comparisons;
-- distinguish verified facts, source claims, community reports, inference, assumptions, and unresolved uncertainty;
-- use a stopping rule based on evidence saturation rather than the first plausible answer.
+- separate verified facts, source claims, community reports, inference, assumptions, and unresolved uncertainty;
+- stop when further evidence is unlikely to change the material conclusion.
 
-Avoid hard-coding one universal minimum source count. Source diversity and independence matter more than collecting redundant links. If a user explicitly asks for broad research or many sources, breadth across source types and search angles becomes part of the requested behavior.
+Avoid a universal minimum source count. Independence and relevance matter more than collecting redundant links.
 
 ## Keep prompts lean
 
-Do not repeat the same preference across identity, tone, structure, research, and avoid lists. When a profile grows, remove redundant wording before adding more. Keep a rule when it encodes a real requirement or repeatedly fixes an observed failure.
+State a rule once when possible. When a profile grows, remove redundant wording before adding more.
 
-A longer profile is not automatically a stronger profile. Leave headroom below the target field limit so later product wording or rendering changes do not immediately create overflow.
+A longer profile is not automatically stronger. Leave headroom below the target field limit so later product or rendering changes do not immediately create overflow.
 
-## Product details are validation inputs, not identity
-
-ChatGPT plan limits and UI controls change. Do not write a plan name into a generic preset merely to select a character limit. Choose the appropriate `--limit` value at lint/render time, or choose the target in the browser builder.
+Product limits are validation inputs rather than identity data. Use the browser target selector or CLI `--limit` argument instead of storing a plan name in a generic preset.
 
 ## Privacy
 
-A public preset should never contain secrets or real personal history. A public maintainer or operational profile should contain only information that is deliberately safe to publish. Operational does not mean private: if the repository is public, the profile is public too.
+Public presets must never contain secrets or personal history. Maintainer and operational profiles are also public when committed to this repository and should contain only deliberately public-safe information.
 
-Use `profiles/local/` for private or experimental variants, but remember that Git ignore is only a convenience—not encryption or a security boundary. Review diffs before commits and keep credentials out of profile JSON entirely.
+Use `profiles/local/` for private or experimental variants, but remember that Git ignore is a convenience rather than encryption. Never put credentials in profile JSON.
 
 ## Iterate with evals
 
-Start from the smallest profile that captures the requirement. Run representative scenarios, note a repeated failure, change the smallest relevant rule, then rerun the affected case plus unrelated cases for side effects. Keep quick-lookup, deep-research, long-explanation, and concise-fact scenarios separate so one improvement does not silently make another task worse.
+Start from the smallest profile that captures the requirement. Run representative scenarios, identify a repeated failure, change the smallest relevant rule, then rerun the affected case and unrelated cases for regressions.
 
-This is more reliable than continuously lengthening the prompt.
+Keep quick lookup, deep research, long explanation, writing, and concise-fact scenarios separate so one improvement does not silently damage another task.
+
+See [`testing.md`](testing.md) for the evaluation workflow and [`references.md`](references.md) for the research basis and limitations.

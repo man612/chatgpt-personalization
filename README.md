@@ -1,55 +1,64 @@
 <h1 align="center">ChatGPT Personalization</h1>
 
 <p align="center">
-  Build versioned, testable ChatGPT personalization profiles from reusable presets — without turning one person's preferences into the default.
+  Build, validate, and maintain reusable ChatGPT personalization profiles.
 </p>
 
 <p align="center">
-  <a href="https://man612.github.io/chatgpt-personalization/"><strong>Open the browser builder</strong></a>
-  · <a href="#quick-start">Quick start</a>
-  · <a href="#choose-a-starting-point">Presets</a>
-  · <a href="docs/testing.md">Evaluation</a>
+  <a href="README.md"><strong>English</strong></a> · <a href="README.id.md">Bahasa Indonesia</a>
+</p>
+
+<p align="center">
+  <a href="https://man612.github.io/chatgpt-personalization/"><strong>Open Builder</strong></a>
+  · <a href="docs/guide.md">Guide</a>
+  · <a href="docs/testing.md">Testing</a>
 </p>
 
 <p align="center">
   <a href="https://github.com/man612/chatgpt-personalization/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/man612/chatgpt-personalization/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/man612/chatgpt-personalization?style=flat-square&label=license" alt="MIT License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/man612/chatgpt-personalization?style=flat-square" alt="MIT License"></a>
   <a href="spec/profile.schema.json"><img src="https://img.shields.io/badge/schema-v2.0-8250df?style=flat-square" alt="Schema v2.0"></a>
 </p>
 
-<p align="center">
-  <sub>Independent open-source project · not affiliated with or endorsed by OpenAI</sub>
-</p>
+<p align="center"><sub>Independent open-source project · not affiliated with or endorsed by OpenAI</sub></p>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark-v3.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/hero-light-v3.svg">
-  <img alt="ChatGPT Personalization public-first workflow" src="assets/hero-light-v3.svg" width="100%">
+  <img alt="ChatGPT Personalization workflow" src="assets/hero-light-v3.svg" width="100%">
 </picture>
 
-<br>
-
-ChatGPT Personalization is an open-source toolkit for treating personalization as **maintainable configuration** instead of an unversioned block of prompt text. Start from an anonymous preset, customize product settings and durable user context, lint the result, render copy-ready fields, and evaluate whether the behavior actually improves.
-
-The repository separates public reference examples from operational account targets. A reference can stay useful to other people while an operational profile evolves as a real user's desired setup for self-audit or AI-assisted setup.
-
-> [!NOTE]
-> This project does not make a model more capable, bypass ChatGPT product rules, or guarantee better answers. Structural validation proves that a profile is well-formed; behavioral improvement still needs representative evaluation.
+ChatGPT Personalization stores product settings, durable user context, and response instructions in a structured JSON profile. Use the browser builder for the simplest setup or the repository tools for a version-controlled workflow.
 
 ## Quick start
 
-The fastest path is the **[browser builder](https://man612.github.io/chatgpt-personalization/)**. It runs as a static page, requires no sign-in, and keeps edits in the browser.
+### Browser builder — recommended
 
-For a version-controlled local workflow:
+Open the **[ChatGPT Personalization Builder](https://man612.github.io/chatgpt-personalization/)**.
+
+1. Choose a preset. **General** is the recommended default for everyday English or Indonesian use.
+2. Customize product settings, durable context, and response behavior.
+3. Select the Custom Instructions character target for your ChatGPT plan.
+4. Validate the profile.
+5. Copy the rendered fields into **ChatGPT → Settings → Personalization**.
+6. Save the profile JSON if you want a reusable copy.
+
+The builder is static, requires no sign-in, and keeps edits in the browser.
+
+### Repository / CLI
+
+Use this path when you want version control, local profiles, repeatable rendering, or regression testing.
 
 ```bash
 git clone https://github.com/man612/chatgpt-personalization.git
 cd chatgpt-personalization
 
-cp profiles/presets/blank.json profiles/local/me.json
+cp profiles/presets/general.json profiles/local/me.json
 python tools/profile.py lint profiles/local/me.json --limit 5000
 python tools/profile.py render profiles/local/me.json --out build/me --limit 5000
 ```
+
+Use `profiles/presets/blank.json` instead if you want no behavioral defaults.
 
 The renderer creates:
 
@@ -61,138 +70,66 @@ build/me/
 └── custom-instructions.txt
 ```
 
-`settings.md` is a readable checklist for product-level controls. The text files are copy-ready for the closest matching personalization fields in the current ChatGPT interface.
+`settings.md` is a checklist for ChatGPT product controls. The remaining files map to the closest matching Personalization fields.
 
-## Why this exists
+## Presets
 
-ChatGPT personalization can span Personality, Characteristics, Memory, Custom Instructions, project-scoped context, and task-local instructions. Those layers have different scopes and can conflict. This repository keeps them conceptually separate instead of stuffing every preference into one giant prompt.
+| Preset | Intended use |
+| --- | --- |
+| [`general.json`](profiles/presets/general.json) | Recommended balanced starting point for everyday English or Indonesian use |
+| [`blank.json`](profiles/presets/blank.json) | No behavioral defaults |
+| [`tech-generalist.json`](profiles/presets/tech-generalist.json) | Technology, troubleshooting, assisted development, research, and UI/UX |
+| [`knowledge-worker.json`](profiles/presets/knowledge-worker.json) | Research, planning, documentation, and practical decisions |
+| [`student.json`](profiles/presets/student.json) | Learning and explanation without assuming expert vocabulary |
+| [`product-designer.json`](profiles/presets/product-designer.json) | Product thinking, interface critique, and design decisions |
+| [`writer-editor.json`](profiles/presets/writer-editor.json) | Drafting, rewriting, editing, and tone-sensitive work |
 
-The project also treats prompt changes like software changes: keep instructions lean, state a rule once when possible, and rerun representative scenarios after behavior guidance changes. The research basis and its limitations are documented in [`docs/references.md`](docs/references.md).
+Public presets are anonymous and reusable. They must not contain maintainer-specific identity or private context.
 
-## Public-first architecture
+## Writing behavior
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/architecture-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/architecture-light.svg">
-  <img alt="Public-first personalization profile architecture" src="assets/architecture-light.svg" width="100%">
-</picture>
+All opinionated public presets use the repository's compact **natural-writing core** for English and Indonesian. It preserves facts and source voice, uses user-provided writing samples when available, and performs one light audit for recurring assistant residue such as filler, rigid symmetry, fake casualness, staged rhetoric, generic endings, and unsupported drafting residue.
 
-The boundary is deliberate:
+The core is adapted from high-value ideas in **Sepia** with selected **Humanizer** audit patterns. It is not an AI detector and is not intended to bypass detection systems. Language-specific punctuation and grammar follow the actual language and destination rather than a universal blacklist.
 
-- **Presets** are anonymous, reusable starting points.
-- **Maintainer profiles** are intentionally public reference examples, not live account truth or universal defaults.
-- **Operational profiles** are version-controlled, public-safe account targets for self-audit and AI-assisted setup.
-- **Local profiles** are private or experimental configurations and are ignored by Git by default.
-- **Core tooling** stays identity-agnostic: schema, renderer, linter, browser builder, and tests use the same rules for everyone.
+See [`docs/writing/core.md`](docs/writing/core.md) and [`docs/writing/indonesian-ai-tells.md`](docs/writing/indonesian-ai-tells.md). **Blank** intentionally does not inherit these rules.
 
-<details>
-<summary><strong>See the v2 profile model</strong></summary>
+## Profile roles
 
 ```text
-profile
-├── product
-│   ├── personality
-│   ├── characteristics
-│   └── memory
-├── identity
-│   ├── occupation
-│   ├── background
-│   ├── experience
-│   ├── recurring_uses
-│   └── stable_preferences
-└── instructions
-    ├── language / tone / audience
-    ├── explanation
-    ├── structure
-    ├── technical
-    ├── research
-    ├── ui_ux
-    ├── writing
-    └── avoid
+profiles/
+├── presets/       reusable public starting points
+├── local/         private or experimental profiles; gitignored
+├── maintainers/   intentionally public reference examples
+└── operational/   public-safe account targets used for dogfooding/audit
 ```
 
-`instructions.explanation` is intentionally explicit. “Beginner-friendly” by itself is ambiguous; a profile can instead define the teaching sequence, terminology policy, and how much technical depth should be preserved.
+Normal users should start from `profiles/presets/` and save personal work under `profiles/local/`.
 
-Formatting rules are based on the shape of the information rather than answer length. A long continuous explanation can stay as connected prose, while procedures, checklists, and comparisons can still use lists or tables when those formats are more usable.
-
-</details>
-
-## Choose a starting point
-
-- [`blank.json`](profiles/presets/blank.json) — least-opinionated starting point.
-- [`knowledge-worker.json`](profiles/presets/knowledge-worker.json) — office work, research, planning, documentation, and practical decisions.
-- [`tech-generalist.json`](profiles/presets/tech-generalist.json) — troubleshooting, practical technology, AI-assisted development, research, and UI/UX.
-- [`student.json`](profiles/presets/student.json) — structured learning without assuming expert vocabulary.
-- [`product-designer.json`](profiles/presets/product-designer.json) — product thinking, interface critique, flows, and design systems.
-- [`writer-editor.json`](profiles/presets/writer-editor.json) — drafting, rewriting, editing, tone, and language-sensitive work.
-
-The maintainer's public reference example lives at [`profiles/maintainers/yasman.json`](profiles/maintainers/yasman.json). The current public-safe account target used for self-audit and AI-assisted setup lives separately at [`profiles/operational/yasman.json`](profiles/operational/yasman.json).
-
-## Browser builder
-
-The GitHub Pages builder starts from **Blank**, not from a maintainer or operational profile. Public presets and reference examples remain separate from account-specific operational targets.
-
-The browser validates profile structure and the selected Custom Instructions target. The Python CLI adds additional checks for secret-like patterns, repeated text, prompt bloat, over-constraint, and outline bias.
-
-<p align="center">
-  <a href="https://man612.github.io/chatgpt-personalization/"><strong>Open the browser builder →</strong></a>
-</p>
+Maintainer and operational profiles are not defaults and are not shown as builder starting points. The Yasman files are retained as public examples of how the maintainer uses and audits the project; they are not profiles other users are expected to copy.
 
 ## Validation and evaluation
 
-Character limits are validation inputs, not identity data. Product limits can change, so the profile itself does not store a ChatGPT plan.
+The linter checks schema validity, field limits, possible secrets, repeated text, prompt bloat, over-constraint, and outline bias. Browser and Python renderers are checked for parity in CI.
 
-```bash
-# Example validation targets
-python tools/profile.py lint profiles/local/me.json --limit 1500
-python tools/profile.py lint profiles/local/me.json --limit 5000
-```
-
-A valid JSON profile is not automatically a better personalization. The repository therefore separates:
-
-- **Engineering tests** — schema handling, linting, rendering, CLI behavior, and Python/browser parity.
-- **Behavioral evals** — real prompts with predefined criteria for explanation order, paragraph flow, research evidence, troubleshooting verification, formatting, and other observable behavior.
-
-Use [`tests/scenarios.md`](tests/scenarios.md) for human-readable cases or [`tests/scenarios.json`](tests/scenarios.json) for a machine-readable suite that can be adapted to an external eval harness.
-
-## Project health and support
-
-- **CI:** pull requests and `main` are tested on Python 3.11, 3.12, and 3.13, plus browser/Python renderer parity.
-- **Security:** read [`SECURITY.md`](SECURITY.md) before reporting a vulnerability or publishing a profile that may contain sensitive data.
-- **Changes:** [`CHANGELOG.md`](CHANGELOG.md) records user-visible and schema-level changes.
-- **Bugs:** use the repository's structured bug-report form with a minimal, non-sensitive reproduction.
-- **Preset proposals:** use the preset proposal form and include an observable behavior or regression case.
-- **ChatGPT account, billing, or product support:** use OpenAI's official support rather than this repository's issue tracker.
+Structural validity does not prove better model behavior. Behavioral changes should be tested with representative prompts before they become defaults. Human-readable scenarios live in [`tests/scenarios.md`](tests/scenarios.md); machine-readable cases live in [`tests/scenarios.json`](tests/scenarios.json).
 
 ## Documentation
 
-[`docs/guide.md`](docs/guide.md) explains how to design and maintain a profile. [`docs/product-mapping.md`](docs/product-mapping.md) maps profile intent to the current ChatGPT product surface. [`docs/testing.md`](docs/testing.md) covers behavioral evaluation. [`docs/privacy.md`](docs/privacy.md) covers data hygiene. [`docs/references.md`](docs/references.md) records the research basis, related projects, and limitations. The maintainer-specific Sepia adaptation is documented separately in [`docs/writing/sepia-yasman.md`](docs/writing/sepia-yasman.md).
-
-<details>
-<summary><strong>Repository structure</strong></summary>
-
-```text
-.github/    Contribution templates, dependency automation, and CI
-assets/     Theme-aware repository visuals
-docs/       Browser builder, mapping, guidance, privacy, writing, and references
-profiles/   Presets, reference examples, operational targets, and private-local profiles
-spec/       JSON Schema for profile files
-tests/      Unit tests, renderer parity, and behavioral scenarios
-tools/      Dependency-free renderer and linter
-```
-
-</details>
+- [`docs/guide.md`](docs/guide.md) — profile design and maintenance
+- [`docs/product-mapping.md`](docs/product-mapping.md) — mapping profile fields to ChatGPT product surfaces
+- [`docs/testing.md`](docs/testing.md) — behavioral evaluation
+- [`docs/privacy.md`](docs/privacy.md) — data hygiene
+- [`docs/references.md`](docs/references.md) — research basis and limitations
+- [`docs/writing/core.md`](docs/writing/core.md) — generic natural-writing policy
+- [`profiles/operational/README.md`](profiles/operational/README.md) — operational-profile scope
 
 ## Contributing
 
-Focused contributions are welcome for the schema, generic presets, tooling, browser UX, tests, and documentation. Personal preferences should not silently become public defaults.
+Focused contributions are welcome. Keep generic tooling identity-agnostic, keep public presets reusable, and add behavioral rules only for observable requirements or repeated failure modes.
 
-Before opening a pull request, read [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Behavioral changes should point to a real requirement or regression scenario, and public presets must stay free of secrets and unnecessary identifying information.
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), and [`SECURITY.md`](SECURITY.md) before contributing.
 
 ## License
 
-Released under the [MIT License](LICENSE). In practical terms, you may use, copy, modify, merge, publish, distribute, sublicense, and sell copies of this repository — including in commercial work — as long as the copyright and license notice are retained.
-
-Third-party material and adaptations retain their original notices in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md), including the Sepia-derived writing layer.
-
-The software and associated documentation are provided **without warranty**. The [`LICENSE`](LICENSE) file is the authoritative license text for this project; third-party notices remain applicable to the material they identify.
+Released under the [MIT License](LICENSE). Third-party adaptations and their original notices are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

@@ -16,6 +16,19 @@ All notable changes to this project are documented here.
 - Added regression coverage for generic preset behavior, separation from maintainer identity, drafting-residue cleanup, and preservation of legitimate objections, alternatives, constraints, and technical trade-offs.
 - Retained Sepia and Humanizer MIT attribution in `THIRD_PARTY_NOTICES.md` and documented benchmark limitations and the non-detector-evasion goal.
 
+### Global onboarding and bilingual builder
+
+- Made `General` the default browser-builder starting point while keeping `Blank` available for users who want no behavioral defaults.
+- Removed maintainer and operational profiles from the builder's normal starting-point list.
+- Added first-class English and Indonesian interface localization with a persistent EN/ID switch that updates the desktop and mobile builder without reloading or discarding edits.
+- Kept JSON schema keys and stored profile values stable while localizing labels, help text, status messages, selectors, mobile controls, and onboarding copy.
+- Added an explicit “Apply to ChatGPT” section that maps rendered output to the current Personalization workflow and keeps the repository/CLI path first-class for version-controlled use.
+- Replaced marketing-heavy builder copy with direct product descriptions.
+- Rewrote the canonical English README as a concise onboarding document and added `README.id.md` as the official Indonesian README.
+- Clarified `profiles/operational/` as public-safe maintainer/account targets for dogfooding and audit, not reusable presets.
+- Updated profile-design and product-mapping documentation for the General-first public workflow and current 2026-09-03 product-limit review.
+- Extended builder asset/version tests and CI syntax checks to cover the bilingual runtime.
+
 ### Operational profiles
 
 - Added `profiles/operational/` for version-controlled, public-safe account targets used for self-audit and AI-assisted setup.
@@ -37,18 +50,12 @@ All notable changes to this project are documented here.
 ### Repository experience
 
 - Restored theme-aware README visuals for the v2 architecture.
-- Improved README mobile readability, onboarding, support links, contributing guidance, and license explanation.
-- Standardized the README trust row as three compact CI, license, and schema badges.
 - Added a dedicated 1280×640 social preview asset plus Open Graph/Twitter metadata and a lightweight favicon for the browser builder.
-- Repaired the social-preview asset as a valid PNG binary after the previous repository blob could not be rendered by GitHub.
-- Rebuilt the browser builder presentation as separate experience, motion, and mobile layers instead of a single generic responsive form surface.
-- Added a dimensional profile-model hero, differentiated Product/Identity/Instructions/Output surfaces, scroll and pointer micro-interactions, mobile section collapsing, custom mobile select sheets, and a safe-area-aware bottom action dock.
-- Added reduced-motion fallbacks and CI syntax checks for the dedicated motion and mobile scripts while keeping renderer output unchanged.
+- Rebuilt the browser builder presentation as separate experience, motion, mobile, and localization layers.
+- Added reduced-motion fallbacks and CI syntax checks for the browser runtime.
 - Added a clear independent-project disclaimer to avoid implying OpenAI affiliation or endorsement.
 - Added a project code of conduct and expanded the security policy.
 - Added Dependabot monitoring for GitHub Actions and updated the workflow to the current v7 major releases of `actions/checkout`, `actions/setup-python`, and `actions/setup-node`.
-- Aligned the preset issue form filename and label with the public-first terminology.
-- Refreshed the GitHub Pages sitemap date.
 
 ### Schema v2 and public-first architecture
 

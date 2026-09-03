@@ -4,23 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ChatGPT Personalization Builder</title>
-  <meta name="description" content="Independent open-source toolkit to build, validate, preview, and export reusable ChatGPT personalization profiles.">
+  <meta name="description" content="Create, validate, and export reusable ChatGPT personalization profiles in English or Indonesian.">
   <meta name="theme-color" content="#0c100e">
   <meta property="og:title" content="ChatGPT Personalization Builder">
-  <meta property="og:description" content="Start from an anonymous preset, keep personal profiles local, and render reviewable ChatGPT personalization settings.">
+  <meta property="og:description" content="Create, validate, and export reusable ChatGPT personalization profiles.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://man612.github.io/chatgpt-personalization/">
   <meta property="og:site_name" content="ChatGPT Personalization">
   <meta property="og:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="ChatGPT Personalization workflow from reusable presets to profiles, validation, rendering, and behavioral evaluation.">
+  <meta property="og:image:alt" content="ChatGPT Personalization profile builder workflow.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ChatGPT Personalization Builder">
-  <meta name="twitter:description" content="Build versioned, reviewable ChatGPT personalization profiles from reusable presets.">
+  <meta name="twitter:description" content="Create, validate, and export reusable ChatGPT personalization profiles.">
   <meta name="twitter:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
-  <link rel="icon" href="favicon.svg?v=2026-08-19.2046" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg?v=2026-09-03.1418" type="image/svg+xml">
   <style>
     .builder-update-notice {
       position: fixed;
@@ -59,7 +59,7 @@
   </style>
   <script>
     (() => {
-      const BUILD = "2026-08-19.2046";
+      const BUILD = "2026-09-03.1418";
       window.__BUILDER_BUILD__ = BUILD;
       window.__BUILDER_DIRTY__ = false;
       let lastCheck = 0;
@@ -80,11 +80,12 @@
 
       function showUpdateNotice(latestBuild) {
         if (document.querySelector(".builder-update-notice")) return;
+        const tr = (key, fallback) => window.BuilderI18n?.t?.(key) || fallback;
         const notice = document.createElement("aside");
         notice.className = "builder-update-notice";
         notice.setAttribute("role", "region");
-        notice.setAttribute("aria-label", "Builder update available");
-        notice.innerHTML = `<div><strong>Builder update available</strong><small>Your current edits are untouched. Refresh when you are ready.</small></div><button type="button">Refresh</button>`;
+        notice.setAttribute("aria-label", tr("update_title", "Builder update available"));
+        notice.innerHTML = `<div><strong>${tr("update_title", "Builder update available")}</strong><small>${tr("update_body", "Your current edits are untouched. Refresh when you are ready.")}</small></div><button type="button">${tr("refresh", "Refresh")}</button>`;
         notice.querySelector("button").addEventListener("click", () => refreshTo(latestBuild));
         document.body.appendChild(notice);
       }
@@ -98,12 +99,10 @@
           if (!response.ok) return;
           const latest = await response.json();
           if (!latest?.build || latest.build === BUILD) return;
-
           if (window.__BUILDER_DIRTY__) {
             showUpdateNotice(latest.build);
             return;
           }
-
           const guardKey = `builder-refresh:${latest.build}`;
           try {
             if (sessionStorage.getItem(guardKey) === "1") return;
@@ -121,29 +120,35 @@
       });
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=2026-08-19.2046">
-  <link rel="stylesheet" href="experience.css?v=2026-08-19.2046">
-  <link rel="stylesheet" href="motion.css?v=2026-08-19.2046">
-  <link rel="stylesheet" href="mobile.css?v=2026-08-19.2046">
-  <link rel="stylesheet" href="performance.css?v=2026-08-19.2046">
-  <script src="renderer.js?v=2026-08-19.2046" defer></script>
-  <script src="app.js?v=2026-08-19.2046" defer></script>
-  <script src="motion.js?v=2026-08-19.2046" defer></script>
-  <script src="mobile.js?v=2026-08-19.2046" defer></script>
+  <link rel="stylesheet" href="styles.css?v=2026-09-03.1418">
+  <link rel="stylesheet" href="experience.css?v=2026-09-03.1418">
+  <link rel="stylesheet" href="motion.css?v=2026-09-03.1418">
+  <link rel="stylesheet" href="mobile.css?v=2026-09-03.1418">
+  <link rel="stylesheet" href="performance.css?v=2026-09-03.1418">
+  <link rel="stylesheet" href="i18n.css?v=2026-09-03.1418">
+  <script src="i18n.js?v=2026-09-03.1418" defer></script>
+  <script src="renderer.js?v=2026-09-03.1418" defer></script>
+  <script src="app.js?v=2026-09-03.1418" defer></script>
+  <script src="motion.js?v=2026-09-03.1418" defer></script>
+  <script src="mobile.js?v=2026-09-03.1418" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#workspace">Skip to builder</a>
+  <a class="skip-link" href="#workspace" data-i18n="skip_builder">Skip to builder</a>
 
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="./" aria-label="ChatGPT Personalization home">
         <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="brand-copy"><strong>ChatGPT Personalization</strong><small>Builder · schema v2</small></span>
+        <span class="brand-copy"><strong>ChatGPT Personalization</strong><small data-i18n="brand_subtitle">Builder · schema v2</small></span>
       </a>
-      <nav aria-label="Primary">
+      <nav data-i18n-aria="primary_nav" aria-label="Primary navigation">
         <a class="nav-github" href="https://github.com/man612/chatgpt-personalization">GitHub</a>
-        <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/guide.md">Guide</a>
-        <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/testing.md">Testing</a>
+        <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/guide.md" data-i18n="nav_guide">Guide</a>
+        <a href="https://github.com/man612/chatgpt-personalization/blob/main/docs/testing.md" data-i18n="nav_testing">Testing</a>
+        <div class="locale-switch" data-i18n-aria="language_label" aria-label="Interface language">
+          <button type="button" data-locale="en" aria-pressed="false">EN</button>
+          <button type="button" data-locale="id" aria-pressed="false">ID</button>
+        </div>
       </nav>
     </div>
   </header>
@@ -151,91 +156,89 @@
   <main class="shell">
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy-block">
-        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Structured profiles, not prompt blobs</div>
-        <h1 id="page-title">Personalization you can <em>actually inspect.</em></h1>
-        <p class="lede">Start from a reusable preset, tune product settings, add durable context, and shape response behavior as separate layers. Validate the profile, then copy the four fields ChatGPT needs.</p>
-        <div class="trust-row" aria-label="Builder properties">
-          <span><i aria-hidden="true"></i>No sign-in</span>
-          <span><i aria-hidden="true"></i>No runtime dependencies</span>
-          <span><i aria-hidden="true"></i>Edits stay in your browser</span>
+        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span><span data-i18n="hero_eyebrow">Reusable ChatGPT personalization profiles</span></div>
+        <h1 id="page-title" data-i18n="hero_title">ChatGPT Personalization Builder</h1>
+        <p class="lede" data-i18n="hero_lede">Create, validate, and export a reusable personalization profile. Start with General for a balanced English/Indonesian setup, or Blank for no behavioral defaults.</p>
+        <div class="trust-row" data-i18n-aria="builder_properties" aria-label="Builder properties">
+          <span><i aria-hidden="true"></i><span data-i18n="trust_no_signin">No sign-in</span></span>
+          <span><i aria-hidden="true"></i><span data-i18n="trust_no_runtime">No runtime dependencies</span></span>
+          <span><i aria-hidden="true"></i><span data-i18n="trust_local">Edits stay in your browser</span></span>
         </div>
-        <div class="hero-flow" aria-label="Workflow">
-          <div><b>01</b><span>Choose a preset</span></div>
-          <div><b>02</b><span>Shape your profile</span></div>
-          <div><b>03</b><span>Validate &amp; export</span></div>
+        <div class="hero-flow" data-i18n-aria="workflow" aria-label="Workflow">
+          <div><b>01</b><span data-i18n="workflow_choose">Choose a preset</span></div>
+          <div><b>02</b><span data-i18n="workflow_edit">Customize your profile</span></div>
+          <div><b>03</b><span data-i18n="workflow_export">Validate and apply</span></div>
         </div>
       </div>
 
-      <div class="hero-stage" role="img" aria-label="A personalization profile separates product settings, identity, and instructions before rendering four copy-ready fields.">
+      <div class="hero-stage" role="img" data-i18n-aria="profile_diagram" aria-label="A personalization profile separates product settings, identity, and instructions before rendering four output fields.">
         <div class="profile-sheet back-product" aria-hidden="true"></div>
         <div class="profile-sheet back-identity" aria-hidden="true"></div>
         <div class="profile-sheet front">
-          <div class="sheet-topline"><span class="sheet-file">profile.json</span><span class="sheet-live">LIVE PROFILE</span></div>
+          <div class="sheet-topline"><span class="sheet-file">profile.json</span><span class="sheet-live" data-i18n="sheet_ready">PROFILE</span></div>
           <div class="sheet-blocks">
-            <div class="sheet-block product"><b>01</b><div><strong>Product</strong><small>Personality · Characteristics · Memory</small></div></div>
-            <div class="sheet-block identity"><b>02</b><div><strong>Identity</strong><small>Occupation · background · durable context</small></div></div>
-            <div class="sheet-block instructions"><b>03</b><div><strong>Instructions</strong><small>Explanation · research · technical · writing</small></div></div>
+            <div class="sheet-block product"><b>01</b><div><strong data-i18n="sheet_product">Product</strong><small data-i18n="sheet_product_detail">Personality · Characteristics · Memory</small></div></div>
+            <div class="sheet-block identity"><b>02</b><div><strong data-i18n="sheet_identity">Identity</strong><small data-i18n="sheet_identity_detail">Occupation · background · durable context</small></div></div>
+            <div class="sheet-block instructions"><b>03</b><div><strong data-i18n="sheet_instructions">Instructions</strong><small data-i18n="sheet_instructions_detail">Explanation · research · technical · writing</small></div></div>
           </div>
-          <div class="sheet-footer"><span>validate → render → evaluate</span><strong>4 COPY-READY FIELDS</strong></div>
+          <div class="sheet-footer"><span data-i18n="sheet_footer">validate → render → evaluate</span><strong data-i18n="sheet_fields">4 OUTPUT FIELDS</strong></div>
         </div>
-        <div class="stage-chip local">local-first editing</div>
-        <div class="stage-chip eval">behavioral evals</div>
+        <div class="stage-chip local" data-i18n="chip_local">local editing</div>
+        <div class="stage-chip eval" data-i18n="chip_eval">behavioral evals</div>
       </div>
     </section>
 
-    <section class="control-deck" aria-label="Profile controls">
+    <section class="control-deck" data-i18n-aria="profile_controls" aria-label="Profile controls">
       <div class="control-card control-card-primary">
-        <div class="control-label" id="template-select-label">Starting point</div>
+        <div class="control-label" id="template-select-label" data-i18n="starting_point">Starting point</div>
         <select id="template-select" aria-labelledby="template-select-label">
-          <optgroup label="Public presets">
-            <option value="presets/blank.json" data-description="Minimal, neutral starting profile" selected>Blank</option>
-            <option value="presets/tech-generalist.json" data-description="Technical work, troubleshooting, UI/UX, assisted development">Technology generalist</option>
-            <option value="presets/knowledge-worker.json" data-description="Research, planning, analysis, and everyday knowledge work">Knowledge worker</option>
-            <option value="presets/student.json" data-description="Learning, explanation, study, and structured understanding">Student</option>
-            <option value="presets/product-designer.json" data-description="Product thinking, interface critique, and design decisions">Product designer</option>
-            <option value="presets/writer-editor.json" data-description="Drafting, editing, tone, and language-sensitive work">Writer and editor</option>
-          </optgroup>
-          <optgroup label="Reference example">
-            <option value="maintainers/yasman.json" data-description="Published maintainer profile; not a universal default">Yasman — maintainer profile</option>
+          <optgroup label="Public presets" data-i18n-label="presets_group">
+            <option value="presets/general.json" data-i18n-label="preset_general" data-i18n-description="preset_general_desc" data-description="Balanced everyday setup for English or Indonesian" selected>General</option>
+            <option value="presets/blank.json" data-i18n-label="preset_blank" data-i18n-description="preset_blank_desc" data-description="No behavioral defaults; build from scratch">Blank</option>
+            <option value="presets/tech-generalist.json" data-i18n-label="preset_tech" data-i18n-description="preset_tech_desc" data-description="Technical work, troubleshooting, UI/UX, assisted development">Technology generalist</option>
+            <option value="presets/knowledge-worker.json" data-i18n-label="preset_knowledge" data-i18n-description="preset_knowledge_desc" data-description="Research, planning, analysis, and everyday knowledge work">Knowledge worker</option>
+            <option value="presets/student.json" data-i18n-label="preset_student" data-i18n-description="preset_student_desc" data-description="Learning, explanation, study, and structured understanding">Student</option>
+            <option value="presets/product-designer.json" data-i18n-label="preset_product" data-i18n-description="preset_product_desc" data-description="Product thinking, interface critique, and design decisions">Product designer</option>
+            <option value="presets/writer-editor.json" data-i18n-label="preset_writer" data-i18n-description="preset_writer_desc" data-description="Drafting, editing, tone, and language-sensitive work">Writer and editor</option>
           </optgroup>
         </select>
       </div>
 
       <div class="control-card">
-        <div class="control-label" id="limit-select-label">Validation target</div>
+        <div class="control-label" id="limit-select-label" data-i18n="validation_target">Validation target</div>
         <select id="limit-select" aria-labelledby="limit-select-label">
-          <option value="1500" data-description="Custom Instructions target: 1,500 characters" selected>Free / Go</option>
-          <option value="5000" data-description="Custom Instructions target: 5,000 characters">Plus / Pro / Business / Enterprise / Education</option>
+          <option value="1500" data-i18n-description="limit_1500_desc" data-description="Custom Instructions target: 1,500 characters" selected>Free / Go</option>
+          <option value="5000" data-i18n-description="limit_5000_desc" data-description="Custom Instructions target: 5,000 characters">Plus / Pro / Business / Enterprise / Education</option>
         </select>
       </div>
 
       <div class="deck-actions">
-        <button id="reset-button" class="button secondary" type="button">Reset to preset</button>
-        <button id="download-button" class="button primary" type="button">Save profile JSON ↓</button>
+        <button id="reset-button" class="button secondary" type="button" data-i18n="reset_preset">Reset to preset</button>
+        <button id="download-button" class="button primary" type="button" data-i18n="save_json">Save profile JSON ↓</button>
       </div>
     </section>
 
-    <div id="status" class="status loading" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span class="status-text">Loading profile…</span></div>
+    <div id="status" class="status loading" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span class="status-text" data-i18n="loading_profile">Loading profile…</span></div>
 
-    <section id="workspace" class="workspace" aria-label="Profile builder workspace">
+    <section id="workspace" class="workspace" data-i18n-aria="workspace_label" aria-label="Profile builder workspace">
       <div class="panel editor-panel">
         <div class="panel-heading">
           <div>
-            <p class="panel-kicker">Source of truth</p>
-            <h2>Edit profile</h2>
-            <p class="panel-caption">Change the profile, not a giant prompt blob.</p>
+            <p class="panel-kicker" data-i18n="source_truth">Profile</p>
+            <h2 data-i18n="edit_profile">Edit profile</h2>
+            <p class="panel-caption" data-i18n="edit_caption">Change structured profile fields. The rendered output updates automatically.</p>
           </div>
-          <button id="validate-button" class="text-button" type="button">Check profile</button>
+          <button id="validate-button" class="text-button" type="button" data-i18n="check_profile">Check profile</button>
         </div>
         <div id="validation-summary" class="validation-summary" aria-live="polite"></div>
         <form id="profile-form" novalidate></form>
         <details class="json-details">
-          <summary><span>Advanced JSON editor</span><small>Direct schema-level control</small></summary>
-          <p>Edit the complete v2 document directly. Applying JSON rebuilds the visual editor and preview.</p>
-          <textarea id="json-editor" spellcheck="false" aria-label="Profile JSON"></textarea>
+          <summary><span data-i18n="json_summary">Advanced JSON editor</span><small data-i18n="json_summary_detail">Direct schema-level control</small></summary>
+          <p data-i18n="json_help">Edit the complete v2 document directly. Applying JSON rebuilds the visual editor and preview.</p>
+          <textarea id="json-editor" spellcheck="false" data-i18n-aria="json_aria" aria-label="Profile JSON"></textarea>
           <div class="json-actions">
-            <button id="format-json-button" class="button secondary" type="button">Format JSON</button>
-            <button id="apply-json-button" class="button secondary" type="button">Apply JSON changes</button>
+            <button id="format-json-button" class="button secondary" type="button" data-i18n="format_json">Format JSON</button>
+            <button id="apply-json-button" class="button secondary" type="button" data-i18n="apply_json">Apply JSON changes</button>
           </div>
         </details>
       </div>
@@ -243,18 +246,23 @@
       <div class="panel preview-panel">
         <div class="panel-heading">
           <div>
-            <p class="panel-kicker">Rendered output</p>
-            <h2>Use in ChatGPT</h2>
-            <p class="panel-caption">Apply product controls manually, then copy the three text fields to their matching Personalization fields.</p>
+            <p class="panel-kicker" data-i18n="rendered_output">Rendered output</p>
+            <h2 data-i18n="use_chatgpt">Apply to ChatGPT</h2>
+            <p class="panel-caption" data-i18n="use_caption">Apply the product settings manually, then copy the generated text into the matching Personalization fields.</p>
           </div>
           <span id="character-summary" class="character-summary"></span>
         </div>
 
         <div class="output-stack">
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">01</span><h3>Product settings</h3></div><button class="copy-button" data-copy="settings-output" type="button">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">02</span><h3>Occupation</h3></div><button class="copy-button" data-copy="occupation-output" type="button">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">03</span><h3>More about you</h3></div><button class="copy-button" data-copy="about-output" type="button">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">04</span><h3>Custom Instructions</h3></div><button class="copy-button" data-copy="instructions-output" type="button">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">01</span><h3 data-i18n="output_product">Product settings</h3></div><button class="copy-button" data-copy="settings-output" type="button" data-i18n="copy">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">02</span><h3 data-i18n="output_occupation">Occupation</h3></div><button class="copy-button" data-copy="occupation-output" type="button" data-i18n="copy">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">03</span><h3 data-i18n="output_about">More about you</h3></div><button class="copy-button" data-copy="about-output" type="button" data-i18n="copy">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">04</span><h3 data-i18n="output_instructions">Custom Instructions</h3></div><button class="copy-button" data-copy="instructions-output" type="button" data-i18n="copy">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
+        </div>
+
+        <div class="apply-guide">
+          <article><h3 data-i18n="apply_steps_title">Where to put these fields</h3><p data-i18n="apply_steps_text">Open ChatGPT → Settings → Personalization. Match the product settings above, then paste Occupation, More about you, and Custom Instructions into their corresponding fields. Product labels can change over time; use the closest current field.</p></article>
+          <article><h3 data-i18n="advanced_path">Need version control?</h3><p data-i18n="advanced_path_text">Download the profile JSON or use the repository CLI to lint, render, compare, and evaluate profiles locally.</p></article>
         </div>
       </div>
     </section>
@@ -262,16 +270,16 @@
     <section class="explanation" aria-labelledby="public-design-title">
       <div class="explanation-rule" aria-hidden="true"></div>
       <div>
-        <p class="panel-kicker">Design boundary</p>
-        <h2 id="public-design-title">Public by design, personal when you choose.</h2>
+        <p class="panel-kicker" data-i18n="design_boundary">Profile roles</p>
+        <h2 id="public-design-title" data-i18n="public_design_title">Reusable presets stay separate from personal profiles.</h2>
       </div>
       <div>
-        <p>Presets are anonymous and reusable. The maintainer profile is a reference example, never the default. Downloaded profiles stay on your device unless you publish them yourself.</p>
-        <p>The character target is validation metadata, not identity. Structural validation catches configuration problems; behavioral quality still needs representative regression scenarios.</p>
+        <p data-i18n="public_design_p1">General and the role presets are reusable starting points. Blank contains no behavioral defaults. Maintainer and operational profiles are public examples or account targets, not presets for other users.</p>
+        <p data-i18n="public_design_p2">Structural validation checks configuration and character limits. Behavioral changes still need representative evaluation.</p>
       </div>
     </section>
   </main>
 
-  <footer><div class="shell footer-inner"><p>Static builder for <a href="https://github.com/man612/chatgpt-personalization">man612/chatgpt-personalization</a>. Profile edits are not uploaded by this page.</p><p>Independent project · not affiliated with or endorsed by OpenAI.</p></div></footer>
+  <footer><div class="shell footer-inner"><p><span data-i18n="footer_privacy">Static builder for man612/chatgpt-personalization. Profile edits are not uploaded by this page.</span></p><p data-i18n="footer_independent">Independent project · not affiliated with or endorsed by OpenAI.</p></div></footer>
 </body>
 </html>

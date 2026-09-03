@@ -48,6 +48,7 @@ jobs:
           node-version: "22"
       - name: Check JavaScript syntax
         run: |
+          node --check docs/i18n.js
           node --check docs/renderer.js
           node --check docs/app.js
           node --check docs/motion.js
