@@ -176,9 +176,11 @@
     "id": "drafting-residue",
     "prompt": "Rapikan paragraf ini supaya bisa berdiri sendiri untuk pembaca yang tidak melihat proses drafting: “Ini bukan berarti dokumentasi tidak penting. Saya juga tidak bilang prompt harus pendek. Pendekatan yang mungkin terlihat menarik adalah menambah aturan baru untuk setiap masalah, tapi itu juga bukan intinya. Yang menentukan adalah apakah instruksi yang relevan tersedia ketika model membutuhkannya.”",
     "criteria": [
-      "Preserve the actual claim about relevant instructions being available when needed",
-      "Remove defenses against objections that the published text never establishes when they add no information",
-      "Remove a discarded alternative when it exists only to be rejected and adds no real trade-off",
+      "Preserve the substantive claim that documentation still matters",
+      "Preserve the substantive claim that prompt length is not the governing criterion",
+      "Preserve the claim that relevant instructions must be available when needed",
+      "Rewrite unsupported defensive framing into direct prose rather than deleting the claims it carries",
+      "Remove the add-a-rule-for-every-problem alternative only if it contributes no real constraint or trade-off",
       "Do not invent a new rationale, stance, or example"
     ],
     "tags": ["writing", "humanizer", "drafting-residue", "indonesian"]
@@ -199,9 +201,10 @@
     "prompt": "Rapikan tanpa mengubah klaimnya: “Jujur? Pada akhirnya, masalah sebenarnya bukan soal panjang prompt. Di level paling fundamental, yang benar-benar penting adalah apakah instruksi tersedia ketika dibutuhkan.”",
     "criteria": [
       "Remove theatrical candor or depth framing when it adds no distinct meaning",
-      "Keep the substantive claim about instruction availability",
+      "Preserve the claim that prompt length is not the deciding factor",
+      "Preserve the claim that instruction availability when needed is what matters",
       "Do not add slang, a slogan, or a new contrast",
-      "Prefer a direct sentence over replacing one rhetorical template with another"
+      "Prefer direct prose over replacing one rhetorical template with another"
     ],
     "tags": ["writing", "humanizer", "indonesian", "rhetoric"]
   },
