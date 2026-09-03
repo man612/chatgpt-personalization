@@ -34,16 +34,18 @@ The repository borrows these principles without pretending that consumer ChatGPT
 
 ## Writing quality, Sepia, and Humanizer
 
-The reusable writing architecture lives in [`docs/writing/core.md`](writing/core.md). It adapts high-value Sepia principles—voice and venue matching, preservation, minimal editing, and structure-aware revision—and selectively incorporates Humanizer ideas that add coverage, especially false-positive handling, a bounded second-pass audit, staged rhetoric, and drafting residue.
+The reusable writing architecture lives in [`docs/writing/core.md`](writing/core.md). It adapts high-value Sepia principles—voice and venue matching, preservation, minimal editing, register preservation, and structure-aware revision—and selectively incorporates Humanizer ideas that add coverage, especially false-positive handling, a bounded second-pass audit, staged rhetoric, and drafting residue.
 
 [`docs/writing/indonesian-ai-tells.md`](writing/indonesian-ai-tells.md) adds Indonesian-specific structural heuristics. [`docs/writing/sepia-yasman.md`](writing/sepia-yasman.md) is only a maintainer-specific extension and is explicitly not a public preset or universal default. Original third-party attribution is retained in [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 
 The public `General` preset and other opinionated presets include a compact version of the generic natural-writing contract. `Blank` intentionally remains unopinionated so users can build a profile without inherited behavioral defaults.
 
 - Sepia upstream: https://github.com/Nanako0129/sepia
+- Sepia v0.5.0 release: https://github.com/Nanako0129/sepia/releases/tag/v0.5.0
 - Sepia ecosystem review: https://github.com/Nanako0129/sepia/blob/main/research/ecosystem.md
 - Humanizer upstream: https://github.com/blader/humanizer
 - Humanizer source skill: https://github.com/blader/humanizer/blob/main/SKILL.md
+- Humanizer latest tagged release at this review: https://github.com/blader/humanizer/releases/tag/v2.11.1
 - Wikipedia: Signs of AI writing: https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
 - Humanizer quality/detector discussion: https://github.com/blader/humanizer/issues/229
 - Humanizer same-model replay discussion: https://github.com/blader/humanizer/issues/250
@@ -53,9 +55,17 @@ The public `General` preset and other opinionated presets include a compact vers
 - Reinhart et al. on human/LLM language differences: https://arxiv.org/abs/2410.16107
 - Russell et al. on expert identification of AI-generated text: https://arxiv.org/abs/2501.15654
 
+### Current upstream review notes
+
+Sepia **v0.5.0**, published on 2026-09-03, adds routing for model-specific prose fingerprints. Its release notes explicitly require source/executor model identity to come from the user, metadata, or runtime/system context rather than being inferred by simply reading the prose. It also strengthens register preservation by stating that a rewrite should not become more promotional than its source.
+
+Those changes reinforce this repository's existing separation of durable profile behavior from task- or runtime-specific analysis. Public presets therefore keep model-neutral preservation and register rules, but do not hardcode volatile GPT/Claude/Gemini fingerprint tables. A model-specific workflow may use such fingerprints only when it actually knows the relevant model identity and can keep the data current.
+
+Humanizer's `main` branch currently declares **2.11.2** in `SKILL.md`, while the latest tagged GitHub release available at this review is **v2.11.1** from 2026-08-18. The repository therefore references the live source skill for behavior rather than claiming that 2.11.2 is the latest tagged release.
+
 The project adopts a narrow lesson from this body of work: writing quality problems are not only vocabulary problems. Register mismatch, filler, templated structure, missing stance, repetitive formatting, over-regular prose, staged rhetoric, and leftover drafting context can matter as much as individual words.
 
-The project does **not** treat Humanizer's 35 patterns as a universal scientific definition of human writing. Its source catalog is largely English-oriented, some surface tells can age as model behavior changes, and punctuation or grammar rules do not automatically transfer across languages. Sepia's 2026-08-27 ecosystem review reaches the same broader conclusion: surface vocabulary is crowded and perishable, while second-pass auditing, false-positive handling, and voice calibration are more transferable design ideas.
+The project does **not** treat Humanizer's pattern catalog as a universal scientific definition of human writing. Its source material is largely English-oriented, some surface tells can age as model behavior changes, and punctuation or grammar rules do not automatically transfer across languages. Sepia's 2026-08-27 ecosystem review reaches the same broader conclusion: surface vocabulary is crowded and perishable, while second-pass auditing, false-positive handling, and voice calibration are more transferable design ideas.
 
 Community evaluations are directional evidence only. Humanizer issue #229 reported strong preference for the rewrite pass in its tested samples while AI-detector scores barely moved; the maintainer explicitly stated detector evasion is not the project's goal. Issue #250 reported a large reduction in its own writing score with 17/18 important-detail retention, but described the study as a small, self-run, LLM-reviewed regression test rather than an independent ranking. Those results support preservation guards and regression testing here; they are not performance claims for this repository.
 
@@ -111,7 +121,7 @@ The lesson taken from these projects is not to copy their prompts. It is to pres
 
 ## Design conclusions from the review
 
-The current architecture intentionally follows these conclusions: public presets should be anonymous; a neutral Blank preset should remain truly unopinionated; reusable defaults should be separate from maintainer-specific examples; product controls should not be duplicated into prompt text when a dedicated control exists; changing product limits should be validation inputs; vocabulary familiarity should not be confused with reasoning ability; quick lookup and deep research need separate behavioral tests; writing-humanization rules should preserve verified author/venue register rather than manufacture imperfection; generic anti-AI catalogs should be adapted selectively rather than stacked wholesale; and behavioral claims require representative repeated evals rather than subjective prompt length or a single impressive response.
+The current architecture intentionally follows these conclusions: public presets should be anonymous; a neutral Blank preset should remain truly unopinionated; reusable defaults should be separate from maintainer-specific examples; product controls should not be duplicated into prompt text when a dedicated control exists; changing product limits should be validation inputs; vocabulary familiarity should not be confused with reasoning ability; quick lookup and deep research need separate behavioral tests; writing-humanization rules should preserve verified author/venue register rather than manufacture imperfection; volatile model-specific fingerprints should stay out of global presets unless runtime identity is actually known; generic anti-AI catalogs should be adapted selectively rather than stacked wholesale; and behavioral claims require representative repeated evals rather than subjective prompt length or a single impressive response.
 
 ## Limitations
 
