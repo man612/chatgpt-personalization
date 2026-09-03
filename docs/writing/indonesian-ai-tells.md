@@ -1,6 +1,6 @@
 # Indonesian AI-writing heuristics
 
-These are **revision heuristics**, not a detector and not a claim that any single phrase proves AI authorship. They exist because upstream Sepia is mostly English-oriented, while Indonesian ChatGPT output has recurring structural habits that can feel synthetic even after casual vocabulary is added.
+These are **revision heuristics**, not a detector and not a claim that any single phrase proves AI authorship. They exist because upstream Sepia and most Humanizer-style pattern catalogs are English-oriented, while Indonesian ChatGPT output has recurring structural habits that can feel synthetic even after casual vocabulary is added.
 
 Use these rules only when patterns cluster and conflict with the intended author or venue.
 
@@ -72,6 +72,24 @@ Indonesian LLM output often states a point, explains it, gives a second paraphra
 
 This is particularly important for chat replies, captions, and short public posts where compression is part of the voice.
 
+### Staged profundity and candor
+
+Watch for a theatrical setup that announces honesty or a deeper truth without adding substance. Common shapes include `jujur?`, `kalau mau jujur`, `sebenarnya inti masalahnya`, `yang benar-benar penting`, `pada level paling fundamental`, or similar framing before an ordinary claim.
+
+Do not ban these phrases. Keep them when the writer is actually changing stance, admitting uncertainty, or making a meaningful distinction. Remove the setup when the same point is clearer without it.
+
+### Invisible defenses and discarded alternatives
+
+Iterative drafting can leave sentences that answer context the final reader never saw. Indonesian examples include `ini bukan berarti...`, `bukan berarti saya mengatakan...`, or an option introduced only as `mungkin kelihatannya masuk akal untuk... tapi...` and then never used again.
+
+Remove the residue when it adds no information beyond the final claim. Preserve a real objection when the text names who raised it, when a reader would reasonably consider it, or when answering it changes the argument. Preserve real alternatives when they affect a design or decision trade-off.
+
+### Formulaic sayings and dramatic fragments
+
+A polished one-line saying can sound synthetic when it turns an ordinary claim into a slogan, and several short fragments in a row can manufacture emphasis rather than communicate information.
+
+Replace the form with the specific claim when the line contributes no distinct meaning. Keep deliberate punchlines, aphorisms, or fragments when they are actually part of the writer's voice or the genre.
+
 ## Surface checks
 
 After structure and register are right, check for:
@@ -82,6 +100,7 @@ After structure and register are right, check for:
 - the same transition word reused across paragraphs;
 - excessive parenthetical explanation;
 - adjectives that intensify without adding information;
+- slogan-like abstractions or stacked dramatic fragments;
 - unusually polished punctuation when the source is intentionally compressed;
 - random imperfections introduced solely to look less machine-written.
 
@@ -109,7 +128,8 @@ Do not flag something merely because it contains:
 - one contrast sentence;
 - one three-item list;
 - one heading;
-- one `jadi`, `nah`, or `justru`;
+- one `jadi`, `nah`, `jujur`, `sebenarnya`, or `justru`;
+- a real objection or alternative that matters to the argument;
 - concise, polished professional writing.
 
 The signal is the **cluster and mismatch**, not an isolated token.
