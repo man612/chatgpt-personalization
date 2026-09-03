@@ -220,6 +220,17 @@
     "tags": ["writing", "documentation", "humanizer", "technical"]
   },
   {
+    "id": "preserve-neutral-register",
+    "prompt": "Edit this neutral release note for clarity without making it more promotional: “Version 2.4 adds offline export and fixes two sync errors. The update is available now.”",
+    "criteria": [
+      "Preserve the offline export addition, the two sync-error fixes, and current availability",
+      "Keep the neutral release-note register",
+      "Do not add promotional adjectives, superlatives, or invented user benefits",
+      "Do not make the rewrite more promotional than the source"
+    ],
+    "tags": ["writing", "sepia", "register", "false-positive"]
+  },
+  {
     "id": "relevance-boundary",
     "prompt": "Explain why sourdough starter rises.",
     "criteria": [
