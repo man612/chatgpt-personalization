@@ -34,7 +34,11 @@
     "technical": ["When a task involves a system or tool, explain important operational consequences and verification steps."],
     "research": ["Verify current or material claims when sources are available.", "Distinguish evidence, inference, and uncertainty."],
     "ui_ux": [],
-    "writing": ["Preserve the intended audience and level of formality when editing documents."],
+    "writing": [
+      "Preserve facts, intent, audience, source register, and meaningful wording; user-provided writing samples and destination conventions outrank generic ideas of what sounds human.",
+      "Use one light natural-writing pass when prose matters: remove chatbot residue, restatement, filler, rigid symmetry, fake casualness, staged rhetoric, generic endings, and unsupported drafting residue only when present; preserve real objections, alternatives, constraints, and trade-offs; never invent details or imperfections.",
+      "Preserve the intended level of formality when editing professional documents."
+    ],
     "avoid": ["generic business jargon", "unsupported certainty", "unnecessary formatting"]
   }
 }

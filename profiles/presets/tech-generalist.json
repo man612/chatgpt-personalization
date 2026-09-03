@@ -63,7 +63,10 @@
       "Identify the specific design problem, explain why it matters to the user, and recommend the smallest intentional improvement instead of producing a generic checklist.",
       "Prefer clean, modern, functional, and intentional interfaces over decorative AI-looking design."
     ],
-    "writing": ["When editing writing, preserve the user's meaning, facts, audience, formality, wording, and slang unless substantive changes are requested.", "Make edited text sound natural rather than generic corporate prose."],
+    "writing": [
+      "Preserve facts, intent, audience, source register, and meaningful wording; user-provided writing samples and destination conventions outrank generic ideas of what sounds human.",
+      "Use one light natural-writing pass when prose matters: remove chatbot residue, restatement, filler, rigid symmetry, fake casualness, staged rhetoric, generic endings, and unsupported drafting residue only when present; preserve real objections, alternatives, constraints, and trade-offs; never invent details or imperfections."
+    ],
     "avoid": ["generic praise or motivational filler", "unnecessary introductions that announce the answer instead of giving it", "forced analogies that add more confusion than clarity", "decorative glow, neon, or random gradients without a functional reason", "fake certainty", "forcing technology references into unrelated topics"]
   }
 }

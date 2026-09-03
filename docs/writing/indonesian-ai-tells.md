@@ -1,115 +1,89 @@
 # Indonesian AI-writing heuristics
 
-These are **revision heuristics**, not a detector and not a claim that any single phrase proves AI authorship. They exist because upstream Sepia is mostly English-oriented, while Indonesian ChatGPT output has recurring structural habits that can feel synthetic even after casual vocabulary is added.
+These are **revision heuristics**, not a detector and not a claim that any single phrase proves AI authorship. They complement the generic [`natural writing core`](core.md) because most upstream Sepia and Humanizer material is English-oriented, while Indonesian ChatGPT output has recurring structural habits of its own.
 
-Use these rules only when patterns cluster and conflict with the intended author or venue.
+Use these checks only when patterns cluster and conflict with the intended author or venue.
 
-## Structural tells worth checking
+## Structural checks
 
 ### Ceremonial lead-ins
 
-Common failure mode: the response spends a sentence announcing that it understands, agrees, will explain, or finds something interesting before delivering the useful text.
-
-Examples of shapes to question:
-
-- `baik, ...`
-- `tentu, ...`
-- `menariknya, ...`
-- `nah, yang perlu dipahami ...`
-- `kalau kita lihat lebih dalam ...`
-
-These phrases are not banned. Keep them when the author genuinely uses them or when they serve a conversational purpose. Remove them when they only delay the content.
+Question openings such as `baik`, `tentu`, `menariknya`, `nah, yang perlu dipahami`, or `kalau kita lihat lebih dalam` when they only announce that an answer is about to begin. Keep them when they serve a real conversational purpose or are part of the author's voice.
 
 ### Restating the request
 
-A model often paraphrases the user's ask before answering it. In sendable text this is especially artificial because the recipient never asked the prompt that generated the draft.
-
-Cut setup that merely says what the text is about. Start where a person writing the message would naturally start.
+A model often paraphrases the user's request before answering it. In sendable prose this is especially artificial because the recipient never saw the generating prompt. Start where the actual message or artifact would naturally start.
 
 ### Contrast-template overuse
 
-The pattern `bukan X, tapi Y` is useful, but repeated contrast framing is a strong ChatGPT rhythm in Indonesian prose. The same applies to `bukan cuma X, melainkan juga Y` and repeated `justru` pivots.
-
-If the contrast carries real meaning, keep it. If it exists mainly to make the sentence sound decisive, rewrite it plainly.
+`Bukan X, tapi Y`, `bukan cuma X, melainkan juga Y`, and repeated `justru` pivots are useful when the contrast is real. Repeated use as a rhetorical default creates a recognizable synthetic rhythm. Rewrite only the unnecessary instances.
 
 ### Signposting every turn
 
-Synthetic prose often narrates its own structure with phrases such as `yang paling penting`, `yang menarik di sini`, `kalau ditarik lebih jauh`, `poin utamanya`, `pada akhirnya`, or `jadi intinya` in nearly every paragraph.
-
-A human draft usually lets some relationships remain implicit. Keep signposts only where the reader would otherwise lose the thread.
+Watch for repeated phrases such as `yang paling penting`, `yang menarik di sini`, `kalau ditarik lebih jauh`, `poin utamanya`, `pada akhirnya`, or `jadi intinya`. Keep signposts when the reader genuinely needs orientation; remove them when the relationship is already clear.
 
 ### Symmetry and neat triplets
 
-Watch for repeated three-part lists, three adjectives, three consequences, or paragraphs with matching size and grammar. A single triplet is normal; a whole answer built from balanced threes feels templated.
-
-Do not break useful lists just to appear human. Break the pattern only when the information itself is not naturally three-part.
+Repeated three-part lists, three adjectives, or paragraphs with matching size and grammar can feel templated. Do not break a useful list merely to look human. Break symmetry only when the information itself does not naturally have that shape.
 
 ### Mini-heading inflation
 
-Short prose can become synthetic when every idea gets a bold mini-heading followed by one similar-length paragraph. If the text would read more naturally as two connected paragraphs, use prose.
-
-Keep headings for real topic changes, long documents, procedures, or material that benefits from scanning.
+Short prose can become synthetic when every idea receives a bold mini-heading and a similar-length paragraph. Use connected prose when the material is one continuous explanation; keep headings for real topic changes or scannable reference material.
 
 ### Recap endings
 
-Avoid an ending that only repeats the previous paragraph with `jadi`, `intinya`, `kesimpulannya`, or a generic future-looking sentence. Stop when the useful content has ended.
+Avoid endings that only repeat the preceding paragraph with `jadi`, `intinya`, `kesimpulannya`, or a generic future-looking sentence. Stop when the useful content has ended.
 
 ### Fake colloquial coating
 
-Adding `wkwk`, `nah`, `sih`, `dong`, `bro`, shortened words, or typos does not automatically make prose sound human. Casual markers become another template when they are inserted without support from the source voice.
-
-Match the author's actual frequency and placement. A user's real shorthand is evidence; invented slang is decoration.
+Adding `wkwk`, `nah`, `sih`, `dong`, `bro`, shortened words, or typos does not make prose human by itself. Match the author's actual frequency and placement instead of decorating polished prose with random casual markers.
 
 ### Register collision
 
-A sentence can sound especially machine-written when formal abstract phrasing is wrapped in casual particles, for example a highly polished explanation ending in `wkwk` or a corporate sentence containing random shorthand.
+A highly formal abstract sentence with arbitrary slang or casual particles can sound more synthetic than either register alone. Choose the register required by the audience and let genuine source habits create the exceptions.
 
-Choose one register that fits the audience and let genuine source habits create the exceptions.
+### Over-explanation after the point is clear
 
-### Over-explanation after the point is already clear
+Indonesian LLM output often states a point, explains it, paraphrases it again, then summarizes the implication. If the reader already has what they need, delete the repetition. This matters especially for chat replies, captions, and short public posts.
 
-Indonesian LLM output often states a point, explains it, gives a second paraphrase, then summarizes the same implication. If the reader already has enough information, delete the rest.
+### Staged profundity and candor
 
-This is particularly important for chat replies, captions, and short public posts where compression is part of the voice.
+Question framing such as `jujur?`, `kalau mau jujur`, `sebenarnya inti masalahnya`, `yang benar-benar penting`, or `pada level paling fundamental` when it announces depth or honesty without adding substance. Keep it when the writer is genuinely changing stance, admitting uncertainty, or making a meaningful distinction.
+
+### Invisible defenses and discarded alternatives
+
+Iterative drafting can leave `ini bukan berarti...`, `bukan berarti saya mengatakan...`, or an option introduced only to be rejected. Rewrite unsupported defensive framing into the direct substantive claim. Remove an abandoned alternative only when it contributes no constraint or real trade-off. Preserve named objections, realistic alternatives, and material claims.
+
+### Formulaic sayings and dramatic fragments
+
+A polished one-line saying or several short fragments can manufacture emphasis without adding information. Replace the form with the specific claim when that is all it contains. Keep deliberate punchlines, aphorisms, or fragments when the writer or genre actually uses them.
 
 ## Surface checks
 
 After structure and register are right, check for:
 
 - repeated sentence openings;
-- too many abstract nouns where a direct verb works;
+- abstract nouns where a direct verb is clearer;
 - consecutive sentences with nearly identical length;
-- the same transition word reused across paragraphs;
+- the same transition word repeated across paragraphs;
 - excessive parenthetical explanation;
 - adjectives that intensify without adding information;
-- unusually polished punctuation when the source is intentionally compressed;
-- random imperfections introduced solely to look less machine-written.
+- slogan-like abstractions or stacked dramatic fragments;
+- punctuation that is much more polished or formal than the source voice;
+- imperfections introduced solely to look less machine-written.
 
-Correct grammar is not a problem by itself. Clean punctuation is not a problem by itself. The goal is congruence with the intended author and venue.
-
-## Yasman-specific guardrails
-
-For informal sendable text where Yasman's own typing is explicitly the target:
-
-- Preserve supported shorthand such as `kek`, `tpi`, `klo`, and `jg` when it already fits the sentence.
-- Prefer compact connected prose over a tidy outline unless the content is naturally list-shaped.
-- Do not expand a short emotional or practical message into a full explanation of motives.
-- Do not over-polish into formal Indonesian.
-- Do not inject slang merely because the user asked for "typingku"; imitate observed sentence shape and compression first.
-- If a supplied draft already sounds recognizably like the user, edit as little as possible.
-
-These are maintainer-specific observations and should not become defaults for public presets or other users.
+Correct Indonesian, clean punctuation, and polished professional writing are not problems by themselves.
 
 ## False positives
 
 Do not flag something merely because it contains:
 
-- correct Indonesian;
-- a formal tone in a formal document;
 - one contrast sentence;
 - one three-item list;
 - one heading;
-- one `jadi`, `nah`, or `justru`;
+- one `jadi`, `nah`, `jujur`, `sebenarnya`, or `justru`;
+- a real objection or alternative that matters to the argument;
+- formal language in a formal document;
 - concise, polished professional writing.
 
 The signal is the **cluster and mismatch**, not an isolated token.

@@ -35,9 +35,9 @@
     "research": ["Verify factual claims when editing would otherwise preserve or amplify an uncertain statement."],
     "ui_ux": [],
     "writing": [
-      "Preserve meaning, facts, audience, formality, wording, and slang unless substantive change is requested.",
-      "Prefer the smallest edit that solves the stated writing problem.",
-      "Avoid smoothing distinctive voice into generic corporate language."
+      "Preserve facts, intent, audience, source register, and meaningful wording; user-provided writing samples and destination conventions outrank generic ideas of what sounds human.",
+      "Use one light natural-writing pass when prose matters: remove chatbot residue, restatement, filler, rigid symmetry, fake casualness, staged rhetoric, generic endings, and unsupported drafting residue only when present; preserve real objections, alternatives, constraints, and trade-offs; never invent details or imperfections.",
+      "Prefer the smallest edit that solves the stated writing problem and avoid smoothing distinctive voice into generic corporate language."
     ],
     "avoid": ["unrequested changes in meaning", "generic corporate phrasing", "over-editing"]
   }

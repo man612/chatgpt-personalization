@@ -21,11 +21,7 @@ class OperationalProfileTests(unittest.TestCase):
         self.operational = json.loads(self.operational_path.read_text(encoding="utf-8"))
 
     def test_operational_profile_is_valid_and_renderable(self):
-        errors = [
-            finding
-            for finding in profile_tool.lint_profile(self.operational, long_field_limit=5000)
-            if finding.level == "error"
-        ]
+        errors = [finding for finding in profile_tool.lint_profile(self.operational, long_field_limit=5000) if finding.level == "error"]
         self.assertEqual(errors, [])
         rendered = profile_tool.render_profile(self.operational)
         self.assertEqual(rendered.occupation, self.operational["identity"]["occupation"])
@@ -42,9 +38,7 @@ class OperationalProfileTests(unittest.TestCase):
         rendered = profile_tool.render_profile(self.operational)
         self.assertLessEqual(len(rendered.custom_instructions), 4500)
         findings = profile_tool.lint_profile(self.operational, long_field_limit=5000)
-        self.assertFalse(
-            [item for item in findings if item.code in {"FIELD_LIMIT", "FIELD_NEAR_LIMIT"}]
-        )
+        self.assertFalse([item for item in findings if item.code in {"FIELD_LIMIT", "FIELD_NEAR_LIMIT"}])
 
     def test_operational_profile_matches_account_target_contract(self):
         rendered = profile_tool.render_profile(self.operational)
@@ -60,18 +54,29 @@ class OperationalProfileTests(unittest.TestCase):
         self.assertIn("generic AI-template visuals", rendered.custom_instructions)
         self.assertIn("Sepia-derived pass", rendered.custom_instructions)
         self.assertIn("verified user samples outrank generic", rendered.custom_instructions)
+        self.assertIn("staged profundity/candor", rendered.custom_instructions)
+        self.assertIn("drafting residue", rendered.custom_instructions)
         self.assertIn("copy-ready", rendered.custom_instructions)
 
-    def test_operational_writing_layer_has_docs_and_attribution(self):
-        writing_layer = REPO_ROOT / "docs" / "writing" / "sepia-yasman.md"
+    def test_operational_writing_layer_has_generic_core_and_attribution(self):
+        core = REPO_ROOT / "docs" / "writing" / "core.md"
+        maintainer_extension = REPO_ROOT / "docs" / "writing" / "sepia-yasman.md"
         indonesian_layer = REPO_ROOT / "docs" / "writing" / "indonesian-ai-tells.md"
         notices = REPO_ROOT / "THIRD_PARTY_NOTICES.md"
-        self.assertTrue(writing_layer.exists())
+        self.assertTrue(core.exists())
+        self.assertTrue(maintainer_extension.exists())
         self.assertTrue(indonesian_layer.exists())
         self.assertTrue(notices.exists())
-        self.assertIn("Sepia", writing_layer.read_text(encoding="utf-8"))
+        core_text = core.read_text(encoding="utf-8")
+        self.assertIn("Sepia", core_text)
+        self.assertIn("Humanizer", core_text)
+        self.assertIn("English and Indonesian", core_text)
+        extension_text = maintainer_extension.read_text(encoding="utf-8")
+        self.assertIn("maintainer", extension_text)
+        self.assertIn("not a preset", extension_text)
         notice_text = notices.read_text(encoding="utf-8")
         self.assertIn("Nanako Tsai", notice_text)
+        self.assertIn("Siqi Chen", notice_text)
         self.assertIn("MIT License", notice_text)
 
     def test_reference_and_operational_profiles_are_distinct_roles(self):

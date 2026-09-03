@@ -80,6 +80,36 @@ The rewrite must preserve the facts, shorthand, and semantic compression already
 
 Check that the result removes chatbot residue or low-information padding only when present, preserves the source register and stance, does not invent anecdotes or specificity, and prefers the smallest useful rewrite over performative humanization.
 
+## Drafting residue
+
+> Rapikan paragraf ini supaya bisa berdiri sendiri untuk pembaca yang tidak melihat proses drafting: “Ini bukan berarti dokumentasi tidak penting. Saya juga tidak bilang prompt harus pendek. Pendekatan yang mungkin terlihat menarik adalah menambah aturan baru untuk setiap masalah, tapi itu juga bukan intinya. Yang menentukan adalah apakah instruksi yang relevan tersedia ketika model membutuhkannya.”
+
+Preserve all substantive claims: documentation still matters, prompt length is not the governing criterion, and relevant instructions must be available when needed. Rewrite unsupported defensive framing into direct prose instead of deleting the claims it carries. Remove the add-a-rule-for-every-problem alternative only if it contributes no real constraint or trade-off. Do not invent a new rationale, stance, or example.
+
+## Preserve real objections and alternatives
+
+> Edit this design note for clarity without deleting real trade-offs: “Tim frontend mengusulkan localStorage karena implementasinya paling sederhana. Tim security menolak penyimpanan credential di browser karena data itu persisten di perangkat. IndexedDB masih menjadi opsi untuk cache offline yang tidak sensitif. Untuk credential, keputusan akhirnya adalah penyimpanan server-side.”
+
+Check the false-positive boundary. The frontend proposal, named security objection, bounded IndexedDB option, and final credential decision are all real information and must survive. A de-AI pass must not flatten a legitimate decision record into only its conclusion.
+
+## Staged profundity and candor
+
+> Rapikan tanpa mengubah klaimnya: “Jujur? Pada akhirnya, masalah sebenarnya bukan soal panjang prompt. Di level paling fundamental, yang benar-benar penting adalah apakah instruksi tersedia ketika dibutuhkan.”
+
+Remove theatrical depth or honesty framing when it adds no distinct meaning. Preserve both material claims: prompt length is not the deciding factor, and instruction availability when needed is what matters. Do not replace the old rhetoric with new slang, slogans, or another `bukan X tapi Y` template.
+
+## Current-state documentation
+
+> Rewrite this documentation sentence so it describes current behavior rather than narrating implementation history: “This helper was added to replace the old O(n²) scan. It now uses a map for O(1) lookups.”
+
+Lead with the current map-based O(1) behavior. Keep the historical O(n²) comparison only if it materially helps explain the current design, and do not invent implementation details that the source does not contain.
+
+## Preserve neutral register
+
+> Edit this neutral release note for clarity without making it more promotional: “Version 2.4 adds offline export and fixes two sync errors. The update is available now.”
+
+Keep the factual claims and neutral release-note register. Do not turn `adds` or `fixes` into promotional language such as “major upgrade,” “powerful,” “game-changing,” or invented user benefits. A natural-writing pass should preserve register rather than replacing neutral prose with marketing copy.
+
 ## Relevance boundary
 
 > Explain why sourdough starter rises.
