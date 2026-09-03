@@ -84,7 +84,7 @@ Check that the result removes chatbot residue or low-information padding only wh
 
 > Rapikan paragraf ini supaya bisa berdiri sendiri untuk pembaca yang tidak melihat proses drafting: “Ini bukan berarti dokumentasi tidak penting. Saya juga tidak bilang prompt harus pendek. Pendekatan yang mungkin terlihat menarik adalah menambah aturan baru untuk setiap masalah, tapi itu juga bukan intinya. Yang menentukan adalah apakah instruksi yang relevan tersedia ketika model membutuhkannya.”
 
-Check that the actual claim survives while unsupported defenses and a discarded alternative are removed when they add no information. The rewrite must not invent a new rationale, stance, or example.
+Preserve all substantive claims: documentation still matters, prompt length is not the governing criterion, and relevant instructions must be available when needed. Rewrite unsupported defensive framing into direct prose instead of deleting the claims it carries. Remove the add-a-rule-for-every-problem alternative only if it contributes no real constraint or trade-off. Do not invent a new rationale, stance, or example.
 
 ## Preserve real objections and alternatives
 
@@ -96,7 +96,7 @@ Check the false-positive boundary. The frontend proposal, named security objecti
 
 > Rapikan tanpa mengubah klaimnya: “Jujur? Pada akhirnya, masalah sebenarnya bukan soal panjang prompt. Di level paling fundamental, yang benar-benar penting adalah apakah instruksi tersedia ketika dibutuhkan.”
 
-Remove theatrical depth or honesty framing when it adds no distinct meaning. Keep the substantive claim and do not replace the old rhetoric with new slang, slogans, or another `bukan X tapi Y` template.
+Remove theatrical depth or honesty framing when it adds no distinct meaning. Preserve both material claims: prompt length is not the deciding factor, and instruction availability when needed is what matters. Do not replace the old rhetoric with new slang, slogans, or another `bukan X tapi Y` template.
 
 ## Current-state documentation
 
