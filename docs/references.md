@@ -1,6 +1,6 @@
 # Research basis and related projects
 
-Last reviewed: **2026-08-29**.
+Last reviewed: **2026-09-03**.
 
 This file records the sources used to shape the repository. It is not a claim that this project is officially endorsed by OpenAI or that it outperforms other personalization approaches. Product behavior changes quickly, so current OpenAI documentation takes precedence over assumptions encoded here.
 
@@ -30,22 +30,34 @@ OpenAI's latest model guidance recommends leaner prompts, stating each instructi
 - Model guidance: https://developers.openai.com/api/docs/guides/latest-model
 - OpenAI Model Spec: https://github.com/openai/model_spec
 
-The repository borrows these design principles without pretending that consumer ChatGPT Custom Instructions are identical to API developer/system messages.
+The repository borrows these design principles without pretending that consumer ChatGPT Custom Instructions are identical to API developer/system messages. This is also why the full Humanizer pattern catalog is not copied into the operational Custom Instructions: the durable global rule stays compact while deeper writing policy remains in repository documentation and regression cases.
 
-## Writing quality and Sepia adaptation
+## Writing quality, Sepia, and Humanizer
 
-The maintainer operational profile includes a compact writing rule derived from **Sepia**, an open-source Agent Skill by Nanako Tsai. The deeper adaptation lives in [`docs/writing/sepia-yasman.md`](writing/sepia-yasman.md), with Indonesian-specific project heuristics in [`docs/writing/indonesian-ai-tells.md`](writing/indonesian-ai-tells.md). The original Sepia license and attribution are retained in [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
+The maintainer operational profile includes a compact writing rule derived primarily from **Sepia**, an open-source Agent Skill by Nanako Tsai. The deeper adaptation lives in [`docs/writing/sepia-yasman.md`](writing/sepia-yasman.md), with Indonesian-specific project heuristics in [`docs/writing/indonesian-ai-tells.md`](writing/indonesian-ai-tells.md). The original Sepia license and attribution are retained in [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
+
+**Humanizer** by Siqi Chen was reviewed as supplemental prior art rather than a replacement architecture. Its useful transferable ideas include voice matching, explicit false-positive guards, a bounded second-pass self-audit, and several forms of editorial or drafting residue that can survive a normal rewrite. The repository selectively adapts those gaps while keeping Sepia as the main routing/revision framework. Humanizer's MIT attribution is also retained in [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 
 - Sepia upstream: https://github.com/Nanako0129/sepia
+- Sepia ecosystem review: https://github.com/Nanako0129/sepia/blob/main/research/ecosystem.md
+- Humanizer upstream: https://github.com/blader/humanizer
+- Humanizer source skill: https://github.com/blader/humanizer/blob/main/SKILL.md
+- Wikipedia: Signs of AI writing: https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
+- Humanizer quality/detector discussion: https://github.com/blader/humanizer/issues/229
+- Humanizer same-model replay discussion: https://github.com/blader/humanizer/issues/250
 - StoryScope: https://arxiv.org/abs/2604.03136
 - LAMP / professional editing study: https://arxiv.org/abs/2409.14509
 - Measuring AI Slop: https://arxiv.org/abs/2509.19163
 - Reinhart et al. on human/LLM language differences: https://arxiv.org/abs/2410.16107
 - Russell et al. on expert identification of AI-generated text: https://arxiv.org/abs/2501.15654
 
-The project adopts a narrow lesson from this body of work: writing quality problems are not only vocabulary problems. Register mismatch, filler, templated structure, missing stance, repetitive formatting, and over-regular prose can matter as much as individual words. The operational profile therefore keeps a short anti-residue rule while the repository stores the fuller routing and revision policy separately.
+The project adopts a narrow lesson from this body of work: writing quality problems are not only vocabulary problems. Register mismatch, filler, templated structure, missing stance, repetitive formatting, over-regular prose, staged rhetoric, and leftover drafting context can matter as much as individual words. The operational profile therefore keeps a short anti-residue rule while the repository stores the fuller routing and revision policy separately.
 
-The Indonesian heuristics are deliberately labeled as project observations rather than scientific detection rules. The cited studies and upstream Sepia are predominantly English-oriented, so this repository does not claim that English vocabulary fingerprints transfer directly to Indonesian. User-specific voice samples and venue fit take precedence over generic ban lists.
+The project does **not** treat Humanizer's 35 patterns as a universal scientific definition of human writing. Its source catalog is largely English-oriented, some surface tells can age as model behavior changes, and punctuation or grammar rules do not automatically transfer across languages. Sepia's own 2026-08-27 ecosystem review makes the same broader point: surface vocabulary is crowded and perishable, while Humanizer's two-pass audit, false-positive handling, and voice calibration are more transferable design ideas.
+
+Community evaluations are treated as directional evidence only. Issue #229 reported strong preference for the rewrite pass in its tested samples while AI-detector scores barely moved; Humanizer's maintainer explicitly stated that detector evasion is not the project's goal. Issue #250 reported a large reduction in its own writing score with 17/18 important-detail retention, but the author also described the study as a small, self-run, LLM-reviewed regression test rather than an independent ranking. Those results motivate regression testing and preservation guards here; they are not performance claims for this repository.
+
+The Indonesian heuristics are deliberately labeled as project observations rather than scientific detection rules. The cited studies, Sepia, Humanizer, and Wikipedia catalog are predominantly English-oriented, so this repository does not claim that English vocabulary fingerprints transfer directly to Indonesian. User-specific voice samples and venue fit take precedence over generic ban lists.
 
 ## Research-process references
 
@@ -97,7 +109,7 @@ The lesson taken from these projects is not to copy their prompts. It is to pres
 
 ## Design conclusions from the review
 
-The current architecture intentionally follows these conclusions: public presets should be anonymous; real personal profiles must be a different category; product controls should not be duplicated into prompt text when a dedicated control exists; changing product limits should be validation inputs; vocabulary familiarity should not be confused with reasoning ability; quick lookup and deep research need separate behavioral tests; writing-humanization rules should preserve verified author/venue register rather than manufacture imperfection; and behavioral claims require representative repeated evals rather than subjective prompt length or a single impressive response.
+The current architecture intentionally follows these conclusions: public presets should be anonymous; real personal profiles must be a different category; product controls should not be duplicated into prompt text when a dedicated control exists; changing product limits should be validation inputs; vocabulary familiarity should not be confused with reasoning ability; quick lookup and deep research need separate behavioral tests; writing-humanization rules should preserve verified author/venue register rather than manufacture imperfection; generic anti-AI catalogs should be adapted selectively rather than stacked wholesale; and behavioral claims require representative repeated evals rather than subjective prompt length or a single impressive response.
 
 ## Limitations
 
