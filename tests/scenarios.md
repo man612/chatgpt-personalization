@@ -104,6 +104,12 @@ Remove theatrical depth or honesty framing when it adds no distinct meaning. Pre
 
 Lead with the current map-based O(1) behavior. Keep the historical O(n²) comparison only if it materially helps explain the current design, and do not invent implementation details that the source does not contain.
 
+## Preserve neutral register
+
+> Edit this neutral release note for clarity without making it more promotional: “Version 2.4 adds offline export and fixes two sync errors. The update is available now.”
+
+Keep the factual claims and neutral release-note register. Do not turn `adds` or `fixes` into promotional language such as “major upgrade,” “powerful,” “game-changing,” or invented user benefits. A natural-writing pass should preserve register rather than replacing neutral prose with marketing copy.
+
 ## Relevance boundary
 
 > Explain why sourdough starter rises.
