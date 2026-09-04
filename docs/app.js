@@ -100,7 +100,7 @@
       detail.className = "select-option-detail";
       item.append(title, detail);
       item.addEventListener("pointerdown", (event) => event.preventDefault());
-      item.addEventListener("click", () => commit(optionItems.indexOf(item)));
+      item.addEventListener("click", () => commit(Number(item.dataset.index)));
       menu.appendChild(item);
       optionItems.push({ item, option, title, detail });
       optionIndex += 1;

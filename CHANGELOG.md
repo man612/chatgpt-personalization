@@ -6,6 +6,13 @@ All notable changes to this project are documented here.
 
 No unreleased changes yet.
 
+## 0.2.1 - 2026-09-04
+
+### Fixes
+
+- Fixed mouse selection in custom dropdowns; keyboard selection was unaffected.
+- Added a real pointer-based end-to-end regression test for preset selection.
+
 ## 0.2.0 - 2026-09-04
 
 ### Release hardening
