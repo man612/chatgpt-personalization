@@ -31,6 +31,7 @@ test("desktop builder preserves state, localizes dynamic UI, and rejects invalid
   const optionBox = await blankOption.boundingBox();
   await page.mouse.click(optionBox.x + 12, optionBox.y + optionBox.height / 2);
   await expect(page.locator("#template-select")).toHaveValue("presets/blank.json");
+  await expect(page.locator("#status")).toHaveClass(/ready/);
   const jsonEditor = page.locator("#json-editor");
   await page.locator(".json-details > summary").click();
   await expect(jsonEditor).toBeVisible();
