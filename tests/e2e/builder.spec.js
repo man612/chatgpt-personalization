@@ -23,9 +23,15 @@ test("desktop builder preserves state, localizes dynamic UI, and rejects invalid
   await expect(page.locator('[data-i18n="target_settings"]')).toHaveText("Terapkan manual");
   await expect(page.locator('[data-i18n="recommended_order_label"]')).toHaveText("Urutan yang disarankan:");
 
-  await page.locator("#template-select-combobox").click();
-  await expect(page.locator(".smart-select").first()).toHaveClass(/open/);
-  await page.keyboard.press("Escape");
+  const presetTrigger = page.locator("#template-select-combobox");
+  await presetTrigger.scrollIntoViewIfNeeded();
+  const triggerBox = await presetTrigger.boundingBox();
+  await page.mouse.click(triggerBox.x + triggerBox.width / 2, triggerBox.y + triggerBox.height / 2);
+  const blankOption = page.locator('.smart-select.open .select-option[data-value="presets/blank.json"]');
+  const optionBox = await blankOption.boundingBox();
+  await page.mouse.click(optionBox.x + 12, optionBox.y + optionBox.height / 2);
+  await expect(page.locator("#template-select")).toHaveValue("presets/blank.json");
+  await expect(page.locator("#status")).toHaveClass(/ready/);
   const jsonEditor = page.locator("#json-editor");
   await page.locator(".json-details > summary").click();
   await expect(jsonEditor).toBeVisible();
