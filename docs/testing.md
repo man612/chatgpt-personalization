@@ -4,7 +4,7 @@ The repository intentionally separates **engineering tests** from **behavioral e
 
 ## Engineering tests
 
-The automated repository suite checks schema handling, enums and types, profile `$schema` path resolution, secret-pattern warnings, prompt-bloat heuristics, outline-bias heuristics, output limits, CLI failures, machine-readable scenario shape, and parity between the Python and browser renderers. CI runs those checks across supported Python versions.
+The automated repository suite checks schema handling, enums and types, canonical profile `$schema` references and deployed schema snapshot parity, secret-pattern warnings, prompt-bloat heuristics, outline-bias heuristics, output limits, CLI failures, machine-readable scenario shape, and parity between the Python and browser renderers. CI runs those checks across supported Python versions. CI also runs browser/CLI validator parity and a Chromium end-to-end smoke suite for desktop/mobile interaction, localization, edit preservation, and invalid JSON handling.
 
 ## Behavioral evals
 

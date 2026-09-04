@@ -60,6 +60,8 @@ python tools/profile.py render profiles/local/me.json --out build/me --limit 500
 
 Use `profiles/presets/blank.json` instead if you want no behavioral defaults.
 
+On Windows PowerShell, use `Copy-Item profiles/presets/general.json profiles/local/me.json` instead of `cp`.
+
 The renderer creates:
 
 ```text

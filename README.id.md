@@ -60,6 +60,8 @@ python tools/profile.py render profiles/local/me.json --out build/me --limit 500
 
 Gunakan `profiles/presets/blank.json` jika ingin memulai tanpa default perilaku apa pun.
 
+Di Windows PowerShell, gunakan `Copy-Item profiles/presets/general.json profiles/local/me.json` sebagai pengganti `cp`.
+
 Renderer menghasilkan:
 
 ```text

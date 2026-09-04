@@ -10,11 +10,18 @@ Describe the focused changes. Personal preferences should not silently become pr
 
 ```bash
 python -m unittest discover -s tests -p "test_*.py" -v
-python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json
+python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json profiles/operational/*.json
+node --check docs/i18n.js
 node --check docs/renderer.js
 node --check docs/app.js
-node --check tests/render_profile.js
+node --check docs/motion.js
+node --check docs/mobile.js
+python tools/sync_docs_data.py --check
 python tests/check_renderer_parity.py
+python tests/check_validator_parity.py
+npm ci
+npx playwright install chromium
+npm run test:e2e
 ```
 
 Describe any behavioral scenarios tested and the baseline used.

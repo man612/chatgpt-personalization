@@ -1,8 +1,20 @@
-name: Tooling bug
-description: Report a reproducible problem in the renderer, linter, schema, or tests.
+name: Bug report
+description: Report a reproducible problem in the browser builder, CLI, renderer, schema, or tests.
 title: "bug: "
 labels: ["bug"]
 body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Browser builder
+        - CLI / linter
+        - Renderer / schema
+        - Tests / CI
+        - Documentation
+    validations:
+      required: true
   - type: textarea
     id: summary
     attributes:
@@ -14,15 +26,15 @@ body:
     id: reproduce
     attributes:
       label: Reproduction
-      description: Include the command, a minimal non-sensitive profile, and the output.
-      render: shell
+      description: Include the smallest reproducible steps and a non-sensitive profile when relevant.
     validations:
       required: true
   - type: input
-    id: python
+    id: environment
     attributes:
-      label: Python version
-      placeholder: "3.12.4"
+      label: Environment
+      description: Browser/version and OS/device for builder bugs; Python version for CLI bugs.
+      placeholder: "Chrome 152 on Windows 11 / Python 3.12"
     validations:
       required: true
   - type: checkboxes

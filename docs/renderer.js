@@ -110,92 +110,156 @@
     };
   }
 
+  const TOP_LEVEL_FIELDS = new Set(["$schema", "schema_version", "name", "description", "product", "identity", "instructions"]);
+  const REQUIRED_TOP_LEVEL = new Set(["schema_version", "name", "product", "identity", "instructions"]);
+  const PRODUCT_FIELDS = new Set(["personality", "characteristics", "memory"]);
+  const CHARACTERISTIC_FIELDS = new Set(["warm", "enthusiastic", "headers_and_lists", "emojis"]);
+  const MEMORY_FIELDS = new Set(["saved_memories", "reference_chat_history"]);
+  const IDENTITY_FIELDS = new Set(["occupation", "background", "experience", "recurring_uses", "stable_preferences"]);
+  const INSTRUCTION_FIELDS = new Set(["language", "tone", "audience", "explanation", "structure", "technical", "research", "ui_ux", "writing", "avoid"]);
+  const EXPLANATION_FIELDS = new Set(["principle", "sequence", "terminology", "depth"]);
+  const STRUCTURE_FIELDS = new Set(["default", "headings", "lists", "tables"]);
+
   function validateProfile(profile) {
     const findings = [];
     const error = (code, message) => findings.push({ level: "error", code, message });
-    const warn = (code, message) => findings.push({ level: "warning", code, message });
+
+    const unknownFields = (value, allowed, location) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return;
+      Object.keys(value).filter((key) => !allowed.has(key)).sort().forEach((key) => {
+        error("UNKNOWN_FIELD", `${location} contains unsupported field: ${key}`);
+      });
+    };
+
+    const missingFields = (value, required, location) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return;
+      const missing = [...required].filter((key) => !(key in value)).sort();
+      if (missing.length) error("MISSING_FIELD", `${location} is missing: ${missing.join(", ")}`);
+    };
+
+    const requireObject = (value, location) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) {
+        error("TYPE", `${location} must be an object`);
+        return null;
+      }
+      return value;
+    };
+
+    const requireString = (value, location, minimum = null, maximum = null) => {
+      if (typeof value !== "string") {
+        error("TYPE", `${location} must be a string`);
+        return null;
+      }
+      if (minimum !== null && value.length < minimum) error("MIN_LENGTH", `${location} must contain at least ${minimum} character(s)`);
+      if (maximum !== null && value.length > maximum) error("MAX_LENGTH", `${location} exceeds ${maximum} characters`);
+      return value;
+    };
+
+    const requireBool = (value, location) => {
+      if (typeof value !== "boolean") error("TYPE", `${location} must be a boolean`);
+    };
+
+    const requireEnum = (value, allowed, location) => {
+      const text = requireString(value, location);
+      if (text !== null && !allowed.has(text)) error("ENUM", `${location} must be one of: ${[...allowed].sort().join(", ")}`);
+    };
+
+    const requireStringList = (value, location) => {
+      if (!Array.isArray(value)) {
+        error("TYPE", `${location} must be an array of strings`);
+        return;
+      }
+      const seen = new Set();
+      value.forEach((item, index) => {
+        const itemLocation = `${location}[${index}]`;
+        if (typeof item !== "string") {
+          error("TYPE", `${itemLocation} must be a string`);
+          return;
+        }
+        if (!item.length) error("MIN_LENGTH", `${itemLocation} must not be empty`);
+        if (seen.has(item)) error("DUPLICATE_ITEM", `${location} contains duplicate value: ${JSON.stringify(item)}`);
+        seen.add(item);
+      });
+    };
 
     if (!profile || typeof profile !== "object" || Array.isArray(profile)) {
       error("TYPE", "profile must be an object");
       return findings;
     }
+
+    unknownFields(profile, TOP_LEVEL_FIELDS, "profile");
+    missingFields(profile, REQUIRED_TOP_LEVEL, "profile");
+
     if (profile.schema_version !== SCHEMA_VERSION) {
-      error("SCHEMA_VERSION", profile.schema_version === "1.0" ? "schema_version 1.0 requires migration to v2" : `schema_version must be ${SCHEMA_VERSION}`);
-    }
-    if (typeof profile.name !== "string" || !profile.name.trim()) error("NAME", "name must be a non-empty string");
-
-    const product = profile.product;
-    if (!product || typeof product !== "object" || Array.isArray(product)) {
-      error("PRODUCT", "product must be an object");
-    } else {
-      if (!PERSONALITIES.has(product.personality)) error("PERSONALITY", "product.personality is not supported by this schema");
-      const characteristics = product.characteristics;
-      if (!characteristics || typeof characteristics !== "object" || Array.isArray(characteristics)) {
-        error("CHARACTERISTICS", "product.characteristics must be an object");
-      } else {
-        ["warm", "enthusiastic", "headers_and_lists", "emojis"].forEach((key) => {
-          if (!RELATIVE.has(characteristics[key])) error("CHARACTERISTIC", `product.characteristics.${key} has an unsupported value`);
-        });
-      }
-      const memory = product.memory;
-      if (!memory || typeof memory !== "object" || Array.isArray(memory)) {
-        error("MEMORY", "product.memory must be an object");
-      } else {
-        ["saved_memories", "reference_chat_history"].forEach((key) => {
-          if (typeof memory[key] !== "boolean") error("MEMORY", `product.memory.${key} must be boolean`);
-        });
-      }
+      error("SCHEMA_VERSION", profile.schema_version === "1.0"
+        ? "schema_version 1.0 is no longer supported; migrate the profile using docs/migration-v2.md"
+        : `schema_version must be ${JSON.stringify(SCHEMA_VERSION)}`);
     }
 
-    const identity = profile.identity;
-    if (!identity || typeof identity !== "object" || Array.isArray(identity)) {
-      error("IDENTITY", "identity must be an object");
-    } else {
-      if (typeof identity.occupation !== "string") error("IDENTITY", "identity.occupation must be a string");
-      ["background", "recurring_uses", "stable_preferences"].forEach((key) => {
-        if (!Array.isArray(identity[key]) || identity[key].some((item) => typeof item !== "string")) error("IDENTITY", `identity.${key} must be an array of strings`);
-      });
-      if (typeof identity.experience !== "string") error("IDENTITY", "identity.experience must be a string");
+    requireString(profile.name, "name", 1, 80);
+    if ("description" in profile) requireString(profile.description, "description", null, 240);
+
+    const product = requireObject(profile.product, "product");
+    if (product) {
+      unknownFields(product, PRODUCT_FIELDS, "product");
+      missingFields(product, PRODUCT_FIELDS, "product");
+      requireEnum(product.personality, PERSONALITIES, "product.personality");
+
+      const characteristics = requireObject(product.characteristics, "product.characteristics");
+      if (characteristics) {
+        unknownFields(characteristics, CHARACTERISTIC_FIELDS, "product.characteristics");
+        missingFields(characteristics, CHARACTERISTIC_FIELDS, "product.characteristics");
+        [...CHARACTERISTIC_FIELDS].sort().forEach((key) => requireEnum(characteristics[key], RELATIVE, `product.characteristics.${key}`));
+      }
+
+      const memory = requireObject(product.memory, "product.memory");
+      if (memory) {
+        unknownFields(memory, MEMORY_FIELDS, "product.memory");
+        missingFields(memory, MEMORY_FIELDS, "product.memory");
+        [...MEMORY_FIELDS].sort().forEach((key) => requireBool(memory[key], `product.memory.${key}`));
+      }
+    }
+    const identity = requireObject(profile.identity, "identity");
+    if (identity) {
+      unknownFields(identity, IDENTITY_FIELDS, "identity");
+      missingFields(identity, IDENTITY_FIELDS, "identity");
+      requireString(identity.occupation, "identity.occupation", null, 500);
+      requireStringList(identity.background, "identity.background");
+      requireString(identity.experience, "identity.experience");
+      requireStringList(identity.recurring_uses, "identity.recurring_uses");
+      requireStringList(identity.stable_preferences, "identity.stable_preferences");
     }
 
-    const instructions = profile.instructions;
-    if (!instructions || typeof instructions !== "object" || Array.isArray(instructions)) {
-      error("INSTRUCTIONS", "instructions must be an object");
-    } else {
-      if (typeof instructions.language !== "string") error("INSTRUCTIONS", "instructions.language must be a string");
-      if (!Array.isArray(instructions.tone) || instructions.tone.some((item) => typeof item !== "string")) error("INSTRUCTIONS", "instructions.tone must be an array of strings");
-      if (typeof instructions.audience !== "string") error("INSTRUCTIONS", "instructions.audience must be a string");
-      ["technical", "research", "ui_ux", "writing", "avoid"].forEach((key) => {
-        if (!Array.isArray(instructions[key]) || instructions[key].some((item) => typeof item !== "string")) error("INSTRUCTIONS", `instructions.${key} must be an array of strings`);
-      });
-      const explanation = instructions.explanation;
-      if (!explanation || typeof explanation !== "object" || Array.isArray(explanation)) {
-        error("EXPLANATION", "instructions.explanation must be an object");
-      } else {
-        ["principle", "terminology", "depth"].forEach((key) => {
-          if (typeof explanation[key] !== "string") error("EXPLANATION", `instructions.explanation.${key} must be a string`);
-        });
-        if (!Array.isArray(explanation.sequence) || explanation.sequence.some((item) => typeof item !== "string")) error("EXPLANATION", "instructions.explanation.sequence must be an array of strings");
+    const instructions = requireObject(profile.instructions, "instructions");
+    if (instructions) {
+      unknownFields(instructions, INSTRUCTION_FIELDS, "instructions");
+      missingFields(instructions, INSTRUCTION_FIELDS, "instructions");
+      requireString(instructions.language, "instructions.language");
+      requireStringList(instructions.tone, "instructions.tone");
+      requireString(instructions.audience, "instructions.audience");
+      ["technical", "research", "ui_ux", "writing", "avoid"].forEach((key) => requireStringList(instructions[key], `instructions.${key}`));
+
+      const explanation = requireObject(instructions.explanation, "instructions.explanation");
+      if (explanation) {
+        unknownFields(explanation, EXPLANATION_FIELDS, "instructions.explanation");
+        missingFields(explanation, EXPLANATION_FIELDS, "instructions.explanation");
+        requireString(explanation.principle, "instructions.explanation.principle");
+        requireStringList(explanation.sequence, "instructions.explanation.sequence");
+        requireString(explanation.terminology, "instructions.explanation.terminology");
+        requireString(explanation.depth, "instructions.explanation.depth");
       }
-      const structure = instructions.structure;
-      if (!structure || typeof structure !== "object" || Array.isArray(structure)) {
-        error("STRUCTURE", "instructions.structure must be an object");
-      } else {
-        ["default", "headings", "lists", "tables"].forEach((key) => {
-          if (typeof structure[key] !== "string") error("STRUCTURE", `instructions.structure.${key} must be a string`);
-        });
-        const combined = [structure.default, structure.headings, structure.lists, structure.tables].join(" ");
-        const outlineSentences = combined.split(/(?<=[.!?])\s+/);
-        const biased = outlineSentences.some((text) => {
-          const lowered = text.toLowerCase();
-          const negated = ["do not", "don't", "avoid", "without", "not use", "not create"].some((phrase) => lowered.includes(phrase));
-          return !negated && /\b(always|prefer|use|create|format|organize)\b.{0,40}\bnumbered (sections?|headings?)\b/i.test(text);
-        });
-        if (biased) warn("OUTLINE_BIAS", "structure may force outline-style answers");
+
+      const structure = requireObject(instructions.structure, "instructions.structure");
+      if (structure) {
+        unknownFields(structure, STRUCTURE_FIELDS, "instructions.structure");
+        missingFields(structure, STRUCTURE_FIELDS, "instructions.structure");
+        [...STRUCTURE_FIELDS].sort().forEach((key) => requireString(structure[key], `instructions.structure.${key}`));
       }
     }
+
     return findings;
   }
+
 
   root.PersonalizationRenderer = { renderProfile, validateProfile, SCHEMA_VERSION };
   if (typeof module !== "undefined" && module.exports) module.exports = root.PersonalizationRenderer;

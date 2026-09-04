@@ -1,4 +1,4 @@
-/* Mobile layer: purpose-built guided flow for touch devices. Desktop behavior stays in base layers. */
+﻿/* Mobile layer: purpose-built guided flow for touch devices. Desktop behavior stays in base layers. */
 
 .mobile-flow-nav,
 .mobile-choice-dialog,
@@ -75,16 +75,8 @@
   .hero-stage { min-height: 410px; overflow: hidden; margin-inline: -4px; }
   .profile-sheet { width: min(335px, 86vw); border-radius: 23px; }
   .profile-sheet.front { min-height: 360px; padding: 11px; }
-  .profile-sheet.back-product { height: 328px; transform: translate(-30px,16px) rotate(-4deg); animation-name: sheet-product-float-mobile; }
-  .profile-sheet.back-identity { height: 338px; transform: translate(30px,10px) rotate(4deg); animation-name: sheet-identity-float-mobile; }
-  @keyframes sheet-product-float-mobile {
-    0%,100% { transform: translate(-30px,16px) rotate(-4deg); }
-    50% { transform: translate(-37px,8px) rotate(-5deg); }
-  }
-  @keyframes sheet-identity-float-mobile {
-    0%,100% { transform: translate(30px,10px) rotate(4deg); }
-    50% { transform: translate(37px,4px) rotate(5deg); }
-  }
+  .profile-sheet.back-product { height: 328px; transform: translate(-30px,16px) rotate(-4deg); }
+  .profile-sheet.back-identity { height: 338px; transform: translate(30px,10px) rotate(4deg); }
   .sheet-topline { min-height: 39px; padding-bottom: 9px; }
   .sheet-blocks { gap: 7px; padding-top: 9px; }
   .sheet-block { min-height: 67px; padding: 10px 11px; grid-template-columns: 30px minmax(0,1fr); gap: 9px; border-radius: 14px; }
@@ -276,7 +268,7 @@
   .mobile-choice-card strong { font-size: 14px; }
   .mobile-choice-card small { color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
   .mobile-choice-card::after {
-    content: "✓";
+    content: "âœ“";
     position: absolute;
     right: 15px;
     top: 50%;
@@ -366,7 +358,7 @@
   .mobile-dialog-option strong { font-size: 14px; }
   .mobile-dialog-option small { color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
   .mobile-dialog-option::after {
-    content: "✓";
+    content: "âœ“";
     position: absolute;
     right: 16px;
     top: 50%;
@@ -520,7 +512,7 @@
   .preview-panel .panel-heading h2 { font-size: 24px; }
   .preview-panel .panel-caption { font-size: 12px; line-height: 1.5; }
   .character-summary { display: none; }
-  .preview-use-note { margin: 0 10px 8px; }
+  .preview-use-note { margin: 0 10px 8px; font-size: 11px; }`r`n  .output-heading, .output-heading > div { flex-wrap: wrap; }
   .output-stack { padding: 10px; gap: 10px; }
   .output-card { border-radius: 16px; }
   .output-heading { min-height: 58px; padding: 9px 9px 9px 12px; }
@@ -560,3 +552,4 @@
   dialog.mobile-choice-dialog[open],
   dialog.mobile-choice-dialog[open]::backdrop { animation: none; }
 }
+`r`n

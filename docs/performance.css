@@ -1,11 +1,6 @@
 /* Performance layer: prioritize stable interaction over continuous decorative compositing.
    Motion is reserved for short, user-triggered or one-shot feedback. */
 
-[data-reveal] {
-  filter: none !important;
-  transition-property: opacity, transform !important;
-}
-
 /* Long-form desktop sections can be skipped while far off-screen.
    Mobile shows one high-level step at a time, so it uses containment instead. */
 @media (min-width: 681px) {
@@ -20,33 +15,6 @@
   }
 }
 
-.profile-sheet.front { will-change: auto !important; }
-
-/* Decorative motion must settle. Persistent animations keep the compositor active
-   even when the user is not interacting with the builder. */
-.brand-mark i,
-.profile-sheet.back-product,
-.profile-sheet.back-identity,
-.stage-chip,
-.sheet-live::before,
-.explanation-rule {
-  animation: none !important;
-}
-
-/* Backdrop blur plus always-running transforms can keep older Windows GPU compositors
-   continuously busy even while the builder is idle. Use opaque-enough surfaces instead. */
-.site-header,
-.control-deck,
-.stage-chip,
-.select-menu {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-.site-header { background: color-mix(in srgb, var(--canvas-2) 97%, black) !important; }
-.control-deck { background: color-mix(in srgb, var(--panel) 98%, black) !important; }
-.stage-chip { background: var(--panel-2) !important; }
-.select-menu { background: var(--panel-3) !important; }
-
 @supports (animation-timeline: scroll()) {
   body::before {
     transform: scaleX(0);
@@ -55,31 +23,6 @@
   }
   @keyframes page-scroll-progress { to { transform: scaleX(1); } }
 }
-
-.output-target {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 3px 7px;
-  border: 1px solid var(--line-soft);
-  border-radius: 999px;
-  color: var(--ink-soft);
-  background: rgba(255,255,255,.025);
-  font: 700 9px/1.2 var(--mono);
-  white-space: nowrap;
-}
-
-.preview-use-note {
-  margin: 0 12px 2px;
-  padding: 11px 12px;
-  border: 1px solid color-mix(in srgb, var(--output) 28%, var(--line-soft));
-  border-radius: 14px;
-  background: var(--output-soft);
-  color: var(--ink-soft);
-  font-size: 11px;
-  line-height: 1.5;
-}
-.preview-use-note strong { color: var(--ink); }
 
 @media (max-width: 680px) {
   /* The mobile selector lives in the top layer, so visible task surfaces can safely contain paint/layout again. */
@@ -104,9 +47,6 @@
   .mobile-flow-nav {
     box-shadow: 0 10px 28px rgba(0,0,0,.16) !important;
   }
-
-  .preview-use-note { margin-inline: 9px; font-size: 11px; }
-  .output-heading, .output-heading > div { flex-wrap: wrap; }
 
   /* The mobile flow has its own progress navigator; skip fallback JS page-progress work if scroll timelines are absent. */
   @supports not (animation-timeline: scroll()) {

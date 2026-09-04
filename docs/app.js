@@ -368,7 +368,14 @@
       return;
     }
     validationSummary.className = "validation-summary invalid";
-    validationSummary.innerHTML = findings.map((item) => `<div><strong>${item.level.toUpperCase()} ${item.code}</strong> — ${item.message}</div>`).join("");
+    validationSummary.replaceChildren();
+    findings.forEach((item) => {
+      const row = document.createElement("div");
+      const strong = document.createElement("strong");
+      strong.textContent = `${item.level.toUpperCase()} ${item.code}`;
+      row.append(strong, document.createTextNode(` — ${item.message}`));
+      validationSummary.appendChild(row);
+    });
   }
 
   function setOutput(element, text) {
@@ -411,7 +418,7 @@
   async function loadTemplate(filename) {
     const file = filename.split("/").pop();
     setStatus("loading", tr("loading_file", { file }, `Loading ${file}…`));
-    const response = await fetch(`https://raw.githubusercontent.com/man612/chatgpt-personalization/main/profiles/${filename}`, { cache: "no-store" });
+    const response = await fetch(`profiles/${filename}`, { cache: "no-store" });
     if (!response.ok) throw new Error(tr("load_failed", { file: filename }, `Could not load ${filename}`));
     profile = await response.json();
     loadedProfile = clone(profile);
