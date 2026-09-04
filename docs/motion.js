@@ -128,45 +128,6 @@
     dynamicObserver.observe(profileForm, { childList: true, subtree: true });
   }
 
-  const relabel = (selector, text, ariaLabel = text) => {
-    const element = document.querySelector(selector);
-    if (!element) return;
-    element.textContent = text;
-    element.setAttribute("aria-label", ariaLabel);
-  };
-  relabel("#reset-button", "Reset to preset", "Reset all edits to the currently selected starting preset");
-  relabel("#download-button", "Save profile JSON ↓", "Save the current personalization profile as a JSON file");
-  relabel("#validate-button", "Check profile", "Validate the current profile");
-  relabel("#apply-json-button", "Apply JSON changes", "Apply the JSON editor contents to the visual builder");
-
-  const previewHeading = document.querySelector(".preview-panel .panel-heading h2");
-  const previewCaption = document.querySelector(".preview-panel .panel-caption");
-  if (previewHeading) previewHeading.textContent = "Use in ChatGPT";
-  if (previewCaption) previewCaption.textContent = "Apply product controls manually, then copy the three text fields to their matching Personalization fields.";
-
-  const outputTargets = [
-    ["settings-output", "Apply manually"],
-    ["occupation-output", "Paste → Occupation"],
-    ["about-output", "Paste → More about you"],
-    ["instructions-output", "Paste → Custom Instructions"],
-  ];
-  outputTargets.forEach(([outputId, label]) => {
-    const heading = document.querySelector(`#${outputId}`)?.closest(".output-card")?.querySelector(".output-heading > div");
-    if (!heading || heading.querySelector(".output-target")) return;
-    const target = document.createElement("span");
-    target.className = "output-target";
-    target.textContent = label;
-    heading.appendChild(target);
-  });
-
-  const outputStack = document.querySelector(".output-stack");
-  if (outputStack && !document.querySelector(".preview-use-note")) {
-    const note = document.createElement("p");
-    note.className = "preview-use-note";
-    note.innerHTML = "<strong>Recommended order:</strong> match Product settings first, then paste Occupation, More about you, and Custom Instructions into the fields with the same names in ChatGPT Personalization.";
-    outputStack.before(note);
-  }
-
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
       const target = document.querySelector(link.getAttribute("href"));

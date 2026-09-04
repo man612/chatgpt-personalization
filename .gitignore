@@ -6,3 +6,6 @@ build/
 # Personal profiles are local by default.
 profiles/local/*.json
 profiles/local/*.jsonc
+node_modules/
+test-results/
+playwright-report/

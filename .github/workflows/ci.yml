@@ -54,5 +54,17 @@ jobs:
           node --check docs/motion.js
           node --check docs/mobile.js
           node --check tests/render_profile.js
+          node --check tests/validate_profile.js
+          node --check tests/e2e/builder.spec.js
+      - name: Check committed Pages data snapshots
+        run: python tools/sync_docs_data.py --check
       - name: Compare browser and Python renderers
         run: python tests/check_renderer_parity.py
+      - name: Compare browser and Python validators
+        run: python tests/check_validator_parity.py
+      - name: Install browser test dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Run browser end-to-end tests
+        run: npm run test:e2e

@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+No unreleased changes yet.
+
+## 0.2.0 - 2026-09-04
+
+### Release hardening
+
+- Added real Chromium end-to-end tests for desktop and mobile builder flows, locale switching, edit preservation, preset interaction, and invalid JSON handling.
+- Added browser/CLI validator parity fixtures for malformed profiles and tightened the browser validator to match schema constraints.
+- Made GitHub Pages serve commit-matched preset and schema snapshots instead of fetching mutable `main` data at runtime.
+- Moved dynamic preview guidance into the normal EN/ID localization layer and removed obsolete motion code left by the compositor hotfix.
+- Hardened validation rendering by using text nodes rather than interpolated HTML.
+
+
 ### Natural writing architecture
 
 - Added `docs/writing/core.md` as the generic English/Indonesian writing policy for opinionated public presets.

@@ -71,8 +71,7 @@ button { cursor: pointer; }
   top: 0;
   z-index: 80;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(18px) saturate(1.15);
+  background: color-mix(in srgb, var(--canvas-2) 97%, black);
 }
 .header-inner {
   min-height: 64px;

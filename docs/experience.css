@@ -253,12 +253,11 @@ h1 {
   padding: 8px 11px;
   border: 1px solid var(--line-med);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel-2) 92%, transparent);
+  background: var(--panel-2);
   box-shadow: 0 16px 38px rgba(0,0,0,.16);
   color: var(--ink-soft);
   font-size: 10px;
   font-weight: 760;
-  backdrop-filter: blur(12px);
 }
 .stage-chip.local { left: 0; top: 105px; }
 .stage-chip.eval { right: -4px; bottom: 114px; }
@@ -273,9 +272,8 @@ h1 {
   padding: 10px;
   border: 1px solid var(--line-soft);
   border-radius: 26px;
-  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  background: color-mix(in srgb, var(--panel) 98%, black);
   box-shadow: 0 18px 54px rgba(0,0,0,.16);
-  backdrop-filter: blur(16px);
   animation: none;
 }
 .control-card {
@@ -310,9 +308,8 @@ h1 {
 .select-menu {
   border-color: var(--line-med);
   border-radius: 18px;
-  background: color-mix(in srgb, var(--panel-3) 97%, transparent);
+  background: var(--panel-3);
   box-shadow: 0 28px 78px rgba(0,0,0,.34);
-  backdrop-filter: blur(18px);
 }
 .select-option { border: 1px solid transparent; border-radius: 12px; }
 .select-option:hover, .select-option.active { border-color: var(--line-soft); background: var(--identity-soft); }
@@ -523,3 +520,29 @@ footer { margin-top: 34px; border-top-color: var(--line-soft); }
   .sheet-block.identity > b,
   .sheet-block.instructions > b { background: rgba(255,255,255,.62); }
 }
+
+/* Rendered-output guidance. */
+.output-target {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  background: rgba(255,255,255,.025);
+  font: 700 9px/1.2 var(--mono);
+  white-space: nowrap;
+}
+
+.preview-use-note {
+  margin: 0 12px 2px;
+  padding: 11px 12px;
+  border: 1px solid color-mix(in srgb, var(--output) 28%, var(--line-soft));
+  border-radius: 14px;
+  background: var(--output-soft);
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.preview-use-note strong { color: var(--ink); }

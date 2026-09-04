@@ -22,10 +22,10 @@ SPEC.loader.exec_module(profile_tool)
 
 
 def render_with_node(profile: dict[str, Any]) -> dict[str, str]:
-    result = subprocess.run(["node", str(NODE_HELPER)], input=json.dumps(profile), capture_output=True, text=True, check=False)
+    result = subprocess.run(["node", str(NODE_HELPER)], input=json.dumps(profile, ensure_ascii=False).encode("utf-8"), capture_output=True, check=False)
     if result.returncode != 0:
-        raise RuntimeError(result.stderr.strip() or "Node renderer failed")
-    return json.loads(result.stdout)
+        raise RuntimeError(result.stderr.decode("utf-8", errors="replace").strip() or "Node renderer failed")
+    return json.loads(result.stdout.decode("utf-8"))
 
 
 def render_with_python(profile: dict[str, Any]) -> dict[str, str]:

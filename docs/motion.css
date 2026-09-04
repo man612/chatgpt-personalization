@@ -25,10 +25,6 @@ body::before {
 .site-header.is-scrolled { box-shadow: 0 20px 52px rgba(0,0,0,.18); }
 .site-header.is-hidden { transform: translateY(-130%); opacity: .15; }
 
-@keyframes brand-stack {
-  0%, 28% { transform: scaleX(.72); opacity: .72; }
-  72%, 100% { transform: scaleX(1.04); opacity: 1; }
-}
 
 .hero-copy-block > * {
   opacity: 0;
@@ -52,31 +48,13 @@ body::before {
 }
 @keyframes hero-marker { to { background-size: 100% 6%; } }
 
-.hero-stage { transform-style: preserve-3d; }
-.profile-sheet.front {
-  transform: rotateX(var(--stage-rx, 0deg)) rotateY(var(--stage-ry, 0deg)) translate3d(0, var(--stage-y, 0px), 0);
-  transition: transform 180ms ease-out, box-shadow 300ms ease;
-  will-change: transform;
-}
-@keyframes sheet-product-float {
-  0%,100% { transform: translate(-54px,20px) rotate(-6deg); }
-  50% { transform: translate(-66px,6px) rotate(-8deg); }
-}
-@keyframes sheet-identity-float {
-  0%,100% { transform: translate(50px,14px) rotate(5deg); }
-  50% { transform: translate(64px,2px) rotate(7deg); }
-}
-@keyframes stage-chip-float { 50% { translate: 0 -10px; } }
-@keyframes live-dot { 50% { transform: scale(1.35); opacity: .45; } }
-
 [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 30px, 0) scale(.988);
-  filter: blur(5px);
-  transition: opacity var(--motion-slow) var(--motion-ease), transform var(--motion-slow) var(--motion-ease), filter var(--motion-slow) ease;
+  transition: opacity var(--motion-slow) var(--motion-ease), transform var(--motion-slow) var(--motion-ease);
   transition-delay: var(--reveal-delay, 0ms);
 }
-[data-reveal].is-visible { opacity: 1; transform: none; filter: none; }
+[data-reveal].is-visible { opacity: 1; transform: none; }
 
 [data-stagger] > * {
   opacity: 0;
@@ -134,7 +112,7 @@ body::before {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(320px circle at var(--card-x, 50%) var(--card-y, 50%), rgba(255,255,255,.07), transparent 58%);
+  background: radial-gradient(320px circle at 50% 50%, rgba(255,255,255,.07), transparent 58%);
   opacity: 0;
   transition: opacity 220ms ease;
   z-index: -1;
@@ -169,21 +147,7 @@ body::before {
 .json-details[open] { animation: details-open 360ms var(--motion-ease); }
 @keyframes details-open { from { opacity: .55; transform: translateY(-5px); } }
 
-@keyframes rule-breathe { 50% { transform: scaleX(1.35); opacity: .6; } }
 
-.motion-particle {
-  position: fixed;
-  z-index: 9999;
-  width: 7px;
-  height: 7px;
-  border-radius: 2px;
-  pointer-events: none;
-  background: var(--particle-color, var(--product));
-  animation: particle-fly 760ms var(--motion-ease) forwards;
-}
-@keyframes particle-fly {
-  to { transform: translate(var(--particle-x), var(--particle-y)) rotate(var(--particle-r)); opacity: 0; scale: .35; }
-}
 
 .page-enter {
   position: fixed;
@@ -204,11 +168,9 @@ body::before {
 
 @media (max-width: 680px) {
   body::before { height: 2px; }
-  [data-reveal] { transform: translate3d(0, 18px, 0) scale(.994); filter: blur(2px); }
+  [data-reveal] { transform: translate3d(0, 18px, 0) scale(.994); }
   [data-stagger] > * { transform: translateY(12px); }
   .hero-copy-block > * { animation-duration: 620ms; }
-  .hero-stage { perspective: none; }
-  .profile-sheet.front { transform: translateY(var(--stage-y, 0px)); }
   .root-section:hover, .output-card:hover { transform: none; }
 }
 
@@ -219,8 +181,6 @@ body::before {
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
-  [data-reveal], [data-stagger] > *, .hero-copy-block > * { opacity: 1 !important; transform: none !important; filter: none !important; }
+  [data-reveal], [data-stagger] > *, .hero-copy-block > * { opacity: 1 !important; transform: none !important; }
   .site-header.is-hidden { transform: none; opacity: 1; }
-  .profile-sheet.back-product { transform: translate(-40px,14px) rotate(-4deg); }
-  .profile-sheet.back-identity { transform: translate(40px,10px) rotate(4deg); }
 }

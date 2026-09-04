@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="Create, validate, and export reusable ChatGPT personalization profiles.">
   <meta name="twitter:image" content="https://man612.github.io/chatgpt-personalization/social-preview.png">
   <link rel="canonical" href="https://man612.github.io/chatgpt-personalization/">
-  <link rel="icon" href="favicon.svg?v=2026-09-03.1615" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg?v=2026-09-04.0915" type="image/svg+xml">
   <style>
     .builder-update-notice {
       position: fixed;
@@ -59,7 +59,7 @@
   </style>
   <script>
     (() => {
-      const BUILD = "2026-09-03.1615";
+      const BUILD = "2026-09-04.0915";
       window.__BUILDER_BUILD__ = BUILD;
       window.__BUILDER_DIRTY__ = false;
       let lastCheck = 0;
@@ -120,17 +120,17 @@
       });
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=2026-09-03.1615">
-  <link rel="stylesheet" href="experience.css?v=2026-09-03.1615">
-  <link rel="stylesheet" href="motion.css?v=2026-09-03.1615">
-  <link rel="stylesheet" href="mobile.css?v=2026-09-03.1615">
-  <link rel="stylesheet" href="performance.css?v=2026-09-03.1615">
-  <link rel="stylesheet" href="i18n.css?v=2026-09-03.1615">
-  <script src="i18n.js?v=2026-09-03.1615" defer></script>
-  <script src="renderer.js?v=2026-09-03.1615" defer></script>
-  <script src="app.js?v=2026-09-03.1615" defer></script>
-  <script src="motion.js?v=2026-09-03.1615" defer></script>
-  <script src="mobile.js?v=2026-09-03.1615" defer></script>
+  <link rel="stylesheet" href="styles.css?v=2026-09-04.0915">
+  <link rel="stylesheet" href="experience.css?v=2026-09-04.0915">
+  <link rel="stylesheet" href="motion.css?v=2026-09-04.0915">
+  <link rel="stylesheet" href="mobile.css?v=2026-09-04.0915">
+  <link rel="stylesheet" href="performance.css?v=2026-09-04.0915">
+  <link rel="stylesheet" href="i18n.css?v=2026-09-04.0915">
+  <script src="i18n.js?v=2026-09-04.0915" defer></script>
+  <script src="renderer.js?v=2026-09-04.0915" defer></script>
+  <script src="app.js?v=2026-09-04.0915" defer></script>
+  <script src="motion.js?v=2026-09-04.0915" defer></script>
+  <script src="mobile.js?v=2026-09-04.0915" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#workspace" data-i18n="skip_builder">Skip to builder</a>
@@ -218,7 +218,7 @@
       </div>
     </section>
 
-    <div id="status" class="status loading" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span class="status-text" data-i18n="loading_profile">Loading profile…</span></div>
+    <div id="status" class="status loading" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span class="status-text">Loading profile…</span></div>
 
     <section id="workspace" class="workspace" data-i18n-aria="workspace_label" aria-label="Profile builder workspace">
       <div class="panel editor-panel">
@@ -253,11 +253,13 @@
           <span id="character-summary" class="character-summary"></span>
         </div>
 
+        <p class="preview-use-note"><strong data-i18n="recommended_order_label">Recommended order:</strong> <span data-i18n="recommended_order_text">Match Product settings first, then paste Occupation, More about you, and Custom Instructions into the corresponding ChatGPT Personalization fields.</span></p>
+
         <div class="output-stack">
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">01</span><h3 data-i18n="output_product">Product settings</h3></div><button class="copy-button" data-copy="settings-output" type="button" data-i18n="copy">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">02</span><h3 data-i18n="output_occupation">Occupation</h3></div><button class="copy-button" data-copy="occupation-output" type="button" data-i18n="copy">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">03</span><h3 data-i18n="output_about">More about you</h3></div><button class="copy-button" data-copy="about-output" type="button" data-i18n="copy">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
-          <article class="output-card"><div class="output-heading"><div><span class="output-index">04</span><h3 data-i18n="output_instructions">Custom Instructions</h3></div><button class="copy-button" data-copy="instructions-output" type="button" data-i18n="copy">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">01</span><h3 data-i18n="output_product">Product settings</h3><span class="output-target" data-i18n="target_settings">Apply manually</span></div><button class="copy-button" data-copy="settings-output" type="button" data-i18n="copy">Copy</button></div><pre id="settings-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">02</span><h3 data-i18n="output_occupation">Occupation</h3><span class="output-target" data-i18n="target_occupation">Paste → Occupation</span></div><button class="copy-button" data-copy="occupation-output" type="button" data-i18n="copy">Copy</button></div><pre id="occupation-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">03</span><h3 data-i18n="output_about">More about you</h3><span class="output-target" data-i18n="target_about">Paste → More about you</span></div><button class="copy-button" data-copy="about-output" type="button" data-i18n="copy">Copy</button></div><pre id="about-output" tabindex="0"></pre></article>
+          <article class="output-card"><div class="output-heading"><div><span class="output-index">04</span><h3 data-i18n="output_instructions">Custom Instructions</h3><span class="output-target" data-i18n="target_instructions">Paste → Custom Instructions</span></div><button class="copy-button" data-copy="instructions-output" type="button" data-i18n="copy">Copy</button></div><pre id="instructions-output" tabindex="0"></pre></article>
         </div>
 
         <div class="apply-guide">

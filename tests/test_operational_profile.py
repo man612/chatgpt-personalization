@@ -29,10 +29,11 @@ class OperationalProfileTests(unittest.TestCase):
         self.assertTrue(rendered.custom_instructions)
 
     def test_operational_profile_schema_reference_resolves(self):
-        expected = (REPO_ROOT / "spec" / "profile.schema.json").resolve()
-        resolved = (self.operational_path.parent / self.operational["$schema"]).resolve()
-        self.assertEqual(resolved, expected)
-        self.assertTrue(resolved.exists())
+        expected = "https://man612.github.io/chatgpt-personalization/schema/v2/profile.schema.json"
+        self.assertEqual(self.operational["$schema"], expected)
+        deployed = REPO_ROOT / "docs" / "schema" / "v2" / "profile.schema.json"
+        self.assertTrue(deployed.exists())
+        self.assertEqual(deployed.read_bytes(), (REPO_ROOT / "spec" / "profile.schema.json").read_bytes())
 
     def test_operational_profile_keeps_useful_headroom(self):
         rendered = profile_tool.render_profile(self.operational)

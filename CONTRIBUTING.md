@@ -36,11 +36,18 @@ Run:
 
 ```bash
 python -m unittest discover -s tests -p "test_*.py" -v
-python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json
+python tools/profile.py lint profiles/presets/*.json profiles/maintainers/*.json profiles/operational/*.json
+python tools/sync_docs_data.py --check
+node --check docs/i18n.js
 node --check docs/renderer.js
 node --check docs/app.js
-node --check tests/render_profile.js
+node --check docs/motion.js
+node --check docs/mobile.js
 python tests/check_renderer_parity.py
+python tests/check_validator_parity.py
+npm ci
+npx playwright install chromium
+npm run test:e2e
 ```
 
 If you change behavioral guidance, also run the relevant prompts from `tests/scenarios.md` against a baseline and record the failure you are trying to fix. Structural tests alone are not evidence of better model behavior.

@@ -144,20 +144,18 @@ class ExampleProfileTests(unittest.TestCase):
                 self.assertEqual(errors, [])
 
     def test_all_profile_schema_references_resolve(self):
-        repo_root = Path(__file__).resolve().parents[1]
-        expected = (repo_root / "spec" / "profile.schema.json").resolve()
+        expected = "https://man612.github.io/chatgpt-personalization/schema/v2/profile.schema.json"
         for path in self.profile_paths():
             with self.subTest(path=path.name):
                 data = json.loads(path.read_text(encoding="utf-8"))
-                self.assertIn("$schema", data)
-                resolved = (path.parent / data["$schema"]).resolve()
-                self.assertTrue(resolved.exists(), f"{path} points to missing schema: {resolved}")
-                self.assertEqual(resolved, expected)
+                self.assertEqual(data.get("$schema"), expected)
 
     def test_presets_do_not_include_maintainer_identity(self):
         repo_root = Path(__file__).resolve().parents[1]
         for path in sorted((repo_root / "profiles" / "presets").glob("*.json")):
-            raw = path.read_text(encoding="utf-8").casefold()
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data.pop("$schema", None)  # infrastructure URL may contain the maintainer namespace
+            raw = json.dumps(data, ensure_ascii=False).casefold()
             self.assertNotIn("yasman", raw, path.name)
             self.assertNotIn("man612", raw, path.name)
 

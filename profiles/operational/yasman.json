@@ -1,5 +1,5 @@
 {
-  "$schema": "../../spec/profile.schema.json",
+  "$schema": "https://man612.github.io/chatgpt-personalization/schema/v2/profile.schema.json",
   "schema_version": "2.0",
   "name": "Yasman Operational",
   "description": "Public-safe operational source of truth for auditing and applying Yasman's current ChatGPT personalization setup.",
